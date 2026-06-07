@@ -29,8 +29,8 @@ export function AdminMarketSelector({ locale }: AdminMarketSelectorProps) {
 
   const currentDomain = getDomainFromLocale(locale)
 
-  const handleChange = (nextLocale: string) => {
-    if (nextLocale === locale) return
+  const handleChange = (nextLocale: Locale | null) => {
+    if (!nextLocale || nextLocale === locale) return
     // Replace the leading locale segment in the current path
     const segments = pathname.split('/')
     segments[1] = nextLocale
