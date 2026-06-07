@@ -55,7 +55,7 @@ interface User {
   id: string
   name: string
   email: string
-  role: string
+  role: string | null
   status: string | null
   companyName: string | null
   companyId: string | null
@@ -165,7 +165,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
     }
   }
 
-  const getRoleBadge = (role: string) => {
+  const getRoleBadge = (role: string | null) => {
     return role === 'admin' 
       ? <Badge variant="outline" className="border-primary text-primary">Admin</Badge>
       : <Badge variant="outline">User</Badge>
