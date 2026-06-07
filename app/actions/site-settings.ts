@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { siteSettings } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { assertAdmin } from '@/lib/auth-utils'
 
 export type SiteSettings = {
   id: number
@@ -29,6 +30,9 @@ export type SiteSettings = {
   linkedin: string | null
   youtube: string | null
   businessHours: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImage: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -57,6 +61,9 @@ const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   linkedin: null,
   youtube: null,
   businessHours: 'Mo-Fr 9:00-17:00',
+  seoTitle: null,
+  seoDescription: null,
+  ogImage: null,
 }
 
 // Map locale to domain
@@ -130,6 +137,8 @@ export async function upsertSiteSettings(
   data: Partial<Omit<SiteSettings, 'id' | 'domain' | 'createdAt' | 'updatedAt'>>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    await assertAdmin()
+
     // Check if settings exist for this domain
     const existing = await db
       .select()
@@ -167,6 +176,7 @@ export async function upsertSiteSettings(
 // Delete site settings for a domain
 export async function deleteSiteSettings(domain: string): Promise<{ success: boolean; error?: string }> {
   try {
+    await assertAdmin()
     await db.delete(siteSettings).where(eq(siteSettings.domain, domain))
     revalidatePath('/', 'layout')
     return { success: true }

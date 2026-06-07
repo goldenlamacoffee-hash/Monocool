@@ -1,20 +1,11 @@
 'use server'
 
-import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { productImage, product } from '@/lib/db/schema'
 import { eq, asc } from 'drizzle-orm'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { del } from '@vercel/blob'
-
-async function requireAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session || session.user.role !== 'admin') {
-    throw new Error('Unauthorized')
-  }
-  return session
-}
+import { assertAdmin } from '@/lib/auth-utils'
 
 // Helper to revalidate product pages across all locales
 function revalidateProductPages(slug?: string) {
@@ -49,7 +40,7 @@ export async function addProductImage(data: {
   alt?: string
   isPrimary?: boolean
 }) {
-  await requireAdmin()
+  await assertAdmin()
   
   // Get current max sortOrder
   const existingImages = await db
@@ -99,7 +90,7 @@ export async function addProductImage(data: {
 
 // Delete image from product gallery
 export async function deleteProductImage(imageId: number) {
-  await requireAdmin()
+  await assertAdmin()
   
   // Get image info before deleting
   const [image] = await db.select().from(productImage).where(eq(productImage.id, imageId))
@@ -157,7 +148,7 @@ export async function deleteProductImage(imageId: number) {
 
 // Set image as primary
 export async function setImageAsPrimary(imageId: number) {
-  await requireAdmin()
+  await assertAdmin()
   
   const [image] = await db.select().from(productImage).where(eq(productImage.id, imageId))
   if (!image) return
@@ -187,7 +178,7 @@ export async function setImageAsPrimary(imageId: number) {
 
 // Update image sort order
 export async function updateImageSortOrder(imageId: number, newSortOrder: number) {
-  await requireAdmin()
+  await assertAdmin()
   
   await db
     .update(productImage)
@@ -197,7 +188,7 @@ export async function updateImageSortOrder(imageId: number, newSortOrder: number
 
 // Update image alt text
 export async function updateImageAlt(imageId: number, alt: string) {
-  await requireAdmin()
+  await assertAdmin()
   
   await db
     .update(productImage)

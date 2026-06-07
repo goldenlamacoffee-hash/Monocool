@@ -39,6 +39,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 1,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -78,6 +81,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 2,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -116,6 +122,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 3,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -155,6 +164,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 4,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -193,8 +205,30 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 5,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
   }
 ]
+
+/**
+ * Market-safe fallback selector.
+ *
+ * The static fallback dataset above is AT-flavored (German content, monocool.at).
+ * When the database is unavailable we must NOT leak AT products onto another
+ * market's domain (e.g. monocool.sk / .cz / .eu). This helper returns ONLY the
+ * fallback products that belong to the requested domain. For any domain without
+ * matching fallback content it returns an empty array, so the caller renders a
+ * clean empty state instead of wrong-market products.
+ *
+ * When no domain is provided (domain-agnostic call) the full dataset is returned
+ * to preserve previous behavior for callers that do not scope by market.
+ */
+export function getFallbackProducts(domain?: string): Product[] {
+  if (!domain) return fallbackProducts
+  return fallbackProducts.filter((p) => p.domain === domain)
+}
+

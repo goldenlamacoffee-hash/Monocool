@@ -22,12 +22,14 @@ export function Footer({ contactInfo }: FooterProps) {
   const tNav = useTranslations('nav')
   const locale = useLocale() as Locale
   
-  // Use provided contact info or defaults
-  const email = contactInfo?.email || 'info@monocool.at'
-  const phone = contactInfo?.phone || '+43 1 234 56 78'
-  const location = contactInfo?.city && contactInfo?.country 
+  // Only show contact details that actually exist. Never render invented
+  // contact data — if a value is missing, hide that row entirely.
+  const email = contactInfo?.email?.trim() || null
+  const phone = contactInfo?.phone?.trim() || null
+  const location = contactInfo?.city && contactInfo?.country
     ? `${contactInfo.city}, ${contactInfo.country}`
-    : t('location')
+    : null
+  const hasContact = Boolean(email || phone || location)
 
   return (
     <footer className="border-t border-border bg-muted/30">
@@ -71,24 +73,34 @@ export function Footer({ contactInfo }: FooterProps) {
           {/* Contact */}
           <div>
             <h3 className="mb-4 text-sm font-semibold text-foreground">{t('contact')}</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <a href={`mailto:${email}`} className="hover:text-primary">
-                  {email}
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary">
-                  {phone}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>{location}</span>
-              </li>
-            </ul>
+            {hasContact ? (
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {email && (
+                  <li className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <a href={`mailto:${email}`} className="hover:text-primary">
+                      {email}
+                    </a>
+                  </li>
+                )}
+                {phone && (
+                  <li className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary">
+                      {phone}
+                    </a>
+                  </li>
+                )}
+                {location && (
+                  <li className="flex items-start gap-2">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>{location}</span>
+                  </li>
+                )}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">{t('location')}</p>
+            )}
           </div>
         </div>
 

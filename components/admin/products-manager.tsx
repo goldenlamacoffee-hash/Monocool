@@ -115,6 +115,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [formData, setFormData] = useState<ProductFormData>(emptyForm)
   const [loading, setLoading] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [galleryDialogOpen, setGalleryDialogOpen] = useState(false)
   const [galleryProduct, setGalleryProduct] = useState<Product | null>(null)
   const [galleryImages, setGalleryImages] = useState<ProductImage[]>([])
@@ -136,11 +137,13 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const openCreateDialog = () => {
     setEditingProduct(null)
     setFormData(emptyForm)
+    setSaveError(null)
     setIsDialogOpen(true)
   }
 
   const openEditDialog = (product: Product) => {
     setEditingProduct(product)
+    setSaveError(null)
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -163,6 +166,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setSaveError(null)
 
     try {
       const data = {
@@ -192,6 +196,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
       router.refresh()
     } catch (error) {
       console.error('Error saving product:', error)
+      setSaveError(error instanceof Error ? error.message : 'Failed to save product')
     } finally {
       setLoading(false)
     }
@@ -390,6 +395,11 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                     {loading ? t('saving') : editingProduct ? tCommon('save') : t('create')}
                   </Button>
                 </div>
+                {saveError && (
+                  <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {saveError}
+                  </p>
+                )}
               </form>
             </DialogContent>
           </Dialog>

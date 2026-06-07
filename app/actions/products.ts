@@ -1,13 +1,12 @@
 'use server'
 
-import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { product, cmsContent } from '@/lib/db/schema'
 import { eq, asc, and } from 'drizzle-orm'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { unstable_noStore as noStore } from 'next/cache'
-import { fallbackProducts } from '@/lib/data/products-fallback'
+import { getFallbackProducts } from '@/lib/data/products-fallback'
+import { assertAdmin } from '@/lib/auth-utils'
 import { getDomainFromLocale } from '@/lib/domain-utils'
 
 // Check database availability at runtime
@@ -15,23 +14,12 @@ function isDatabaseAvailable() {
   return !!process.env.DATABASE_URL
 }
 
-async function getSession() {
-  return auth.api.getSession({ headers: await headers() })
-}
-
-async function requireAdmin() {
-  const session = await getSession()
-  if (!session?.user) throw new Error('Unauthorized')
-  if (session.user.role !== 'admin') throw new Error('Admin access required')
-  return session.user
-}
-
 // Public product queries - with domain filtering
 export async function getProducts(domain?: string) {
   noStore()
   
   if (!isDatabaseAvailable()) {
-    return fallbackProducts.filter(p => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
+    return getFallbackProducts(domain).filter(p => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
   }
   
   try {
@@ -45,7 +33,7 @@ export async function getProducts(domain?: string) {
     return result
   } catch (error) {
     console.error('[v0] Error fetching products, using fallback:', error)
-    return fallbackProducts.filter(p => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
+    return getFallbackProducts(domain).filter(p => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder)
   }
 }
 
@@ -58,7 +46,7 @@ export async function getProductBySlug(slug: string, domain?: string) {
   noStore()
   
   if (!isDatabaseAvailable()) {
-    return fallbackProducts.find(p => p.slug === slug)
+    return getFallbackProducts(domain).find(p => p.slug === slug)
   }
   
   try {
@@ -71,7 +59,7 @@ export async function getProductBySlug(slug: string, domain?: string) {
     return result
   } catch (error) {
     console.error('[v0] Error fetching product by slug, using fallback:', error)
-    return fallbackProducts.find(p => p.slug === slug)
+    return getFallbackProducts(domain).find(p => p.slug === slug)
   }
 }
 
@@ -113,12 +101,33 @@ export async function createProduct(data: {
   specifications?: Record<string, string>
   domain?: string
 }) {
-  await requireAdmin()
+  await assertAdmin()
+
+  // Basic validation: name and slug are required, and slug must be url-safe.
+  const name = data.name?.trim()
+  const slug = data.slug?.trim()
+  if (!name) throw new Error('Product name is required')
+  if (!slug) throw new Error('Product slug is required')
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    throw new Error('Slug must be lowercase letters, numbers, and hyphens only')
+  }
+
+  const domain = data.domain || 'monocool.at'
+
+  // Slug must be unique within a domain (markets are independent).
+  const [existing] = await db.select({ id: product.id }).from(product)
+    .where(and(eq(product.slug, slug), eq(product.domain, domain)))
+  if (existing) {
+    throw new Error(`A product with slug "${slug}" already exists for ${domain}`)
+  }
+
   const { price, ...rest } = data
   const [newProduct] = await db.insert(product).values({
     ...rest,
+    name,
+    slug,
     ...(price !== undefined ? { price: price.toString() } : {}),
-    domain: data.domain || 'monocool.at'
+    domain,
   }).returning()
   revalidateProductPages(newProduct.slug)
   return newProduct
@@ -147,7 +156,25 @@ export async function updateProduct(
     domain: string
   }>
 ) {
-  await requireAdmin()
+  await assertAdmin()
+
+  // Validate slug if it is being changed.
+  if (data.slug !== undefined) {
+    const slug = data.slug?.trim()
+    if (!slug) throw new Error('Product slug is required')
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+      throw new Error('Slug must be lowercase letters, numbers, and hyphens only')
+    }
+    const [current] = await db.select({ domain: product.domain }).from(product).where(eq(product.id, id))
+    const targetDomain = data.domain || current?.domain || 'monocool.at'
+    const [conflict] = await db.select({ id: product.id }).from(product)
+      .where(and(eq(product.slug, slug), eq(product.domain, targetDomain)))
+    if (conflict && conflict.id !== id) {
+      throw new Error(`A product with slug "${slug}" already exists for ${targetDomain}`)
+    }
+    data.slug = slug
+  }
+
   const { price, ...rest } = data
   const [updated] = await db
     .update(product)
@@ -163,14 +190,14 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: number) {
-  await requireAdmin()
+  await assertAdmin()
   const [productToDelete] = await db.select().from(product).where(eq(product.id, id))
   await db.delete(product).where(eq(product.id, id))
   revalidateProductPages(productToDelete?.slug)
 }
 
 export async function toggleProductActive(id: number, isActive: boolean) {
-  await requireAdmin()
+  await assertAdmin()
   const [updated] = await db
     .update(product)
     .set({ isActive, updatedAt: new Date() })
@@ -184,7 +211,7 @@ export async function getAllProducts(domain?: string) {
   noStore()
   
   if (!isDatabaseAvailable()) {
-    return fallbackProducts.sort((a, b) => a.sortOrder - b.sortOrder)
+    return getFallbackProducts(domain).sort((a, b) => a.sortOrder - b.sortOrder)
   }
   
   try {
@@ -196,7 +223,7 @@ export async function getAllProducts(domain?: string) {
     return await db.select().from(product).orderBy(asc(product.sortOrder))
   } catch (error) {
     console.error('[v0] Error fetching all products, using fallback:', error)
-    return fallbackProducts.sort((a, b) => a.sortOrder - b.sortOrder)
+    return getFallbackProducts(domain).sort((a, b) => a.sortOrder - b.sortOrder)
   }
 }
 
@@ -210,7 +237,7 @@ export async function getProductsByCategory(category: string, domain?: string) {
   noStore()
   
   if (!isDatabaseAvailable()) {
-    return fallbackProducts.filter(p => p.isActive && p.category === category).sort((a, b) => a.sortOrder - b.sortOrder)
+    return getFallbackProducts(domain).filter(p => p.isActive && p.category === category).sort((a, b) => a.sortOrder - b.sortOrder)
   }
   
   try {
@@ -286,7 +313,7 @@ export async function upsertCmsContent(data: {
   metadata?: Record<string, unknown>
   domain?: string
 }) {
-  await requireAdmin()
+  await assertAdmin()
   const domain = data.domain || 'monocool.at'
   
   // Check if exists for this key AND domain combination
