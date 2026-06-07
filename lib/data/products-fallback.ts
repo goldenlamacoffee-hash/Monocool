@@ -39,6 +39,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 1,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -78,6 +81,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 2,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -116,6 +122,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 3,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -155,6 +164,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 4,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
@@ -193,6 +205,9 @@ export const fallbackProducts: Product[] = [
     isActive: true,
     sortOrder: 5,
     imageUrl: null,
+    seoTitle: null,
+    seoDescription: null,
+    ogImage: null,
     domain: "monocool.at",
     createdAt: new Date("2026-06-04T13:55:17.313Z"),
     updatedAt: new Date("2026-06-04T13:55:17.313Z")
