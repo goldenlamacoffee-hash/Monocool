@@ -1,0 +1,496 @@
+{
+  "metadata": {
+    "title": "MonoCool - Klimatizace bez venkovní jednotky | Česká republika",
+    "description": "MonoCool nabízí inovativní klimatizace bez venkovní jednotky pro Českou republiku. Efektivní chlazení a topení bez složité instalace."
+  },
+  "nav": {
+    "home": "Domů",
+    "products": "Produkty",
+    "benefits": "Výhody",
+    "contact": "Kontakt",
+    "login": "Přihlásit",
+    "logout": "Odhlásit",
+    "register": "Registrovat",
+    "admin": "Admin",
+    "language": "Jazyk"
+  },
+  "hero": {
+    "title": "Klimatizace bez venkovní jednotky",
+    "subtitle": "Revoluční monoblock klimatizační technologie z Itálie. Snadná instalace, maximální komfort, minimální námaha.",
+    "cta": "Objevte produkty",
+    "secondary": "Zjistit více"
+  },
+  "features": {
+    "title": "Proč MonoCool?",
+    "subtitle": "Objevte výhody naší inovativní klimatizační technologie",
+    "noOutdoor": {
+      "title": "Žádná venkovní jednotka",
+      "description": "Žádná rušivá venkovní jednotka na fasádě. Ideální pro památkově chráněné budovy a pronajímané byty."
+    },
+    "quiet": {
+      "title": "Tichý provoz",
+      "description": "S pouhými 19 dB(A) patří naše zařízení k nejtišším na trhu."
+    },
+    "easy": {
+      "title": "Snadná instalace",
+      "description": "Pouze malý jádrový vrt. Instalace možná během několika hodin."
+    },
+    "efficient": {
+      "title": "Energeticky úsporné",
+      "description": "Až A+++ energetická třída pro minimální provozní náklady."
+    }
+  },
+  "benefits": {
+    "title": "Výhody MonoCool",
+    "subtitle": "Čísla, která přesvědčí",
+    "noise": {
+      "value": "19 dB",
+      "label": "Tichý provoz"
+    },
+    "energy": {
+      "value": "A+++",
+      "label": "Energetická účinnost"
+    },
+    "outdoor": {
+      "value": "0",
+      "label": "Venkovních jednotek"
+    },
+    "warranty": {
+      "value": "5 let",
+      "label": "Záruka"
+    }
+  },
+  "products": {
+    "title": "Naše produkty",
+    "subtitle": "Najděte ideální klimatizaci pro váš prostor",
+    "viewAll": "Zobrazit všechny produkty",
+    "details": "Zobrazit detaily",
+    "priceOnLogin": "Cena po přihlášení",
+    "loginToSeePrice": "Cena pouze pro registrované zákazníky",
+    "loginPrompt": "Přihlaste se pro zobrazení ceny",
+    "backToProducts": "Zpět na produkty",
+    "requestQuote": "Poslat poptávku",
+    "callNow": "Zavolat",
+    "description": "Popis",
+    "specifications": "Specifikace",
+    "features": "Vlastnosti",
+    "coolingCapacity": "Chladicí výkon",
+    "heatingCapacity": "Topný výkon",
+    "energyClass": "Energetická účinnost",
+    "noiseLevel": "Hlučnost",
+    "dimensions": "Rozměry",
+    "weight": "Hmotnost",
+    "notFound": "Produkt nenalezen"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "subtitle": "Máte dotazy? Rádi vám pomůžeme!",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "dealerTitle": "Staňte se prodejcem",
+    "dealerText": "Máte zájem o partnerství? Kontaktujte nás pro více informací.",
+    "dealerCta": "Stát se prodejcem"
+  },
+  "footer": {
+    "quickLinks": "Rychlé odkazy",
+    "contact": "Kontakt",
+    "rights": "Všechna práva vyhrazena.",
+    "imprint": "Impressum",
+    "privacy": "Ochrana osobních údajů",
+    "terms": "Obchodní podmínky",
+    "description": "MonoCool - Inovativní klimatizace bez venkovní jednotky. Perfektní klimatizace pro váš domov nebo kancelář.",
+    "location": "Vídeň, Rakousko"
+  },
+  "auth": {
+    "loginTitle": "Přihlášení",
+    "loginSubtitle": "Přihlaste se pro zobrazení cen a zadávání objednávek.",
+    "registerTitle": "Registrace prodejce",
+    "registerSubtitle": "Vytvořte si obchodní účet pro přístup k dealerským cenám.",
+    "email": "E-mail",
+    "emailPlaceholder": "jmeno@firma.cz",
+    "password": "Heslo",
+    "passwordPlaceholder": "Minimálně 8 znaků",
+    "confirmPassword": "Potvrzení hesla",
+    "confirmPasswordPlaceholder": "Heslo znovu",
+    "name": "Celé jméno",
+    "namePlaceholder": "Jan Novák",
+    "phone": "Telefon",
+    "phonePlaceholder": "+420 123 456 789",
+    "companyName": "Název firmy",
+    "companyNamePlaceholder": "Vaše firma s.r.o.",
+    "companyId": "IČO",
+    "companyIdPlaceholder": "12345678",
+    "vatNumber": "DIČ",
+    "vatNumberPlaceholder": "CZ12345678",
+    "address": "Adresa",
+    "addressPlaceholder": "Vzorová 1",
+    "city": "Město",
+    "cityPlaceholder": "Praha",
+    "postalCode": "PSČ",
+    "postalCodePlaceholder": "110 00",
+    "country": "Země",
+    "selectCountry": "Vyberte zemi",
+    "step1": "Osobní údaje",
+    "step2": "Firemní údaje",
+    "step3": "Adresa",
+    "personalInfo": "Osobní informace",
+    "companyInfo": "Informace o firmě",
+    "addressInfo": "Obchodní adresa",
+    "next": "Další",
+    "back": "Zpět",
+    "loginButton": "Přihlásit",
+    "register": "Registrovat",
+    "noAccount": "Nemáte účet?",
+    "haveAccount": "Již máte účet?",
+    "login": "Přihlaste se",
+    "registerLink": "Zaregistrujte se",
+    "loginLink": "Přihlaste se",
+    "registerButton": "Registrovat",
+    "hasAccount": "Již máte účet?",
+    "registrationSuccess": "Registrace úspěšná!",
+    "registrationPending": "Váš účet se ověřuje",
+    "registrationPendingDescription": "Ověřujeme vaše údaje a aktivujeme váš účet do 24 hodin. Obdržíte e-mailové oznámení.",
+    "backToHome": "Zpět na hlavní stránku",
+    "errors": {
+      "nameRequired": "Zadejte prosím své jméno",
+      "invalidEmail": "Zadejte prosím platnou e-mailovou adresu",
+      "passwordLength": "Heslo musí mít alespoň 8 znaků",
+      "passwordMismatch": "Hesla se neshodují",
+      "companyRequired": "Zadejte prosím název firmy",
+      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu."
+    },
+    "error": "Přihlášení selhalo. Zkontrolujte prosím své údaje."
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "welcome": "Vítejte",
+    "products": "Správa produktů",
+    "users": "Správa uživatelů",
+    "orders": "Objednávky",
+    "cms": "CMS Obsah",
+    "productsDesc": "Přidávat, upravovat nebo mazat produkty",
+    "usersDesc": "Spravovat a schvalovat uživatelské účty",
+    "ordersDesc": "Zobrazit a upravovat objednávky",
+    "cmsDesc": "Upravovat obsah webu",
+    "setup": {
+      "title": "Admin Setup",
+      "description": "Vytvořte administrátorský účet pro MonoCool",
+      "setupSecret": "Setup heslo",
+      "setupSecretPlaceholder": "Zadejte setup heslo",
+      "setupSecretHint": "ADMIN_SETUP_SECRET z vašich environment proměnných",
+      "fullName": "Celé jméno",
+      "fullNamePlaceholder": "Jméno admina",
+      "email": "E-mailová adresa",
+      "emailPlaceholder": "admin@monocool.at",
+      "password": "Heslo",
+      "passwordPlaceholder": "Minimálně 8 znaků",
+      "confirmPassword": "Potvrzení hesla",
+      "confirmPasswordPlaceholder": "Heslo znovu",
+      "createAdmin": "Vytvořit admin účet",
+      "creatingAdmin": "Vytváření admina...",
+      "backToLogin": "Zpět na přihlášení",
+      "errors": {
+        "secretRequired": "Setup heslo je vyžadováno",
+        "nameRequired": "Jméno musí mít alespoň 2 znaky",
+        "emailRequired": "Vyžadována platná e-mailová adresa",
+        "passwordLength": "Heslo musí mít alespoň 8 znaků",
+        "passwordMismatch": "Hesla se neshodují",
+        "setupFailed": "Setup selhal",
+        "unexpected": "Nastala neočekávaná chyba"
+      }
+    },
+    "accessDenied": "Přístup odepřen",
+    "adminOnly": "Tato stránka je přístupná pouze pro administrátory.",
+    "backToHome": "Zpět na hlavní stránku",
+    "stats": {
+      "totalUsers": "Celkem uživatelů",
+      "pendingApproval": "Čekající",
+      "approvedUsers": "Schválených",
+      "totalProducts": "Produktů",
+      "totalOrders": "Objednávek",
+      "revenue": "Tržby",
+      "activeProducts": "Aktivní produkty",
+      "pending": "čekající",
+      "approved": "% schváleno"
+    },
+    "quickActions": "Rychlé akce",
+    "userManagement": {
+      "title": "Správa uživatelů",
+      "allUsers": "Všichni uživatelé",
+      "pending": "Čekající",
+      "approved": "Schválení",
+      "rejected": "Zamítnutí",
+      "searchPlaceholder": "Hledat uživatele...",
+      "name": "Jméno",
+      "email": "E-mail",
+      "company": "Firma",
+      "status": "Stav",
+      "role": "Role",
+      "registered": "Registrován",
+      "actions": "Akce",
+      "approve": "Schválit",
+      "reject": "Zamítnout",
+      "makeAdmin": "Udělat adminem",
+      "removeAdmin": "Odebrat admin",
+      "viewDetails": "Zobrazit detaily",
+      "editUser": "Upravit uživatele",
+      "deleteUser": "Smazat uživatele",
+      "confirmDelete": "Opravdu chcete tohoto uživatele smazat?",
+      "noUsers": "Žádní uživatelé nenalezeni",
+      "notes": "Poznámky",
+      "companyId": "IČO",
+      "vatNumber": "DIČ",
+      "phone": "Telefon",
+      "address": "Adresa",
+      "postalCode": "PSČ",
+      "city": "Město",
+      "country": "Země",
+      "saveChanges": "Uložit změny",
+      "close": "Zavřít"
+    },
+    "productManagement": {
+      "title": "Správa produktů",
+      "backToAdmin": "Zpět",
+      "addProduct": "Přidat produkt",
+      "newProduct": "Nový produkt",
+      "editProduct": "Upravit produkt",
+      "createProduct": "Vytvořit nový produkt",
+      "deleteProduct": "Smazat produkt",
+      "confirmDelete": "Opravdu chcete tento produkt smazat?",
+      "noProducts": "Zatím žádné produkty.",
+      "firstProduct": "Vytvořit první produkt",
+      "active": "Aktivní",
+      "inactive": "Neaktivní",
+      "productForm": "Vyplňte informace o produktu.",
+      "name": "Název",
+      "slug": "Slug",
+      "slugPlaceholder": "automaticky-generováno",
+      "shortDescription": "Krátký popis",
+      "description": "Popis",
+      "price": "Cena (EUR)",
+      "category": "Kategorie",
+      "imageUrl": "URL obrázku",
+      "coolingCapacity": "Chladicí výkon",
+      "heatingCapacity": "Topný výkon",
+      "energyClass": "Energetická třída",
+      "noiseLevel": "Hlučnost",
+      "weight": "Hmotnost",
+      "dimensions": "Rozměry",
+      "features": "Vlastnosti (jedna na řádek)",
+      "status": "Stav",
+      "actions": "Akce",
+      "saving": "Ukládání...",
+      "create": "Vytvořit"
+    },
+    "gallery": {
+      "title": "Galerie obrázků",
+      "dropzone": "Přetáhněte obrázky sem nebo klikněte pro výběr",
+      "formats": "JPEG, PNG, WebP, GIF - max. 5MB",
+      "uploading": "Nahrávání...",
+      "primary": "Hlavní",
+      "setPrimary": "Nastavit jako hlavní",
+      "delete": "Smazat",
+      "empty": "Zatím žádné obrázky"
+    },
+    "cmsManagement": {
+      "title": "Správa obsahu",
+      "backToAdmin": "Zpět",
+      "newContent": "Nový obsah",
+      "description": "Upravte obsah vašeho webu. Změny se projeví okamžitě.",
+      "sections": "Sekce webu",
+      "allContent": "Veškerý obsah",
+      "editSection": "Upravit sekci",
+      "configured": "Nastaveno",
+      "notConfigured": "Nenastaveno",
+      "edit": "Upravit",
+      "heroSection": "Hero sekce",
+      "heroDesc": "Hlavní nadpis a popis na úvodní stránce",
+      "features": "Proč MonoCool?",
+      "featuresDesc": "Název a popis sekce výhod",
+      "feature1": "Výhoda 1: Bez venkovní jednotky",
+      "feature1Desc": "Žádná rušivá venkovní jednotka",
+      "feature2": "Výhoda 2: Tichý provoz",
+      "feature2Desc": "Extrémně tichý provoz",
+      "feature3": "Výhoda 3: Snadná instalace",
+      "feature3Desc": "Rychlá a snadná instalace",
+      "feature4": "Výhoda 4: Energeticky úsporné",
+      "feature4Desc": "Vysoká energetická účinnost",
+      "benefits": "Výhody MonoCool",
+      "benefitsDesc": "Název a popis sekce statistik",
+      "productsSection": "Sekce produktů",
+      "productsSectionDesc": "Název a popis sekce produktů",
+      "about": "O nás",
+      "aboutDesc": "Text o nás",
+      "contact": "Kontaktní sekce",
+      "contactDesc": "Kontaktní informace na úvodní stránce",
+      "footer": "Patička",
+      "footerDesc": "Text patičky",
+      "allEntries": "Všechny CMS záznamy",
+      "allEntriesDesc": "Přehled veškerého uloženého obsahu v databázi.",
+      "noTitle": "Bez názvu",
+      "noContent": "Zatím žádný obsah. Upravte sekci webu pro začátek.",
+      "editContent": "Upravit obsah",
+      "editContentDesc": "Upravte obsah pro tuto sekci.",
+      "key": "Klíč",
+      "keyPlaceholder": "např. hero-title, about-text",
+      "titleField": "Název",
+      "titlePlaceholder": "Zadejte název...",
+      "contentField": "Obsah",
+      "contentPlaceholder": "Zadejte obsah...",
+      "imageUrl": "URL obrázku",
+      "metadata": "Další data (JSON)",
+      "saving": "Ukládání..."
+    }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Impressum",
+      "companyInfo": "Informace o společnosti",
+      "companyName": "MonoCool GmbH",
+      "address": "Musterstraße 123",
+      "city": "1010 Vídeň",
+      "country": "Rakousko",
+      "contact": "Kontakt",
+      "phone": "Telefon: +43 1 234 56 78",
+      "email": "E-mail: info@monocool.at",
+      "registration": "Obchodní rejstřík",
+      "registrationInfo": "Registrační soud: Obchodní soud Vídeň",
+      "registrationNumber": "Číslo společnosti: FN 123456a",
+      "vatId": "DIČ",
+      "vatIdNumber": "Identifikační číslo DPH: ATU12345678",
+      "responsible": "Odpovědný za obsah",
+      "responsibleName": "Max Mustermann, jednatel",
+      "dispute": "Řešení sporů",
+      "disputeText": "Evropská komise poskytuje platformu pro online řešení sporů (ODR). Nejsme ochotni ani povinni účastnit se řízení o řešení sporů před spotřebitelskou rozhodčí komisí."
+    },
+    "privacy": {
+      "title": "Zásady ochrany osobních údajů",
+      "intro": "Ochrana vašich osobních údajů je pro nás zvláště důležitá. Proto zpracováváme vaše údaje výhradně na základě zákonných ustanovení (GDPR).",
+      "responsible": "Správce údajů",
+      "responsibleText": "Za zpracování údajů na této webové stránce odpovídá MonoCool GmbH.",
+      "dataCollection": "Sběr a zpracování údajů",
+      "dataCollectionText": "Při návštěvě naší webové stránky se automaticky shromažďují technické informace: IP adresa, typ prohlížeče, operační systém, čas přístupu. Tyto údaje se používají výhradně k zajištění plynulého provozu webu.",
+      "cookies": "Cookies",
+      "cookiesText": "Naše webová stránka používá cookies. Jedná se o malé textové soubory uložené na vašem zařízení. Některé cookies jsou technicky nezbytné, jiné nám pomáhají zlepšovat naše webové stránky.",
+      "rights": "Vaše práva",
+      "rightsText": "Máte obecně právo na přístup, opravu, výmaz, omezení, přenositelnost údajů, odvolání a námitku. Pokud se domníváte, že zpracování vašich údajů porušuje zákon o ochraně osobních údajů, můžete podat stížnost u dozorového úřadu.",
+      "contact": "Kontakt",
+      "contactText": "V případě dotazů ohledně ochrany osobních údajů nás můžete kdykoli kontaktovat na adrese info@monocool.at.",
+      "updates": "Změny",
+      "updatesText": "Vyhrazujeme si právo tuto politiku ochrany osobních údajů upravit v souladu se změněnými právními požadavky nebo při změnách našich služeb."
+    }
+  },
+  "common": {
+    "loading": "Načítání...",
+    "error": "Došlo k chybě",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "add": "Přidat",
+    "search": "Hledat",
+    "noResults": "Žádné výsledky"
+  },
+  "fanCoil": {
+    "meta": {
+      "title": "Fan Coil Design - Ventilkonvektory | MonoCool",
+      "description": "Objevte naše designové fan coil jednotky. Elegantní ventilkonvektory pro moderní vytápění a chlazení."
+    },
+    "hero": {
+      "badge": "Premium Design",
+      "title": "Fan Coil Ventilkonvektory",
+      "description": "Elegantní klimatizace pro náročné prostory. Naše designové fan coily spojují nejvyšší účinnost s nadčasovou estetikou.",
+      "cta": "Objevte produkty",
+      "learnMore": "Zjistit více"
+    },
+    "products": {
+      "title": "Naše Fan Coil modely",
+      "subtitle": "Vyberte si z pěti různých provedení pro každou aplikaci",
+      "specs": {
+        "power": "Výkon",
+        "airflow": "Průtok vzduchu",
+        "noise": "Hlučnost",
+        "dimensions": "Rozměry"
+      },
+      "fs": {
+        "name": "FS - Podlahová jednotka",
+        "badge": "Bestseller",
+        "tagline": "Volně stojící elegance",
+        "description": "Model FS je elegantní podlahová jednotka, která se bezproblémově hodí do každého interiéru. Ideální pro obývací pokoje, kanceláře a recepce.",
+        "feature1": "Kompaktní design pro flexibilní umístění",
+        "feature2": "360° distribuce vzduchu pro optimální komfort",
+        "feature3": "Integrovaný odvod kondenzátu"
+      },
+      "sm": {
+        "name": "SM - Nástěnná montáž",
+        "badge": "Úspora místa",
+        "tagline": "Štíhlé nástěnné řešení",
+        "description": "Model SM je perfektním řešením pro stísněné prostory. Plochý design umožňuje diskrétní montáž na stěnu.",
+        "feature1": "Pouze 15 cm hloubka instalace",
+        "feature2": "Snadná montáž na stěnu bez podlahové instalace",
+        "feature3": "Moderní LED ovládací displej"
+      },
+      "hw": {
+        "name": "HW - Horizontální",
+        "badge": "Výkonný",
+        "tagline": "Maximální dosah",
+        "description": "Horizontální model HW nabízí maximální topný a chladicí výkon pro velké místnosti. Ideální pod okna nebo na parapety.",
+        "feature1": "Až 10 kW topný/chladicí výkon",
+        "feature2": "Optimalizováno pro podlahová okna",
+        "feature3": "Rovnoměrná distribuce vzduchu v celé místnosti"
+      },
+      "bt": {
+        "name": "BT - Lavicový typ",
+        "badge": "Inovativní",
+        "tagline": "Design potkává funkci",
+        "description": "Model BT integruje klimatizaci do elegantní lavice. Perfektní pro recepce, čekárny a moderní architekturu.",
+        "feature1": "Multifunkční jako sedačka",
+        "feature2": "Nejvyšší integrace designu",
+        "feature3": "Různé povrchy a barvy k dispozici"
+      },
+      "tw": {
+        "name": "TW - Tower",
+        "badge": "Elegantní",
+        "tagline": "Vertikální dokonalost",
+        "description": "Model TW Tower je štíhlý stojací sloup pro rohy a úzké prostory. Minimální půdorys při maximální účinnosti.",
+        "feature1": "Štíhlý sloupový tvar šetří podlahovou plochu",
+        "feature2": "Ideální proudění vzduchu směrem nahoru",
+        "feature3": "Integrovaný dotykový ovládací panel"
+      }
+    },
+    "features": {
+      "title": "Proč naše Fan Coily?",
+      "subtitle": "Inovativní technologie pro nejvyšší nároky",
+      "design": {
+        "title": "Oceňovaný design",
+        "description": "Naše fan coily byly vyvinuty renomovanými designéry a harmonicky zapadají do jakéhokoli prostředí."
+      },
+      "efficiency": {
+        "title": "Nejvyšší účinnost",
+        "description": "EC motory nejnovější generace zajišťují minimální spotřebu energie při maximálním výkonu."
+      },
+      "quiet": {
+        "title": "Tichý provoz",
+        "description": "Optimalizovaná geometrie ventilátoru a zvuková izolace pro provoz od pouhých 20 dB(A)."
+      },
+      "eco": {
+        "title": "Ekologické",
+        "description": "Kompatibilní s obnovitelnými zdroji energie jako jsou tepelná čerpadla a solární systémy."
+      },
+      "control": {
+        "title": "Smart ovládání",
+        "description": "WiFi ovládání a integrace do smart home systémů pro maximální komfort."
+      },
+      "quality": {
+        "title": "Made in Italy",
+        "description": "Nejvyšší kvalita výroby z italské produkce s 5letou zárukou."
+      }
+    },
+    "cta": {
+      "title": "Připraveni na elegantní klimatizaci?",
+      "description": "Kontaktujte nás pro osobní konzultaci nebo si vyžádejte náš aktuální katalog.",
+      "contact": "Kontaktujte nás",
+      "catalog": "Zobrazit katalog"
+    }
+  }
+}

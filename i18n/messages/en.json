@@ -1,0 +1,496 @@
+{
+  "metadata": {
+    "title": "MonoCool - Air Conditioners Without Outdoor Unit | Europe",
+    "description": "MonoCool offers innovative air conditioners without outdoor units for Europe. Efficient cooling and heating without complicated installation."
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "benefits": "Benefits",
+    "contact": "Contact",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "admin": "Admin",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Air Conditioners Without Outdoor Unit",
+    "subtitle": "Revolutionary monoblock climate technology from Italy. Easy installation, maximum comfort, minimal effort.",
+    "cta": "Discover Products",
+    "secondary": "Learn More"
+  },
+  "features": {
+    "title": "Why MonoCool?",
+    "subtitle": "Discover the advantages of our innovative climate technology",
+    "noOutdoor": {
+      "title": "No Outdoor Unit",
+      "description": "No disruptive outdoor unit on the facade. Perfect for heritage buildings and rental apartments."
+    },
+    "quiet": {
+      "title": "Whisper Quiet",
+      "description": "At only 19 dB(A), our devices are among the quietest on the market."
+    },
+    "easy": {
+      "title": "Easy Installation",
+      "description": "Only a small core drilling required. Installation possible within hours."
+    },
+    "efficient": {
+      "title": "Energy Efficient",
+      "description": "Up to A+++ energy efficiency class for minimal operating costs."
+    }
+  },
+  "benefits": {
+    "title": "MonoCool Benefits",
+    "subtitle": "Numbers that convince",
+    "noise": {
+      "value": "19 dB",
+      "label": "Whisper Quiet"
+    },
+    "energy": {
+      "value": "A+++",
+      "label": "Energy Efficiency"
+    },
+    "outdoor": {
+      "value": "0",
+      "label": "Outdoor Units"
+    },
+    "warranty": {
+      "value": "5 Years",
+      "label": "Warranty"
+    }
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Find the perfect air conditioner for your space",
+    "viewAll": "View All Products",
+    "details": "View Details",
+    "priceOnLogin": "Price on Login",
+    "loginToSeePrice": "Price only for registered customers",
+    "loginPrompt": "Login to see the price",
+    "backToProducts": "Back to Products",
+    "requestQuote": "Request Quote",
+    "callNow": "Call Now",
+    "description": "Description",
+    "specifications": "Specifications",
+    "features": "Features",
+    "coolingCapacity": "Cooling Capacity",
+    "heatingCapacity": "Heating Capacity",
+    "energyClass": "Energy Efficiency",
+    "noiseLevel": "Noise Level",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "notFound": "Product not found"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Have questions? We are happy to help!",
+    "email": "Email",
+    "phone": "Phone",
+    "dealerTitle": "Become a Dealer",
+    "dealerText": "Interested in a partnership? Contact us for more information.",
+    "dealerCta": "Become a Dealer"
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "description": "MonoCool - Innovative air conditioners without outdoor unit. Perfect climate control for your home or office.",
+    "location": "Vienna, Austria"
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "loginSubtitle": "Login to see prices and place orders.",
+    "registerTitle": "Dealer Registration",
+    "registerSubtitle": "Create a business account to access dealer prices.",
+    "email": "Email",
+    "emailPlaceholder": "name@company.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat password",
+    "name": "Full Name",
+    "namePlaceholder": "John Smith",
+    "phone": "Phone",
+    "phonePlaceholder": "+1 234 567 890",
+    "companyName": "Company Name",
+    "companyNamePlaceholder": "Your Company Ltd.",
+    "companyId": "Company Registration Number",
+    "companyIdPlaceholder": "12345678",
+    "vatNumber": "VAT Number",
+    "vatNumberPlaceholder": "EU123456789",
+    "address": "Address",
+    "addressPlaceholder": "123 Main Street",
+    "city": "City",
+    "cityPlaceholder": "London",
+    "postalCode": "Postal Code",
+    "postalCodePlaceholder": "SW1A 1AA",
+    "country": "Country",
+    "selectCountry": "Select country",
+    "step1": "Personal Details",
+    "step2": "Company Details",
+    "step3": "Address",
+    "personalInfo": "Personal Information",
+    "companyInfo": "Company Information",
+    "addressInfo": "Business Address",
+    "next": "Next",
+    "back": "Back",
+    "loginButton": "Login",
+    "register": "Register",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already registered?",
+    "login": "Login now",
+    "registerLink": "Register now",
+    "loginLink": "Login now",
+    "registerButton": "Register",
+    "hasAccount": "Already registered?",
+    "registrationSuccess": "Registration Successful!",
+    "registrationPending": "Your account is being reviewed",
+    "registrationPendingDescription": "We are verifying your details and will activate your account within 24 hours. You will receive an email notification.",
+    "backToHome": "Back to Home",
+    "errors": {
+      "nameRequired": "Please enter your name",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
+      "companyRequired": "Please enter your company name",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "error": "Login failed. Please check your credentials."
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "welcome": "Welcome",
+    "products": "Manage Products",
+    "users": "Manage Users",
+    "orders": "Orders",
+    "cms": "CMS Content",
+    "productsDesc": "Add, edit, or delete products",
+    "usersDesc": "Manage and approve user accounts",
+    "ordersDesc": "View and manage orders",
+    "cmsDesc": "Edit website content",
+    "setup": {
+      "title": "Admin Setup",
+      "description": "Create an administrator account for MonoCool",
+      "setupSecret": "Setup Secret",
+      "setupSecretPlaceholder": "Enter setup secret",
+      "setupSecretHint": "The ADMIN_SETUP_SECRET from your environment variables",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Admin Name",
+      "email": "Email Address",
+      "emailPlaceholder": "admin@monocool.at",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Repeat password",
+      "createAdmin": "Create Admin Account",
+      "creatingAdmin": "Creating Admin...",
+      "backToLogin": "Back to Login",
+      "errors": {
+        "secretRequired": "Setup secret is required",
+        "nameRequired": "Name must be at least 2 characters",
+        "emailRequired": "Valid email is required",
+        "passwordLength": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match",
+        "setupFailed": "Setup failed",
+        "unexpected": "An unexpected error occurred"
+      }
+    },
+    "accessDenied": "Access Denied",
+    "adminOnly": "This page is only accessible to administrators.",
+    "backToHome": "Back to Home",
+    "stats": {
+      "totalUsers": "Total Users",
+      "pendingApproval": "Pending",
+      "approvedUsers": "Approved",
+      "totalProducts": "Products",
+      "totalOrders": "Orders",
+      "revenue": "Revenue",
+      "activeProducts": "Active products",
+      "pending": "pending",
+      "approved": "% approved"
+    },
+    "quickActions": "Quick Actions",
+    "userManagement": {
+      "title": "User Management",
+      "allUsers": "All Users",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "searchPlaceholder": "Search users...",
+      "name": "Name",
+      "email": "Email",
+      "company": "Company",
+      "status": "Status",
+      "role": "Role",
+      "registered": "Registered",
+      "actions": "Actions",
+      "approve": "Approve",
+      "reject": "Reject",
+      "makeAdmin": "Make Admin",
+      "removeAdmin": "Remove Admin",
+      "viewDetails": "View Details",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "confirmDelete": "Are you sure you want to delete this user?",
+      "noUsers": "No users found",
+      "notes": "Notes",
+      "companyId": "Company ID",
+      "vatNumber": "VAT Number",
+      "phone": "Phone",
+      "address": "Address",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "country": "Country",
+      "saveChanges": "Save Changes",
+      "close": "Close"
+    },
+    "productManagement": {
+      "title": "Product Management",
+      "backToAdmin": "Back",
+      "addProduct": "Add Product",
+      "newProduct": "New Product",
+      "editProduct": "Edit Product",
+      "createProduct": "Create New Product",
+      "deleteProduct": "Delete Product",
+      "confirmDelete": "Are you sure you want to delete this product?",
+      "noProducts": "No products yet.",
+      "firstProduct": "Create First Product",
+      "active": "Active",
+      "inactive": "Inactive",
+      "productForm": "Fill in the product information.",
+      "name": "Name",
+      "slug": "Slug",
+      "slugPlaceholder": "auto-generated",
+      "shortDescription": "Short Description",
+      "description": "Description",
+      "price": "Price (EUR)",
+      "category": "Category",
+      "imageUrl": "Image URL",
+      "coolingCapacity": "Cooling Capacity",
+      "heatingCapacity": "Heating Capacity",
+      "energyClass": "Energy Class",
+      "noiseLevel": "Noise Level",
+      "weight": "Weight",
+      "dimensions": "Dimensions",
+      "features": "Features (one per line)",
+      "status": "Status",
+      "actions": "Actions",
+      "saving": "Saving...",
+      "create": "Create"
+    },
+    "gallery": {
+      "title": "Image Gallery",
+      "dropzone": "Drag images here or click to select",
+      "formats": "JPEG, PNG, WebP, GIF - max. 5MB",
+      "uploading": "Uploading...",
+      "primary": "Primary",
+      "setPrimary": "Set as primary",
+      "delete": "Delete",
+      "empty": "No images yet"
+    },
+    "cmsManagement": {
+      "title": "Content Management",
+      "backToAdmin": "Back",
+      "newContent": "New Content",
+      "description": "Edit your website content. Changes are applied immediately.",
+      "sections": "Website Sections",
+      "allContent": "All Content",
+      "editSection": "Edit Section",
+      "configured": "Configured",
+      "notConfigured": "Not configured",
+      "edit": "Edit",
+      "heroSection": "Hero Section",
+      "heroDesc": "Main headline and description on homepage",
+      "features": "Why MonoCool?",
+      "featuresDesc": "Title and description of features section",
+      "feature1": "Feature 1: No Outdoor Unit",
+      "feature1Desc": "No disruptive outdoor unit",
+      "feature2": "Feature 2: Quiet Operation",
+      "feature2Desc": "Extremely quiet operation",
+      "feature3": "Feature 3: Easy Installation",
+      "feature3Desc": "Quick and easy installation",
+      "feature4": "Feature 4: Energy Efficient",
+      "feature4Desc": "High energy efficiency",
+      "benefits": "MonoCool Benefits",
+      "benefitsDesc": "Title and description of statistics section",
+      "productsSection": "Products Section",
+      "productsSectionDesc": "Title and description of products section",
+      "about": "About Us",
+      "aboutDesc": "About Us Text",
+      "contact": "Contact Section",
+      "contactDesc": "Contact information on homepage",
+      "footer": "Footer",
+      "footerDesc": "Footer Text",
+      "allEntries": "All CMS Entries",
+      "allEntriesDesc": "Overview of all saved content in the database.",
+      "noTitle": "No Title",
+      "noContent": "No content yet. Edit a website section to get started.",
+      "editContent": "Edit Content",
+      "editContentDesc": "Edit the content for this section.",
+      "key": "Key",
+      "keyPlaceholder": "e.g. hero-title, about-text",
+      "titleField": "Title",
+      "titlePlaceholder": "Enter title...",
+      "contentField": "Content",
+      "contentPlaceholder": "Enter content...",
+      "imageUrl": "Image URL",
+      "metadata": "Additional Data (JSON)",
+      "saving": "Saving..."
+    }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Imprint",
+      "companyInfo": "Company Information",
+      "companyName": "MonoCool GmbH",
+      "address": "Musterstraße 123",
+      "city": "1010 Vienna",
+      "country": "Austria",
+      "contact": "Contact",
+      "phone": "Phone: +43 1 234 56 78",
+      "email": "Email: info@monocool.at",
+      "registration": "Commercial Register",
+      "registrationInfo": "Registry Court: Commercial Court Vienna",
+      "registrationNumber": "Company Number: FN 123456a",
+      "vatId": "VAT ID",
+      "vatIdNumber": "VAT Identification Number: ATU12345678",
+      "responsible": "Responsible for Content",
+      "responsibleName": "Max Mustermann, Managing Director",
+      "dispute": "Dispute Resolution",
+      "disputeText": "The European Commission provides a platform for online dispute resolution (ODR). We are neither willing nor obliged to participate in dispute resolution proceedings before a consumer arbitration board."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "The protection of your personal data is of particular concern to us. We therefore process your data exclusively on the basis of legal provisions (GDPR).",
+      "responsible": "Data Controller",
+      "responsibleText": "The party responsible for data processing on this website is MonoCool GmbH.",
+      "dataCollection": "Data Collection and Processing",
+      "dataCollectionText": "When you visit our website, technical information is automatically collected: IP address, browser type, operating system, access time. This data is used exclusively to ensure smooth operation of the website.",
+      "cookies": "Cookies",
+      "cookiesText": "Our website uses cookies. These are small text files stored on your device. Some cookies are technically necessary, others help us improve our website.",
+      "rights": "Your Rights",
+      "rightsText": "You generally have the right to access, rectification, erasure, restriction, data portability, revocation and objection. If you believe that the processing of your data violates data protection law, you can lodge a complaint with the supervisory authority.",
+      "contact": "Contact",
+      "contactText": "For questions about data protection, you can contact us at any time at info@monocool.at.",
+      "updates": "Changes",
+      "updatesText": "We reserve the right to adapt this privacy policy to comply with changed legal requirements or when our services change."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "noResults": "No results found"
+  },
+  "fanCoil": {
+    "meta": {
+      "title": "Fan Coil Design - Ventilconvectors | MonoCool",
+      "description": "Discover our designer fan coil units. Elegant ventilconvectors for modern heating and cooling."
+    },
+    "hero": {
+      "badge": "Premium Design",
+      "title": "Fan Coil Ventilconvectors",
+      "description": "Elegant climate control for discerning spaces. Our designer fan coils combine highest efficiency with timeless aesthetics.",
+      "cta": "Discover Products",
+      "learnMore": "Learn More"
+    },
+    "products": {
+      "title": "Our Fan Coil Models",
+      "subtitle": "Choose from five different designs for every application",
+      "specs": {
+        "power": "Power",
+        "airflow": "Airflow",
+        "noise": "Noise",
+        "dimensions": "Dimensions"
+      },
+      "fs": {
+        "name": "FS - Floor Standing",
+        "badge": "Bestseller",
+        "tagline": "Freestanding Elegance",
+        "description": "The FS model is an elegant floor-standing unit that blends seamlessly into any interior. Ideal for living rooms, offices, and reception areas.",
+        "feature1": "Compact design for flexible placement",
+        "feature2": "360° air distribution for optimal comfort",
+        "feature3": "Integrated condensate drain"
+      },
+      "sm": {
+        "name": "SM - Surface Mount",
+        "badge": "Space-saving",
+        "tagline": "Slim Wall Solution",
+        "description": "The SM model is the perfect solution for tight spaces. The flat design enables discrete wall mounting.",
+        "feature1": "Only 15 cm installation depth",
+        "feature2": "Easy wall mounting without floor installation",
+        "feature3": "Modern LED control display"
+      },
+      "hw": {
+        "name": "HW - Horizontal Wall",
+        "badge": "Powerful",
+        "tagline": "Maximum Range",
+        "description": "The horizontal HW model offers maximum heating and cooling capacity for large rooms. Ideal under windows or on parapets.",
+        "feature1": "Up to 10 kW heating/cooling capacity",
+        "feature2": "Optimized for floor-to-ceiling windows",
+        "feature3": "Even air distribution throughout the room"
+      },
+      "bt": {
+        "name": "BT - Bench Type",
+        "badge": "Innovative",
+        "tagline": "Design Meets Function",
+        "description": "The BT model integrates climate control into an elegant bench seat. Perfect for reception areas, waiting zones, and modern architecture.",
+        "feature1": "Multi-functional as seating",
+        "feature2": "Highest design integration",
+        "feature3": "Various surfaces and colors available"
+      },
+      "tw": {
+        "name": "TW - Tower",
+        "badge": "Elegant",
+        "tagline": "Vertical Perfection",
+        "description": "The TW Tower model is a slim standing column for corners and narrow areas. Minimal footprint with maximum efficiency.",
+        "feature1": "Slim column shape saves floor space",
+        "feature2": "Ideal upward airflow",
+        "feature3": "Integrated touch control panel"
+      }
+    },
+    "features": {
+      "title": "Why Our Fan Coils?",
+      "subtitle": "Innovative technology for the highest demands",
+      "design": {
+        "title": "Award-Winning Design",
+        "description": "Our fan coils were developed by renowned designers and blend harmoniously into any environment."
+      },
+      "efficiency": {
+        "title": "Highest Efficiency",
+        "description": "Latest generation EC motors ensure minimal power consumption with maximum performance."
+      },
+      "quiet": {
+        "title": "Whisper-Quiet Operation",
+        "description": "Optimized fan geometry and sound insulation for operation from just 20 dB(A)."
+      },
+      "eco": {
+        "title": "Eco-Friendly",
+        "description": "Compatible with renewable energy sources such as heat pumps and solar systems."
+      },
+      "control": {
+        "title": "Smart Control",
+        "description": "WiFi control and integration into smart home systems for maximum comfort."
+      },
+      "quality": {
+        "title": "Made in Italy",
+        "description": "Highest manufacturing quality from Italian production with 5 years warranty."
+      }
+    },
+    "cta": {
+      "title": "Ready for Elegant Climate Control?",
+      "description": "Contact us for personal consultation or request our current catalog.",
+      "contact": "Contact Us",
+      "catalog": "View Catalog"
+    }
+  }
+}

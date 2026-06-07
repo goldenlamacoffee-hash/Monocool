@@ -1,0 +1,33 @@
+import { redirect } from 'next/navigation'
+import { setRequestLocale } from 'next-intl/server'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
+import { B2BRegistrationForm } from '@/components/b2b-registration-form'
+import { type Locale } from '@/i18n/config'
+
+interface Props {
+  params: Promise<{ locale: Locale }>
+}
+
+export default async function SignUpPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  
+  const session = await auth.api.getSession({ headers: await headers() })
+  
+  if (session?.user) {
+    redirect(`/${locale}`)
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <B2BRegistrationForm locale={locale} />
+      </main>
+      <Footer />
+    </div>
+  )
+}

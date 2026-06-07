@@ -1,0 +1,190 @@
+// Fallback product data synced from database
+// This is used when DATABASE_URL is not available at runtime
+// Last synced: 2026-06-04
+
+import type { Product } from '@/lib/db/schema'
+
+export const fallbackProducts: Product[] = [
+  {
+    id: 4,
+    name: "Silent",
+    slug: "silent",
+    description: "Der Silent ist ein elegantes Klimagerät für Boden- und Wandinstallation. Mit einer Kapazität von 2,1 kW bis 3,6 kW bietet er Heizen, Kühlen und Entfeuchtung in einem minimalistischen italienischen Design. Perfekt für Wohnräume bis 25 m².",
+    shortDescription: "Boden- und Wandinstallation | 2,1-3,6 kW | Heizen, Kühlen, Entfeuchtung",
+    price: null,
+    category: "klimageraete",
+    coolingCapacity: "2,1 - 3,6 kW",
+    heatingCapacity: "2,1 - 3,6 kW",
+    energyClass: "A++",
+    noiseLevel: "22 dB(A)",
+    dimensions: "600 x 600 x 130 mm",
+    weight: "18 kg",
+    features: [
+      "Flüsterleiser Betrieb ab 22 dB(A)",
+      "Heizen und Kühlen in einem Gerät",
+      "Entfeuchtungsfunktion",
+      "Elegantes italienisches Design",
+      "Einfache Installation",
+      "Fernbedienung inklusive",
+      "WiFi-fähig (optional)"
+    ],
+    technicalData: null,
+    specifications: {
+      area: "bis 25 m²",
+      origin: "Made in Italy",
+      voltage: "230V/50Hz",
+      installation: "Boden/Wand"
+    },
+    specs: null,
+    isActive: true,
+    sortOrder: 1,
+    createdAt: new Date("2026-06-04T13:55:17.313Z"),
+    updatedAt: new Date("2026-06-04T13:55:17.313Z")
+  },
+  {
+    id: 5,
+    name: "Silent Hybrid",
+    slug: "silent-hybrid",
+    description: "Der Silent Hybrid ersetzt den klassischen Wasserheizkörper und bietet Heizen, Kühlen, Entfeuchtung sowie hydronic Heizung in einem Gerät. Mit 2,1 kW bis 5,6 kW Kapazität ist er die perfekte Lösung für die Modernisierung bestehender Heizsysteme.",
+    shortDescription: "Ersetzt Wasserheizkörper | 2,1-5,6 kW | Heizen, Kühlen, Entfeuchtung, Hydronic",
+    price: null,
+    category: "klimageraete",
+    coolingCapacity: "2,1 - 5,6 kW",
+    heatingCapacity: "2,1 - 5,6 kW",
+    energyClass: "A++",
+    noiseLevel: "24 dB(A)",
+    dimensions: "800 x 600 x 180 mm",
+    weight: "28 kg",
+    features: [
+      "Ersetzt bestehende Wasserheizkörper",
+      "4-in-1: Heizen, Kühlen, Entfeuchtung, Hydronic",
+      "Anschluss an bestehendes Heizsystem",
+      "Hohe Leistung bis 5,6 kW",
+      "Intelligente Steuerung",
+      "Made in Italy",
+      "5 Jahre Garantie"
+    ],
+    technicalData: null,
+    specifications: {
+      area: "bis 25 m²",
+      origin: "Made in Italy",
+      voltage: "230V/50Hz",
+      installation: "Bodenaufstellung",
+      waterConnection: "3/4 Zoll"
+    },
+    specs: null,
+    isActive: true,
+    sortOrder: 2,
+    createdAt: new Date("2026-06-04T13:55:17.313Z"),
+    updatedAt: new Date("2026-06-04T13:55:17.313Z")
+  },
+  {
+    id: 6,
+    name: "Silent Inverter",
+    slug: "silent-inverter",
+    description: "Der Silent Inverter ist die energieeffizienteste Lösung mit modernster Inverter-Technologie. Er passt die Leistung stufenlos an den Bedarf an und spart so bis zu 40% Energie. Ideal für umweltbewusste Kunden.",
+    shortDescription: "Inverter-Technologie | Bis 40% Energieersparnis | Stufenlose Regelung",
+    price: null,
+    category: "klimageraete",
+    coolingCapacity: "1,5 - 4,2 kW",
+    heatingCapacity: "1,5 - 4,2 kW",
+    energyClass: "A+++",
+    noiseLevel: "20 dB(A)",
+    dimensions: "700 x 600 x 150 mm",
+    weight: "22 kg",
+    features: [
+      "Inverter-Technologie für maximale Effizienz",
+      "Bis zu 40% Energieersparnis",
+      "Stufenlose Leistungsanpassung",
+      "Extrem leiser Betrieb ab 20 dB(A)",
+      "Energieklasse A+++",
+      "Smart Home kompatibel",
+      "Nachtmodus für Schlafzimmer"
+    ],
+    technicalData: null,
+    specifications: {
+      area: "bis 30 m²",
+      origin: "Made in Italy",
+      voltage: "230V/50Hz",
+      installation: "Boden/Wand"
+    },
+    specs: null,
+    isActive: true,
+    sortOrder: 3,
+    createdAt: new Date("2026-06-04T13:55:17.313Z"),
+    updatedAt: new Date("2026-06-04T13:55:17.313Z")
+  },
+  {
+    id: 7,
+    name: "Climapuro",
+    slug: "climapuro",
+    description: "Der Climapuro kombiniert Klimatisierung mit fortschrittlicher Luftreinigung. HEPA-Filter und UV-C Technologie entfernen 99,97% aller Partikel, Viren und Bakterien. Die perfekte Lösung für Allergiker und gesundheitsbewusste Menschen.",
+    shortDescription: "Klimatisierung + Luftreinigung | HEPA-Filter | UV-C Technologie",
+    price: null,
+    category: "klimageraete",
+    coolingCapacity: "2,0 - 3,2 kW",
+    heatingCapacity: "2,0 - 3,2 kW",
+    energyClass: "A++",
+    noiseLevel: "25 dB(A)",
+    dimensions: "650 x 550 x 200 mm",
+    weight: "20 kg",
+    features: [
+      "HEPA H13 Filter entfernt 99,97% der Partikel",
+      "UV-C Desinfektion gegen Viren und Bakterien",
+      "Integrierter Ionisator",
+      "Luftqualitätssensor mit Anzeige",
+      "Automatischer Filterwechsel-Hinweis",
+      "Ideal für Allergiker",
+      "Kombiniert Klimatisierung und Luftreinigung"
+    ],
+    technicalData: null,
+    specifications: {
+      area: "bis 25 m²",
+      cadr: "400 m³/h",
+      origin: "Made in Italy",
+      filterType: "HEPA H13 + UV-C",
+      installation: "Wand"
+    },
+    specs: null,
+    isActive: true,
+    sortOrder: 4,
+    createdAt: new Date("2026-06-04T13:55:17.313Z"),
+    updatedAt: new Date("2026-06-04T13:55:17.313Z")
+  },
+  {
+    id: 8,
+    name: "WZ-32",
+    slug: "wz-32",
+    description: "Der WZ-32 ist ein kompaktes Klimagerät für kleinere Räume und Büros. Trotz seiner kompakten Größe bietet er volle Funktionalität mit Heizen, Kühlen und Entfeuchtung. Ideal als Ergänzung zu bestehenden Systemen.",
+    shortDescription: "Kompakt | Ideal für kleine Räume | Volle Funktionalität",
+    price: null,
+    category: "klimageraete",
+    coolingCapacity: "1,8 - 2,8 kW",
+    heatingCapacity: "1,8 - 2,8 kW",
+    energyClass: "A+",
+    noiseLevel: "23 dB(A)",
+    dimensions: "500 x 450 x 120 mm",
+    weight: "12 kg",
+    features: [
+      "Kompakte Bauweise für kleine Räume",
+      "Vollwertiges Klimagerät",
+      "Einfache Wandmontage",
+      "Leiser Betrieb",
+      "Fernbedienung inklusive",
+      "Timer-Funktion",
+      "Preis-Leistungs-Sieger"
+    ],
+    technicalData: null,
+    specifications: {
+      area: "bis 18 m²",
+      origin: "Made in Italy",
+      voltage: "230V/50Hz",
+      installation: "Wand"
+    },
+    specs: null,
+    isActive: true,
+    sortOrder: 5,
+    createdAt: new Date("2026-06-04T13:55:17.313Z"),
+    updatedAt: new Date("2026-06-04T13:55:17.313Z")
+  }
+]

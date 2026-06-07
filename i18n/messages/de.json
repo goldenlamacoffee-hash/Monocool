@@ -1,0 +1,496 @@
+{
+  "metadata": {
+    "title": "MonoCool - Klimaanlagen ohne Außengerät | Österreich",
+    "description": "MonoCool bietet innovative Klimaanlagen ohne Außengerät für Österreich. Effiziente Kühlung und Heizung ohne komplizierte Installation."
+  },
+  "nav": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "benefits": "Vorteile",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "register": "Registrieren",
+    "admin": "Admin",
+    "language": "Sprache"
+  },
+  "hero": {
+    "title": "Klimaanlagen ohne Außengerät",
+    "subtitle": "Revolutionäre Monoblock-Klimatechnik aus Italien. Einfache Installation, maximaler Komfort, minimaler Aufwand.",
+    "cta": "Produkte entdecken",
+    "secondary": "Mehr erfahren"
+  },
+  "features": {
+    "title": "Warum MonoCool?",
+    "subtitle": "Entdecken Sie die Vorteile unserer innovativen Klimatechnologie",
+    "noOutdoor": {
+      "title": "Kein Außengerät",
+      "description": "Keine störende Außeneinheit an der Fassade. Perfekt für Denkmalschutz und Mietwohnungen."
+    },
+    "quiet": {
+      "title": "Flüsterleise",
+      "description": "Mit nur 19 dB(A) gehören unsere Geräte zu den leisesten am Markt."
+    },
+    "easy": {
+      "title": "Einfache Installation",
+      "description": "Nur eine kleine Kernbohrung nötig. Installation in wenigen Stunden möglich."
+    },
+    "efficient": {
+      "title": "Energieeffizient",
+      "description": "Bis zu A+++ Energieeffizienzklasse für minimale Betriebskosten."
+    }
+  },
+  "benefits": {
+    "title": "MonoCool Vorteile",
+    "subtitle": "Zahlen die überzeugen",
+    "noise": {
+      "value": "19 dB",
+      "label": "Flüsterleise"
+    },
+    "energy": {
+      "value": "A+++",
+      "label": "Energieeffizienz"
+    },
+    "outdoor": {
+      "value": "0",
+      "label": "Außengeräte"
+    },
+    "warranty": {
+      "value": "5 Jahre",
+      "label": "Garantie"
+    }
+  },
+  "products": {
+    "title": "Unsere Produkte",
+    "subtitle": "Finden Sie die perfekte Klimaanlage für Ihren Raum",
+    "viewAll": "Alle Produkte ansehen",
+    "details": "Details ansehen",
+    "priceOnLogin": "Preis nach Anmeldung",
+    "loginToSeePrice": "Preis nur für registrierte Kunden",
+    "loginPrompt": "Melden Sie sich an, um den Preis zu sehen",
+    "backToProducts": "Zurück zu Produkten",
+    "requestQuote": "Anfrage senden",
+    "callNow": "Jetzt anrufen",
+    "description": "Beschreibung",
+    "specifications": "Spezifikationen",
+    "features": "Merkmale",
+    "coolingCapacity": "Kühlleistung",
+    "heatingCapacity": "Heizleistung",
+    "energyClass": "Energieeffizienz",
+    "noiseLevel": "Lautstärke",
+    "dimensions": "Abmessungen",
+    "weight": "Gewicht",
+    "notFound": "Produkt nicht gefunden"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "subtitle": "Haben Sie Fragen? Wir helfen Ihnen gerne!",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "dealerTitle": "Werden Sie Händler",
+    "dealerText": "Interessiert an einer Partnerschaft? Kontaktieren Sie uns für mehr Informationen.",
+    "dealerCta": "Händler werden"
+  },
+  "footer": {
+    "quickLinks": "Schnelllinks",
+    "contact": "Kontakt",
+    "rights": "Alle Rechte vorbehalten.",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "description": "MonoCool - Innovative Klimaanlagen ohne Außengerät. Perfekte Klimatisierung für Ihr Zuhause oder Büro.",
+    "location": "Wien, Österreich"
+  },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "loginSubtitle": "Melden Sie sich an, um Preise zu sehen und Bestellungen aufzugeben.",
+    "registerTitle": "Händler-Registrierung",
+    "registerSubtitle": "Erstellen Sie ein Geschäftskonto, um Zugang zu Händlerpreisen zu erhalten.",
+    "email": "E-Mail",
+    "emailPlaceholder": "name@firma.at",
+    "password": "Passwort",
+    "passwordPlaceholder": "Mindestens 8 Zeichen",
+    "confirmPassword": "Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Passwort wiederholen",
+    "name": "Vollständiger Name",
+    "namePlaceholder": "Max Mustermann",
+    "phone": "Telefon",
+    "phonePlaceholder": "+43 1 234 5678",
+    "companyName": "Firmenname",
+    "companyNamePlaceholder": "Ihre Firma GmbH",
+    "companyId": "Firmenbuchnummer",
+    "companyIdPlaceholder": "FN 123456a",
+    "vatNumber": "UID-Nummer",
+    "vatNumberPlaceholder": "ATU12345678",
+    "address": "Adresse",
+    "addressPlaceholder": "Musterstraße 1",
+    "city": "Stadt",
+    "cityPlaceholder": "Wien",
+    "postalCode": "PLZ",
+    "postalCodePlaceholder": "1010",
+    "country": "Land",
+    "selectCountry": "Land auswählen",
+    "step1": "Persönliche Daten",
+    "step2": "Firmendaten",
+    "step3": "Adresse",
+    "personalInfo": "Persönliche Informationen",
+    "companyInfo": "Firmeninformationen",
+    "addressInfo": "Geschäftsadresse",
+    "next": "Weiter",
+    "back": "Zurück",
+    "loginButton": "Anmelden",
+    "register": "Registrieren",
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Bereits registriert?",
+    "login": "Jetzt anmelden",
+    "registerLink": "Jetzt registrieren",
+    "loginLink": "Jetzt anmelden",
+    "registerButton": "Registrieren",
+    "hasAccount": "Bereits registriert?",
+    "registrationSuccess": "Registrierung erfolgreich!",
+    "registrationPending": "Ihr Konto wird geprüft",
+    "registrationPendingDescription": "Wir prüfen Ihre Angaben und schalten Ihr Konto innerhalb von 24 Stunden frei. Sie erhalten eine E-Mail-Benachrichtigung.",
+    "backToHome": "Zurück zur Startseite",
+    "errors": {
+      "nameRequired": "Bitte geben Sie Ihren Namen ein",
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "passwordLength": "Das Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein",
+      "companyRequired": "Bitte geben Sie Ihren Firmennamen ein",
+      "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "welcome": "Willkommen",
+    "products": "Produkte verwalten",
+    "users": "Benutzer verwalten",
+    "orders": "Bestellungen",
+    "cms": "CMS Inhalte",
+    "productsDesc": "Produkte hinzufügen, bearbeiten oder löschen",
+    "usersDesc": "Benutzerkonten verwalten und genehmigen",
+    "ordersDesc": "Bestellungen anzeigen und bearbeiten",
+    "cmsDesc": "Website-Inhalte bearbeiten",
+    "setup": {
+      "title": "Admin Setup",
+      "description": "Erstellen Sie ein Administratorkonto für MonoCool",
+      "setupSecret": "Setup-Geheimnis",
+      "setupSecretPlaceholder": "Setup-Geheimnis eingeben",
+      "setupSecretHint": "Das ADMIN_SETUP_SECRET aus Ihren Umgebungsvariablen",
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "Admin Name",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "admin@monocool.at",
+      "password": "Passwort",
+      "passwordPlaceholder": "Mindestens 8 Zeichen",
+      "confirmPassword": "Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Passwort wiederholen",
+      "createAdmin": "Admin-Konto erstellen",
+      "creatingAdmin": "Admin wird erstellt...",
+      "backToLogin": "Zurück zur Anmeldung",
+      "errors": {
+        "secretRequired": "Setup-Geheimnis ist erforderlich",
+        "nameRequired": "Name muss mindestens 2 Zeichen lang sein",
+        "emailRequired": "Gültige E-Mail-Adresse erforderlich",
+        "passwordLength": "Passwort muss mindestens 8 Zeichen lang sein",
+        "passwordMismatch": "Passwörter stimmen nicht überein",
+        "setupFailed": "Setup fehlgeschlagen",
+        "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
+      }
+    },
+    "accessDenied": "Zugriff verweigert",
+    "adminOnly": "Diese Seite ist nur für Administratoren zugänglich.",
+    "backToHome": "Zurück zur Startseite",
+    "stats": {
+      "totalUsers": "Benutzer gesamt",
+      "pendingApproval": "Ausstehend",
+      "approvedUsers": "Freigegeben",
+      "totalProducts": "Produkte",
+      "totalOrders": "Bestellungen",
+      "revenue": "Umsatz",
+      "activeProducts": "Aktive Produkte",
+      "pending": "ausstehend",
+      "approved": "% freigegeben"
+    },
+    "quickActions": "Schnellaktionen",
+    "userManagement": {
+      "title": "Benutzerverwaltung",
+      "allUsers": "Alle Benutzer",
+      "pending": "Ausstehend",
+      "approved": "Freigegeben",
+      "rejected": "Abgelehnt",
+      "searchPlaceholder": "Benutzer suchen...",
+      "name": "Name",
+      "email": "E-Mail",
+      "company": "Firma",
+      "status": "Status",
+      "role": "Rolle",
+      "registered": "Registriert",
+      "actions": "Aktionen",
+      "approve": "Freigeben",
+      "reject": "Ablehnen",
+      "makeAdmin": "Zum Admin machen",
+      "removeAdmin": "Admin entfernen",
+      "viewDetails": "Details anzeigen",
+      "editUser": "Benutzer bearbeiten",
+      "deleteUser": "Benutzer löschen",
+      "confirmDelete": "Möchten Sie diesen Benutzer wirklich löschen?",
+      "noUsers": "Keine Benutzer gefunden",
+      "notes": "Notizen",
+      "companyId": "Firmenbuchnummer",
+      "vatNumber": "UID-Nummer",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "postalCode": "PLZ",
+      "city": "Stadt",
+      "country": "Land",
+      "saveChanges": "Änderungen speichern",
+      "close": "Schließen"
+    },
+    "productManagement": {
+      "title": "Produktverwaltung",
+      "backToAdmin": "Zurück",
+      "addProduct": "Produkt hinzufügen",
+      "newProduct": "Neues Produkt",
+      "editProduct": "Produkt bearbeiten",
+      "createProduct": "Neues Produkt erstellen",
+      "deleteProduct": "Produkt löschen",
+      "confirmDelete": "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?",
+      "noProducts": "Noch keine Produkte vorhanden.",
+      "firstProduct": "Erstes Produkt erstellen",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "productForm": "Füllen Sie die Produktinformationen aus.",
+      "name": "Name",
+      "slug": "Slug",
+      "slugPlaceholder": "wird-automatisch-generiert",
+      "shortDescription": "Kurzbeschreibung",
+      "description": "Beschreibung",
+      "price": "Preis (EUR)",
+      "category": "Kategorie",
+      "imageUrl": "Bild-URL",
+      "coolingCapacity": "Kühlleistung",
+      "heatingCapacity": "Heizleistung",
+      "energyClass": "Energieklasse",
+      "noiseLevel": "Lautstärke",
+      "weight": "Gewicht",
+      "dimensions": "Abmessungen",
+      "features": "Merkmale (eine pro Zeile)",
+      "status": "Status",
+      "actions": "Aktionen",
+      "saving": "Wird gespeichert...",
+      "create": "Erstellen"
+    },
+    "gallery": {
+      "title": "Bildergalerie",
+      "dropzone": "Bilder hierher ziehen oder klicken zum Auswählen",
+      "formats": "JPEG, PNG, WebP, GIF - max. 5MB",
+      "uploading": "Wird hochgeladen...",
+      "primary": "Hauptbild",
+      "setPrimary": "Als Hauptbild setzen",
+      "delete": "Löschen",
+      "empty": "Noch keine Bilder vorhanden"
+    },
+    "cmsManagement": {
+      "title": "Inhaltsverwaltung",
+      "backToAdmin": "Zurück",
+      "newContent": "Neuer Inhalt",
+      "description": "Bearbeiten Sie die Inhalte Ihrer Website. Änderungen werden sofort übernommen.",
+      "sections": "Website Bereiche",
+      "allContent": "Alle Inhalte",
+      "editSection": "Bereich bearbeiten",
+      "configured": "Konfiguriert",
+      "notConfigured": "Nicht konfiguriert",
+      "edit": "Bearbeiten",
+      "heroSection": "Hero Bereich",
+      "heroDesc": "Hauptüberschrift und Beschreibung auf der Startseite",
+      "features": "Warum MonoCool?",
+      "featuresDesc": "Titel und Beschreibung der Vorteile-Sektion",
+      "feature1": "Vorteil 1: Keine Außeneinheit",
+      "feature1Desc": "Keine störende Außeneinheit",
+      "feature2": "Vorteil 2: Leiser Betrieb",
+      "feature2Desc": "Extrem leiser Betrieb",
+      "feature3": "Vorteil 3: Einfache Installation",
+      "feature3Desc": "Schnelle und einfache Installation",
+      "feature4": "Vorteil 4: Energieeffizient",
+      "feature4Desc": "Hohe Energieeffizienz",
+      "benefits": "Vorteile MonoCool",
+      "benefitsDesc": "Titel und Beschreibung der Statistik-Sektion",
+      "productsSection": "Produkte Bereich",
+      "productsSectionDesc": "Titel und Beschreibung der Produkte-Sektion",
+      "about": "Über uns",
+      "aboutDesc": "Über uns Text",
+      "contact": "Kontakt Bereich",
+      "contactDesc": "Kontaktinformationen auf der Startseite",
+      "footer": "Footer",
+      "footerDesc": "Footer Texte",
+      "allEntries": "Alle CMS Einträge",
+      "allEntriesDesc": "Übersicht aller gespeicherten Inhalte in der Datenbank.",
+      "noTitle": "Kein Titel",
+      "noContent": "Noch keine Inhalte vorhanden. Bearbeiten Sie einen Website Bereich um zu beginnen.",
+      "editContent": "Inhalt bearbeiten",
+      "editContentDesc": "Bearbeiten Sie den Inhalt für diesen Bereich.",
+      "key": "Schlüssel",
+      "keyPlaceholder": "z.B. hero-title, about-text",
+      "titleField": "Titel",
+      "titlePlaceholder": "Titel eingeben...",
+      "contentField": "Inhalt",
+      "contentPlaceholder": "Inhalt eingeben...",
+      "imageUrl": "Bild URL",
+      "metadata": "Zusätzliche Daten (JSON)",
+      "saving": "Wird gespeichert..."
+    }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Impressum",
+      "companyInfo": "Angaben gemäß § 5 TMG",
+      "companyName": "MonoCool GmbH",
+      "address": "Musterstraße 123",
+      "city": "1010 Wien",
+      "country": "Österreich",
+      "contact": "Kontakt",
+      "phone": "Telefon: +43 1 234 56 78",
+      "email": "E-Mail: info@monocool.at",
+      "registration": "Handelsregister",
+      "registrationInfo": "Registergericht: Handelsgericht Wien",
+      "registrationNumber": "Firmenbuchnummer: FN 123456a",
+      "vatId": "Umsatzsteuer-ID",
+      "vatIdNumber": "Umsatzsteuer-Identifikationsnummer gemäß §27a Umsatzsteuergesetz: ATU12345678",
+      "responsible": "Verantwortlich für den Inhalt",
+      "responsibleName": "Max Mustermann, Geschäftsführer",
+      "dispute": "Streitschlichtung",
+      "disputeText": "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "intro": "Der Schutz Ihrer persönlichen Daten ist uns ein besonderes Anliegen. Wir verarbeiten Ihre Daten daher ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, TKG 2003).",
+      "responsible": "Verantwortlicher",
+      "responsibleText": "Verantwortlich für die Datenverarbeitung auf dieser Website ist MonoCool GmbH.",
+      "dataCollection": "Erhebung und Verarbeitung von Daten",
+      "dataCollectionText": "Beim Besuch unserer Website werden automatisch technische Informationen erfasst: IP-Adresse, Browsertyp, Betriebssystem, Zugriffszeit. Diese Daten werden ausschließlich zur Sicherstellung eines reibungslosen Betriebs der Website verwendet.",
+      "cookies": "Cookies",
+      "cookiesText": "Unsere Website verwendet Cookies. Dabei handelt es sich um kleine Textdateien, die auf Ihrem Endgerät gespeichert werden. Einige Cookies sind technisch notwendig, andere helfen uns, unsere Website zu verbessern.",
+      "rights": "Ihre Rechte",
+      "rightsText": "Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu. Wenn Sie glauben, dass die Verarbeitung Ihrer Daten gegen das Datenschutzrecht verstößt, können Sie sich bei der Aufsichtsbehörde beschweren.",
+      "contact": "Kontakt",
+      "contactText": "Für Fragen zum Datenschutz können Sie uns jederzeit unter info@monocool.at kontaktieren.",
+      "updates": "Änderungen",
+      "updatesText": "Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie an geänderte Rechtslagen oder bei Änderungen unserer Dienste anzupassen."
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "noResults": "Keine Ergebnisse gefunden"
+  },
+  "fanCoil": {
+    "meta": {
+      "title": "Fan Coil Design - Ventilkonvektoren | MonoCool",
+      "description": "Entdecken Sie unsere Designer Fan Coil Einheiten. Elegante Ventilkonvektoren für modernes Heizen und Kühlen."
+    },
+    "hero": {
+      "badge": "Premium Design",
+      "title": "Fan Coil Ventilkonvektoren",
+      "description": "Elegante Klimatisierung für anspruchsvolle Räume. Unsere Designer Fan Coils verbinden höchste Effizienz mit zeitloser Ästhetik.",
+      "cta": "Produkte entdecken",
+      "learnMore": "Mehr erfahren"
+    },
+    "products": {
+      "title": "Unsere Fan Coil Modelle",
+      "subtitle": "Wählen Sie aus fünf verschiedenen Bauformen für jeden Einsatzbereich",
+      "specs": {
+        "power": "Leistung",
+        "airflow": "Luftstrom",
+        "noise": "Geräusch",
+        "dimensions": "Abmessungen"
+      },
+      "fs": {
+        "name": "FS - Standgerät",
+        "badge": "Bestseller",
+        "tagline": "Freistehende Eleganz",
+        "description": "Das FS-Modell ist ein elegantes Standgerät, das sich nahtlos in jede Einrichtung einfügt. Ideal für Wohnräume, Büros und Empfangsbereiche.",
+        "feature1": "Kompakte Bauweise für flexible Aufstellung",
+        "feature2": "360° Luftverteilung für optimalen Komfort",
+        "feature3": "Integrierter Kondenswasserabfluss"
+      },
+      "sm": {
+        "name": "SM - Wandmontage",
+        "badge": "Platzsparend",
+        "tagline": "Schlanke Wandlösung",
+        "description": "Das SM-Modell ist die perfekte Lösung für beengte Räume. Die flache Bauweise ermöglicht eine diskrete Wandmontage.",
+        "feature1": "Nur 15 cm Einbautiefe",
+        "feature2": "Einfache Wandmontage ohne Bodenaufstellung",
+        "feature3": "Moderne LED-Steuerungsanzeige"
+      },
+      "hw": {
+        "name": "HW - Horizontal",
+        "badge": "Leistungsstark",
+        "tagline": "Maximale Reichweite",
+        "description": "Das horizontale HW-Modell bietet maximale Heiz- und Kühlleistung für große Räume. Ideal unter Fenstern oder an Brüstungen.",
+        "feature1": "Bis zu 10 kW Heiz-/Kühlleistung",
+        "feature2": "Optimiert für bodentiefe Fenster",
+        "feature3": "Gleichmäßige Luftverteilung im ganzen Raum"
+      },
+      "bt": {
+        "name": "BT - Sitzbank",
+        "badge": "Innovativ",
+        "tagline": "Design trifft Funktion",
+        "description": "Das BT-Modell integriert Klimatisierung in eine elegante Sitzbank. Perfekt für Empfangsbereiche, Wartezonen und moderne Architektur.",
+        "feature1": "Multifunktional als Sitzgelegenheit nutzbar",
+        "feature2": "Höchste Designintegration",
+        "feature3": "Verschiedene Oberflächen und Farben verfügbar"
+      },
+      "tw": {
+        "name": "TW - Tower",
+        "badge": "Elegant",
+        "tagline": "Vertikale Perfektion",
+        "description": "Das TW Tower-Modell ist ein schlanker Standturm für Ecken und schmale Bereiche. Minimaler Platzbedarf bei maximaler Effizienz.",
+        "feature1": "Schlanke Säulenform spart Stellfläche",
+        "feature2": "Ideale Luftströmung nach oben",
+        "feature3": "Touch-Bedienfeld integriert"
+      }
+    },
+    "features": {
+      "title": "Warum unsere Fan Coils?",
+      "subtitle": "Innovative Technik für höchste Ansprüche",
+      "design": {
+        "title": "Preisgekröntes Design",
+        "description": "Unsere Fan Coils wurden von renommierten Designern entwickelt und fügen sich harmonisch in jede Umgebung ein."
+      },
+      "efficiency": {
+        "title": "Höchste Effizienz",
+        "description": "EC-Motoren der neuesten Generation sorgen für minimalen Stromverbrauch bei maximaler Leistung."
+      },
+      "quiet": {
+        "title": "Flüsterleiser Betrieb",
+        "description": "Optimierte Lüftergeometrie und Schalldämmung für einen Betrieb ab nur 20 dB(A)."
+      },
+      "eco": {
+        "title": "Umweltfreundlich",
+        "description": "Kompatibel mit erneuerbaren Energiequellen wie Wärmepumpen und Solaranlagen."
+      },
+      "control": {
+        "title": "Smart Control",
+        "description": "WiFi-Steuerung und Integration in Smart-Home-Systeme für maximalen Komfort."
+      },
+      "quality": {
+        "title": "Made in Italy",
+        "description": "Höchste Fertigungsqualität aus italienischer Produktion mit 5 Jahren Garantie."
+      }
+    },
+    "cta": {
+      "title": "Bereit für elegante Klimatisierung?",
+      "description": "Kontaktieren Sie uns für eine persönliche Beratung oder fordern Sie unseren aktuellen Katalog an.",
+      "contact": "Kontakt aufnehmen",
+      "catalog": "Zum Katalog"
+    }
+  }
+}
