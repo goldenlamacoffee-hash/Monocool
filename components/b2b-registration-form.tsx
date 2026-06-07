@@ -352,7 +352,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="country">{t('country')}</Label>
-                <Select value={formData.country} onValueChange={(v) => updateField('country', v)}>
+                <Select value={formData.country} onValueChange={(v) => updateField('country', v ?? '')}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('selectCountry')} />
                   </SelectTrigger>

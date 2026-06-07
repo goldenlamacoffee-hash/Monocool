@@ -402,11 +402,9 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
         {/* Column visibility dropdown */}
         <div className="mb-4 flex justify-end">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                {locale === 'sk' ? 'Stĺpce' : locale === 'cs' ? 'Sloupce' : locale === 'de' ? 'Spalten' : 'Columns'}
-              </Button>
+            <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+              <SlidersHorizontal className="mr-2 h-4 w-4" />
+              {locale === 'sk' ? 'Stĺpce' : locale === 'cs' ? 'Sloupce' : locale === 'de' ? 'Spalten' : 'Columns'}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>

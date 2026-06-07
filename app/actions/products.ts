@@ -114,8 +114,10 @@ export async function createProduct(data: {
   domain?: string
 }) {
   await requireAdmin()
+  const { price, ...rest } = data
   const [newProduct] = await db.insert(product).values({
-    ...data,
+    ...rest,
+    ...(price !== undefined ? { price: price.toString() } : {}),
     domain: data.domain || 'monocool.at'
   }).returning()
   revalidateProductPages(newProduct.slug)
@@ -146,9 +148,14 @@ export async function updateProduct(
   }>
 ) {
   await requireAdmin()
+  const { price, ...rest } = data
   const [updated] = await db
     .update(product)
-    .set({ ...data, updatedAt: new Date() })
+    .set({
+      ...rest,
+      ...(price !== undefined ? { price: price.toString() } : {}),
+      updatedAt: new Date(),
+    })
     .where(eq(product.id, id))
     .returning()
   revalidateProductPages(updated.slug)
