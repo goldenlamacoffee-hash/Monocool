@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProductCard } from '@/components/product-card'
-import { getProducts } from '@/app/actions/products'
+import { getProductsByLocale } from '@/app/actions/products'
 import { type Locale } from '@/i18n/config'
 
 interface Props {
@@ -14,7 +14,7 @@ export default async function ProductsPage({ params }: Props) {
   setRequestLocale(locale)
   
   const t = await getTranslations('products')
-  const products = await getProducts()
+  const products = await getProductsByLocale(locale)
 
   return (
     <div className="flex min-h-screen flex-col">

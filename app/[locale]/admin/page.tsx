@@ -11,6 +11,7 @@ import { ButtonLink } from '@/components/button-link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Package, FileText, Users, ShoppingCart, TrendingUp, Clock, Phone } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
+import { AdminMarketSelector } from '@/components/admin/market-selector'
 
 interface Props {
   params: Promise<{ locale: Locale }>
@@ -84,11 +85,14 @@ export default async function AdminPage({ params }: Props) {
       <main className="flex-1 bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
-            <p className="mt-2 text-muted-foreground">
-              {t('welcome')}, {session.user.name}!
-            </p>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+              <p className="mt-2 text-muted-foreground">
+                {t('welcome')}, {session.user.name}!
+              </p>
+            </div>
+            <AdminMarketSelector locale={locale} />
           </div>
 
           {/* Stats Grid */}
