@@ -132,17 +132,19 @@ export default async function ProductDetailPage({ params }: Props) {
               {/* CTA Buttons */}
               <div className="mt-8 flex flex-wrap gap-4">
                 <a 
-                  href={`mailto:info@monocool.at?subject=Anfrage: ${product.name}`}
+                  href={`mailto:${siteSettings.email || 'info@monocool.at'}?subject=Anfrage: ${product.name}`}
                   className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   {t('requestQuote')}
                 </a>
-                <a 
-                  href="tel:+4312345678"
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  {t('callNow')}
-                </a>
+                {siteSettings.phone && (
+                  <a 
+                    href={`tel:${siteSettings.phone.replace(/[^+\d]/g, '')}`}
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {t('callNow')}
+                  </a>
+                )}
               </div>
             </div>
           </div>
