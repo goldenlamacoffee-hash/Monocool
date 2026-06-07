@@ -202,9 +202,9 @@ export default async function AdminPage({ params }: Props) {
                 <CardDescription>{t('ordersDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <ButtonLink href={`/${locale}/admin/bestellungen`} className="w-full">
-                  {t('orders')}
-                </ButtonLink>
+                <span className="inline-flex w-full items-center justify-center rounded-md border border-dashed border-border px-4 py-2 text-sm text-muted-foreground">
+                  {locale === 'sk' ? 'Čoskoro' : locale === 'cs' ? 'Již brzy' : 'Demnächst verfügbar'}
+                </span>
               </CardContent>
             </Card>
 

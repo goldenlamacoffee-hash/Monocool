@@ -4,6 +4,15 @@ import { db } from '@/lib/db'
 import { siteSettings } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+async function requireAdmin() {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user) throw new Error('Unauthorized')
+  if (session.user.role !== 'admin') throw new Error('Admin access required')
+  return session.user
+}
 
 export type SiteSettings = {
   id: number
@@ -130,6 +139,8 @@ export async function upsertSiteSettings(
   data: Partial<Omit<SiteSettings, 'id' | 'domain' | 'createdAt' | 'updatedAt'>>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    await requireAdmin()
+
     // Check if settings exist for this domain
     const existing = await db
       .select()
@@ -167,6 +178,7 @@ export async function upsertSiteSettings(
 // Delete site settings for a domain
 export async function deleteSiteSettings(domain: string): Promise<{ success: boolean; error?: string }> {
   try {
+    await requireAdmin()
     await db.delete(siteSettings).where(eq(siteSettings.domain, domain))
     revalidatePath('/', 'layout')
     return { success: true }
