@@ -6,19 +6,11 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, desc, count, and, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-
-// Helper to check if user is admin
-async function requireAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user || session.user.role !== 'admin') {
-    throw new Error('Unauthorized')
-  }
-  return session.user
-}
+import { assertAdmin } from '@/lib/auth-utils'
 
 // Get all users (admin only)
 export async function getUsers(status?: string) {
-  await requireAdmin()
+  await assertAdmin()
   
   const conditions = status && status !== 'all' ? eq(user.status, status) : undefined
   
@@ -33,7 +25,7 @@ export async function getUsers(status?: string) {
 
 // Get user by ID (admin only)
 export async function getUserById(id: string) {
-  await requireAdmin()
+  await assertAdmin()
   
   const [foundUser] = await db
     .select()
@@ -46,7 +38,7 @@ export async function getUserById(id: string) {
 
 // Update user status (admin only)
 export async function updateUserStatus(id: string, status: 'pending' | 'approved' | 'rejected') {
-  await requireAdmin()
+  await assertAdmin()
   
   await db
     .update(user)
@@ -59,7 +51,7 @@ export async function updateUserStatus(id: string, status: 'pending' | 'approved
 
 // Update user role (admin only)
 export async function updateUserRole(id: string, role: 'user' | 'admin') {
-  await requireAdmin()
+  await assertAdmin()
   
   await db
     .update(user)
@@ -84,7 +76,7 @@ export async function updateUser(id: string, data: {
   phone?: string
   notes?: string
 }) {
-  await requireAdmin()
+  await assertAdmin()
   
   await db
     .update(user)
@@ -97,7 +89,7 @@ export async function updateUser(id: string, data: {
 
 // Delete user (admin only)
 export async function deleteUser(id: string) {
-  await requireAdmin()
+  await assertAdmin()
   
   await db.delete(user).where(eq(user.id, id))
   
@@ -107,7 +99,7 @@ export async function deleteUser(id: string) {
 
 // Get user statistics (admin only)
 export async function getUserStats() {
-  await requireAdmin()
+  await assertAdmin()
   
   const [totalUsers] = await db.select({ count: count() }).from(user)
   const [pendingUsers] = await db.select({ count: count() }).from(user).where(eq(user.status, 'pending'))

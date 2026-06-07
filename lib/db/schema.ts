@@ -57,6 +57,10 @@ export const siteSettings = pgTable('site_settings', {
   youtube: text('youtube'),
   // Business hours
   businessHours: text('businessHours'),
+  // SEO foundation fields (V1.3B)
+  seoTitle: text('seoTitle'),
+  seoDescription: text('seoDescription'),
+  ogImage: text('ogImage'),
   // Metadata
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
@@ -122,6 +126,10 @@ export const product = pgTable('product', {
   specifications: jsonb('specifications'),
   specs: jsonb('specs'), // Fan-coil specific specs (power, airflow, noise, dimensions)
   imageUrl: text('imageUrl'), // Primary product image (mirrors the primary product_image)
+  // SEO foundation fields (V1.3B)
+  seoTitle: text('seoTitle'),
+  seoDescription: text('seoDescription'),
+  ogImage: text('ogImage'),
   isActive: boolean('isActive').notNull().default(true),
   sortOrder: integer('sortOrder').notNull().default(0),
   domain: text('domain').notNull().default('monocool.at'), // Domain-specific content
@@ -151,6 +159,10 @@ export const cmsContent = pgTable('cms_content', {
   imageUrl: text('imageUrl'),
   gallery: jsonb('gallery').$type<string[]>(), // Array of image URLs
   metadata: jsonb('metadata'),
+  // SEO foundation fields (V1.3B)
+  seoTitle: text('seoTitle'),
+  seoDescription: text('seoDescription'),
+  ogImage: text('ogImage'),
   domain: text('domain').notNull().default('monocool.at'), // Domain-specific content
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),

@@ -37,3 +37,27 @@ export async function requireAdmin() {
   
   return { authorized: true, session, role }
 }
+
+/**
+ * Throwing admin guard for use inside Server Actions / mutations.
+ *
+ * Unlike `requireAdmin()` (which returns a result object suited for page-level
+ * redirect handling), this throws on failure so it can be used as a one-line
+ * gate at the top of any mutating server action. Role is resolved from the
+ * database (not the session token) so a stale session can never bypass it.
+ *
+ * Returns the authenticated Better Auth session on success.
+ */
+export async function assertAdmin() {
+  const { session, role } = await getSessionWithRole()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  if (role !== 'admin') {
+    throw new Error('Admin access required')
+  }
+
+  return session
+}
