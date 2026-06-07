@@ -121,6 +121,7 @@ export const product = pgTable('product', {
   technicalData: text('technicalData'), // Technical data / datasheet info
   specifications: jsonb('specifications'),
   specs: jsonb('specs'), // Fan-coil specific specs (power, airflow, noise, dimensions)
+  imageUrl: text('imageUrl'), // Primary product image (mirrors the primary product_image)
   isActive: boolean('isActive').notNull().default(true),
   sortOrder: integer('sortOrder').notNull().default(0),
   domain: text('domain').notNull().default('monocool.at'), // Domain-specific content
@@ -171,3 +172,12 @@ export const order = pgTable('order', {
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
+
+// --- Inferred types --------------------------------------------------------
+export type User = typeof user.$inferSelect
+export type Product = typeof product.$inferSelect
+export type NewProduct = typeof product.$inferInsert
+export type ProductImage = typeof productImage.$inferSelect
+export type CmsContent = typeof cmsContent.$inferSelect
+export type SiteSettings = typeof siteSettings.$inferSelect
+export type Order = typeof order.$inferSelect

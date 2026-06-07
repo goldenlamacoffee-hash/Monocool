@@ -114,8 +114,21 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
 
   const handleEditSave = async () => {
     if (!selectedUser) return
+    const payload = {
+      name: editForm.name ?? undefined,
+      email: editForm.email ?? undefined,
+      companyName: editForm.companyName ?? undefined,
+      companyId: editForm.companyId ?? undefined,
+      vatNumber: editForm.vatNumber ?? undefined,
+      address: editForm.address ?? undefined,
+      city: editForm.city ?? undefined,
+      postalCode: editForm.postalCode ?? undefined,
+      country: editForm.country ?? undefined,
+      phone: editForm.phone ?? undefined,
+      notes: editForm.notes ?? undefined,
+    }
     startTransition(async () => {
-      await updateUser(selectedUser.id, editForm)
+      await updateUser(selectedUser.id, payload)
       setUsers(users.map(u => u.id === selectedUser.id ? { ...u, ...editForm } : u))
       setViewMode(null)
       setSelectedUser(null)
@@ -242,13 +255,11 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                     <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button 
-                            disabled={isPending}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
+                        <DropdownMenuTrigger
+                          disabled={isPending}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openView(user)}>

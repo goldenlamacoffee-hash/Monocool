@@ -35,18 +35,32 @@ export default async function FanCoilPage({ params }: Props) {
     getSiteSettingsByLocale(locale)
   ])
 
-  // Helper to get CMS content with locale fallback
+  // Helper to get CMS content with locale fallback.
+  // Coerces the jsonb `metadata` column (typed as unknown) into the
+  // Record<string, string> shape the presentational components expect.
   const getCms = (key: string) => {
     const localeKey = `${key}_${locale}`
-    return cmsContent[localeKey] || cmsContent[key] || null
+    const entry = cmsContent[localeKey] || cmsContent[key] || null
+    if (!entry) return null
+    return {
+      ...entry,
+      metadata: (entry.metadata as Record<string, string> | null) ?? null,
+    }
   }
+
+  // Coerce the jsonb `specs` column (typed as unknown) into the
+  // Record<string, string> shape the products display expects.
+  const fanCoilProductsForDisplay = fanCoilProducts.map((p) => ({
+    ...p,
+    specs: (p.specs as Record<string, string> | null) ?? null,
+  }))
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
         <FanCoilHero cmsContent={getCms('fancoil_hero')} />
-        <FanCoilProductsDisplay products={fanCoilProducts} />
+        <FanCoilProductsDisplay products={fanCoilProductsForDisplay} />
         <FanCoilFeatures 
           cmsContent={{
             section: getCms('fancoil_features'),
