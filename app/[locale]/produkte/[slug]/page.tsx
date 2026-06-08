@@ -131,12 +131,14 @@ export default async function ProductDetailPage({ params }: Props) {
 
               {/* CTA Buttons */}
               <div className="mt-8 flex flex-wrap gap-4">
-                <a 
-                  href={`mailto:${siteSettings.email || 'info@monocool.at'}?subject=Anfrage: ${product.name}`}
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                  {t('requestQuote')}
-                </a>
+                {siteSettings.email?.trim() && (
+                  <a 
+                    href={`mailto:${siteSettings.email.trim()}?subject=Anfrage: ${product.name}`}
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    {t('requestQuote')}
+                  </a>
+                )}
                 {siteSettings.phone && (
                   <a 
                     href={`tel:${siteSettings.phone.replace(/[^+\d]/g, '')}`}

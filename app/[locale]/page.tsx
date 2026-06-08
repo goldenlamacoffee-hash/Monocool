@@ -228,20 +228,26 @@ export default async function HomePage({ params }: Props) {
                   <p className="mt-4 opacity-90">
                     {getCms('homepage_contact', 'content', tContact('subtitle'))}
                   </p>
-                  <div className="mt-8 space-y-4">
-                    <div>
-                      <div className="font-semibold">{tContact('email')}</div>
-                      <a href={`mailto:${siteSettings.email || 'info@monocool.at'}`} className="opacity-90 hover:opacity-100">
-                        {siteSettings.email || 'info@monocool.at'}
-                      </a>
+                  {(siteSettings.email?.trim() || siteSettings.phone?.trim()) && (
+                    <div className="mt-8 space-y-4">
+                      {siteSettings.email?.trim() && (
+                        <div>
+                          <div className="font-semibold">{tContact('email')}</div>
+                          <a href={`mailto:${siteSettings.email.trim()}`} className="opacity-90 hover:opacity-100">
+                            {siteSettings.email.trim()}
+                          </a>
+                        </div>
+                      )}
+                      {siteSettings.phone?.trim() && (
+                        <div>
+                          <div className="font-semibold">{tContact('phone')}</div>
+                          <a href={`tel:${siteSettings.phone.replace(/\s/g, '')}`} className="opacity-90 hover:opacity-100">
+                            {siteSettings.phone.trim()}
+                          </a>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <div className="font-semibold">{tContact('phone')}</div>
-                      <a href={`tel:${(siteSettings.phone || '+43 1 234 56 78').replace(/\s/g, '')}`} className="opacity-90 hover:opacity-100">
-                        {siteSettings.phone || '+43 1 234 56 78'}
-                      </a>
-                    </div>
-                  </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-center bg-muted/50 p-8 lg:p-12">
                   <div className="text-center">

@@ -51,13 +51,15 @@ export function FanCoilCTA({ cmsContent, contactInfo }: FanCoilCTAProps) {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href={`tel:${(contactInfo?.phone || '+43 1 234 56 78').replace(/\s/g, '')}`} 
-              className="inline-flex h-9 gap-1.5 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              <Phone className="h-5 w-5" />
-              {contactText}
-            </a>
+            {contactInfo?.phone?.trim() && (
+              <a 
+                href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} 
+                className="inline-flex h-9 gap-1.5 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <Phone className="h-5 w-5" />
+                {contactText}
+              </a>
+            )}
             <Link href={`/${locale}/produkte`} className="inline-flex h-9 gap-1.5 items-center justify-center rounded-lg border border-slate-600 bg-slate-800/50 px-4 text-sm font-medium text-white transition-colors hover:bg-slate-700">
               <FileText className="h-5 w-5" />
               {catalogText}
