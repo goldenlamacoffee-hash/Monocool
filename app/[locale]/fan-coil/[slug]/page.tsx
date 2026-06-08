@@ -173,12 +173,14 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
 
                 {/* CTA Buttons */}
                 <div className="mt-6 flex flex-wrap gap-4">
-                  <a 
-                    href={`mailto:${siteSettings.email || 'info@monocool.at'}?subject=${locale === 'sk' ? 'Dopyt' : locale === 'cs' ? 'Poptávka' : locale === 'de' ? 'Anfrage' : 'Inquiry'}: ${product.name}`}
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                  >
-                    {tProducts('requestQuote')}
-                  </a>
+                  {siteSettings.email?.trim() && (
+                    <a 
+                      href={`mailto:${siteSettings.email.trim()}?subject=${locale === 'sk' ? 'Dopyt' : locale === 'cs' ? 'Poptávka' : locale === 'de' ? 'Anfrage' : 'Inquiry'}: ${product.name}`}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    >
+                      {tProducts('requestQuote')}
+                    </a>
+                  )}
                   {siteSettings.phone && (
                     <a 
                       href={`tel:${siteSettings.phone.replace(/[^+\d]/g, '')}`}
