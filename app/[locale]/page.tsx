@@ -194,16 +194,16 @@ export default async function HomePage({ params }: Props) {
         {products.length > 0 && (
           <section className="border-t border-border bg-muted/30 py-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex items-end justify-between">
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="min-w-0">
+                  <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
                     {getCms('homepage_products', 'title', tProducts('title'))}
                   </h2>
                   <p className="mt-4 text-muted-foreground">
                     {getCms('homepage_products', 'content', tProducts('subtitle'))}
                   </p>
                 </div>
-                <ButtonLink href={`/${locale}/produkte`} variant="outline">
+                <ButtonLink href={`/${locale}/produkte`} variant="outline" className="shrink-0 self-start sm:self-auto">
                   {tProducts('viewAll')}
                 </ButtonLink>
               </div>
