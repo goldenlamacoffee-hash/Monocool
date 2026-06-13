@@ -11,6 +11,7 @@ import { ProductGalleryCarousel } from '@/components/product-gallery-carousel'
 import { getProductBySlugAndLocale } from '@/app/actions/products'
 import { getProductImages } from '@/app/actions/gallery'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
+import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { type Locale } from '@/i18n/config'
@@ -27,6 +28,25 @@ import {
 
 interface Props {
   params: Promise<{ locale: Locale; slug: string }>
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { locale, slug } = await params
+  const product = await getProductBySlugAndLocale(slug, locale)
+
+  if (!product) {
+    return { title: 'Product Not Found' }
+  }
+
+  return buildSeoMetadata({
+    domain: getDomainFromLocale(locale),
+    seoTitle: product.seoTitle,
+    seoDescription: product.seoDescription,
+    ogImage: product.ogImage,
+    fallbackTitle: `${product.name} | Monocool`,
+    fallbackDescription: product.shortDescription || product.description?.slice(0, 160),
+    path: `produkte/${product.slug}`,
+  })
 }
 
 export default async function ProductDetailPage({ params }: Props) {

@@ -3,6 +3,8 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { Inter } from 'next/font/google'
 import { locales, type Locale } from '@/i18n/config'
+import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
+import { getDomainFromLocale, getMarketBaseUrl } from '@/lib/domain-utils'
 import '../globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -15,11 +17,25 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const messages = await getMessages({ locale })
   const metadata = messages.metadata as { title: string; description: string }
-  
+  const domain = getDomainFromLocale(locale)
+  const settings = await getSiteSettingsByLocale(locale)
+
+  const title = settings.seoTitle?.trim() || metadata.title
+  const description = settings.seoDescription?.trim() || metadata.description
+  const ogImage = settings.ogImage?.trim()
+
   return {
-    title: metadata.title,
-    description: metadata.description,
+    metadataBase: new URL(getMarketBaseUrl(domain)),
+    title,
+    description,
     keywords: 'Klimaanlage, ohne Außengerät, MonoCool, Kühlung, Heizung, energieeffizient',
+    openGraph: {
+      title,
+      description,
+      url: `${getMarketBaseUrl(domain)}/${locale}`,
+      siteName: 'Monocool',
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+    },
   }
 }
 

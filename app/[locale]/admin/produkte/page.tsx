@@ -7,6 +7,7 @@ import { getAllProductsByLocale } from '@/app/actions/products'
 import { type Locale } from '@/i18n/config'
 import { getSessionWithRole } from '@/lib/auth-utils'
 import { AdminMarketSelector } from '@/components/admin/market-selector'
+import { MarketBanner } from '@/components/admin/market-banner'
 
 interface Props {
   params: Promise<{ locale: Locale }>
@@ -28,8 +29,9 @@ export default async function AdminProductsPage({ params }: Props) {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-4 px-4 pt-6 sm:px-6 lg:px-8">
           <AdminMarketSelector locale={locale} />
+          <MarketBanner locale={locale} previewPath="produkte" />
         </div>
         <ProductsManager initialProducts={products} locale={locale} />
       </main>

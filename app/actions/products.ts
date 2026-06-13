@@ -99,6 +99,11 @@ export async function createProduct(data: {
   features?: string[]
   technicalData?: string
   specifications?: Record<string, string>
+  seoTitle?: string
+  seoDescription?: string
+  ogImage?: string
+  sortOrder?: number
+  isActive?: boolean
   domain?: string
 }) {
   await assertAdmin()
@@ -151,6 +156,9 @@ export async function updateProduct(
     features: string[]
     technicalData: string
     specifications: Record<string, string>
+    seoTitle: string
+    seoDescription: string
+    ogImage: string
     isActive: boolean
     sortOrder: number
     domain: string
@@ -311,6 +319,9 @@ export async function upsertCmsContent(data: {
   imageUrl?: string
   gallery?: string[]
   metadata?: Record<string, unknown>
+  seoTitle?: string
+  seoDescription?: string
+  ogImage?: string
   domain?: string
 }) {
   await assertAdmin()

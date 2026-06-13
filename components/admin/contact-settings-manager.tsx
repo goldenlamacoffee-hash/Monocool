@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2 } from 'lucide-react'
+import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2, Search, Globe, ExternalLink } from 'lucide-react'
 import { upsertSiteSettings, deleteSiteSettings, type SiteSettings } from '@/app/actions/site-settings'
+import { getLocaleFromDomain, getPreviewUrl } from '@/lib/domain-utils'
 import { useRouter } from 'next/navigation'
 
 interface ContactSettingsManagerProps {
@@ -69,6 +70,28 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
     instagram: 'Instagram URL',
     linkedin: 'LinkedIn URL',
     youtube: 'YouTube URL',
+    seo: locale === 'sk' ? 'SEO' : locale === 'cs' ? 'SEO' : locale === 'de' ? 'SEO' : 'SEO',
+    seoTitle: 'SEO Title',
+    seoDescription: 'SEO Description',
+    ogImage: 'OG Image URL',
+    seoHint: locale === 'sk'
+      ? 'Voliteľné. Ak ostane prázdne, použijú sa predvolené hodnoty stránky.'
+      : locale === 'cs'
+      ? 'Volitelné. Pokud zůstane prázdné, použijí se výchozí hodnoty stránky.'
+      : locale === 'de'
+      ? 'Optional. Wenn leer, werden die Standardwerte der Seite verwendet.'
+      : 'Optional. If left empty, the page defaults are used.',
+    charsTitle: locale === 'sk' ? 'znakov (odporúčané 50–60)' : locale === 'cs' ? 'znaků (doporučeno 50–60)' : locale === 'de' ? 'Zeichen (empfohlen 50–60)' : 'chars (50–60 recommended)',
+    charsDesc: locale === 'sk' ? 'znakov (odporúčané 140–160)' : locale === 'cs' ? 'znaků (doporučeno 140–160)' : locale === 'de' ? 'Zeichen (empfohlen 140–160)' : 'chars (140–160 recommended)',
+    activeMarket: locale === 'sk' ? 'Aktívny trh' : locale === 'cs' ? 'Aktivní trh' : locale === 'de' ? 'Aktiver Markt' : 'Active market',
+    viewPublic: locale === 'sk' ? 'Zobraziť verejnú stránku' : locale === 'cs' ? 'Zobrazit veřejnou stránku' : locale === 'de' ? 'Öffentliche Seite ansehen' : 'View public page',
+    ctaHint: locale === 'sk'
+      ? 'Prázdny telefón alebo email skryje príslušné tlačidlá na verejnej stránke.'
+      : locale === 'cs'
+      ? 'Prázdný telefon nebo email skryje příslušná tlačítka na veřejné stránce.'
+      : locale === 'de'
+      ? 'Leere Telefon- oder E-Mail-Felder blenden die zugehörigen Buttons auf der öffentlichen Seite aus.'
+      : 'Leaving phone or email empty hides the related call-to-action buttons on the public page.',
   }
 
   const updateField = (domain: string, field: keyof SiteSettings, value: string) => {
@@ -127,6 +150,27 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
         ))}
       </div>
 
+      {/* Active market banner */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-4 py-3">
+        <div className="flex items-center gap-2 text-sm">
+          <Globe className="h-4 w-4 text-primary" />
+          <span className="font-medium text-muted-foreground">{translations.activeMarket}:</span>
+          <span className="font-semibold text-foreground">
+            {DOMAINS.find((d) => d.domain === activeDomain)?.label} &middot; {activeDomain} &middot;{' '}
+            <span className="uppercase">{getLocaleFromDomain(activeDomain)}</span>
+          </span>
+        </div>
+        <a
+          href={getPreviewUrl(activeDomain)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          <ExternalLink className="h-4 w-4" />
+          {translations.viewPublic}
+        </a>
+      </div>
+
       {message && (
         <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
           {message.text}
@@ -134,7 +178,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
       )}
 
       <Tabs defaultValue="contact" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="contact" className="gap-2">
             <Mail className="h-4 w-4" />
             {translations.contact}
@@ -151,6 +195,10 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
             <Share2 className="h-4 w-4" />
             {translations.social}
           </TabsTrigger>
+          <TabsTrigger value="seo" className="gap-2">
+            <Search className="h-4 w-4" />
+            {translations.seo}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="contact">
@@ -165,13 +213,16 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 md:grid-cols-2">
+              <p className="md:col-span-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                {translations.ctaHint}
+              </p>
               <div className="space-y-2">
                 <Label htmlFor="companyName">{translations.companyName}</Label>
                 <Input
                   id="companyName"
                   value={currentSettings.companyName || ''}
                   onChange={(e) => updateField(activeDomain, 'companyName', e.target.value)}
-                  placeholder="MonoCool GmbH"
+                  placeholder={translations.companyName}
                 />
               </div>
               <div className="space-y-2">
@@ -181,7 +232,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   type="email"
                   value={currentSettings.email || ''}
                   onChange={(e) => updateField(activeDomain, 'email', e.target.value)}
-                  placeholder="info@monocool.at"
+                  placeholder={translations.email}
                 />
               </div>
               <div className="space-y-2">
@@ -191,7 +242,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   type="email"
                   value={currentSettings.emailSales || ''}
                   onChange={(e) => updateField(activeDomain, 'emailSales', e.target.value)}
-                  placeholder="verkauf@monocool.at"
+                  placeholder={translations.emailSales}
                 />
               </div>
               <div className="space-y-2">
@@ -201,7 +252,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   type="email"
                   value={currentSettings.emailSupport || ''}
                   onChange={(e) => updateField(activeDomain, 'emailSupport', e.target.value)}
-                  placeholder="support@monocool.at"
+                  placeholder={translations.emailSupport}
                 />
               </div>
               <div className="space-y-2">
@@ -210,7 +261,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="phone"
                   value={currentSettings.phone || ''}
                   onChange={(e) => updateField(activeDomain, 'phone', e.target.value)}
-                  placeholder="+43 1 234 56 78"
+                  placeholder={translations.phone}
                 />
               </div>
               <div className="space-y-2">
@@ -219,7 +270,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="phoneSecondary"
                   value={currentSettings.phoneSecondary || ''}
                   onChange={(e) => updateField(activeDomain, 'phoneSecondary', e.target.value)}
-                  placeholder="+43 1 234 56 79"
+                  placeholder={translations.phoneSecondary}
                 />
               </div>
               <div className="space-y-2">
@@ -228,7 +279,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="fax"
                   value={currentSettings.fax || ''}
                   onChange={(e) => updateField(activeDomain, 'fax', e.target.value)}
-                  placeholder="+43 1 234 56 80"
+                  placeholder={translations.fax}
                 />
               </div>
               <div className="space-y-2">
@@ -237,7 +288,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="businessHours"
                   value={currentSettings.businessHours || ''}
                   onChange={(e) => updateField(activeDomain, 'businessHours', e.target.value)}
-                  placeholder="Mo-Fr 9:00-17:00"
+                  placeholder={translations.businessHours}
                 />
               </div>
             </CardContent>
@@ -262,7 +313,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="address"
                   value={currentSettings.address || ''}
                   onChange={(e) => updateField(activeDomain, 'address', e.target.value)}
-                  placeholder="Musterstraße 123"
+                  placeholder={translations.street}
                 />
               </div>
               <div className="space-y-2">
@@ -271,7 +322,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="city"
                   value={currentSettings.city || ''}
                   onChange={(e) => updateField(activeDomain, 'city', e.target.value)}
-                  placeholder="Wien"
+                  placeholder={translations.city}
                 />
               </div>
               <div className="space-y-2">
@@ -280,7 +331,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="postalCode"
                   value={currentSettings.postalCode || ''}
                   onChange={(e) => updateField(activeDomain, 'postalCode', e.target.value)}
-                  placeholder="1010"
+                  placeholder={translations.postalCode}
                 />
               </div>
               <div className="space-y-2">
@@ -289,7 +340,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="country"
                   value={currentSettings.country || ''}
                   onChange={(e) => updateField(activeDomain, 'country', e.target.value)}
-                  placeholder="Österreich"
+                  placeholder={translations.country}
                 />
               </div>
             </CardContent>
@@ -314,7 +365,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="companyId"
                   value={currentSettings.companyId || ''}
                   onChange={(e) => updateField(activeDomain, 'companyId', e.target.value)}
-                  placeholder="12345678"
+                  placeholder={translations.companyId}
                 />
               </div>
               <div className="space-y-2">
@@ -323,7 +374,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="vatNumber"
                   value={currentSettings.vatNumber || ''}
                   onChange={(e) => updateField(activeDomain, 'vatNumber', e.target.value)}
-                  placeholder="ATU12345678"
+                  placeholder={translations.vatNumber}
                 />
               </div>
               <div className="space-y-2">
@@ -332,7 +383,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="registrationCourt"
                   value={currentSettings.registrationCourt || ''}
                   onChange={(e) => updateField(activeDomain, 'registrationCourt', e.target.value)}
-                  placeholder="Handelsgericht Wien"
+                  placeholder={translations.registrationCourt}
                 />
               </div>
               <div className="space-y-2">
@@ -341,7 +392,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="registrationNumber"
                   value={currentSettings.registrationNumber || ''}
                   onChange={(e) => updateField(activeDomain, 'registrationNumber', e.target.value)}
-                  placeholder="FN 123456a"
+                  placeholder={translations.registrationNumber}
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -350,7 +401,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="responsiblePerson"
                   value={currentSettings.responsiblePerson || ''}
                   onChange={(e) => updateField(activeDomain, 'responsiblePerson', e.target.value)}
-                  placeholder="Max Mustermann"
+                  placeholder={translations.responsiblePerson}
                 />
               </div>
             </CardContent>
@@ -375,7 +426,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="facebook"
                   value={currentSettings.facebook || ''}
                   onChange={(e) => updateField(activeDomain, 'facebook', e.target.value)}
-                  placeholder="https://facebook.com/monocool"
+                  placeholder="https://..."
                 />
               </div>
               <div className="space-y-2">
@@ -384,7 +435,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="instagram"
                   value={currentSettings.instagram || ''}
                   onChange={(e) => updateField(activeDomain, 'instagram', e.target.value)}
-                  placeholder="https://instagram.com/monocool"
+                  placeholder="https://..."
                 />
               </div>
               <div className="space-y-2">
@@ -393,7 +444,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="linkedin"
                   value={currentSettings.linkedin || ''}
                   onChange={(e) => updateField(activeDomain, 'linkedin', e.target.value)}
-                  placeholder="https://linkedin.com/company/monocool"
+                  placeholder="https://..."
                 />
               </div>
               <div className="space-y-2">
@@ -402,7 +453,60 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   id="youtube"
                   value={currentSettings.youtube || ''}
                   onChange={(e) => updateField(activeDomain, 'youtube', e.target.value)}
-                  placeholder="https://youtube.com/@monocool"
+                  placeholder="https://..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="seo">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                {translations.seo}
+              </CardTitle>
+              <CardDescription>
+                {DOMAINS.find(d => d.domain === activeDomain)?.flag} {activeDomain}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6">
+              <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                {translations.seoHint}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="seoTitle">{translations.seoTitle}</Label>
+                <Input
+                  id="seoTitle"
+                  value={currentSettings.seoTitle || ''}
+                  onChange={(e) => updateField(activeDomain, 'seoTitle', e.target.value)}
+                  maxLength={70}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {(currentSettings.seoTitle || '').length}/60 {translations.charsTitle}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="seoDescription">{translations.seoDescription}</Label>
+                <Input
+                  id="seoDescription"
+                  value={currentSettings.seoDescription || ''}
+                  onChange={(e) => updateField(activeDomain, 'seoDescription', e.target.value)}
+                  maxLength={180}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {(currentSettings.seoDescription || '').length}/160 {translations.charsDesc}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ogImage">{translations.ogImage}</Label>
+                <Input
+                  id="ogImage"
+                  type="url"
+                  value={currentSettings.ogImage || ''}
+                  onChange={(e) => updateField(activeDomain, 'ogImage', e.target.value)}
+                  placeholder="https://..."
                 />
               </div>
             </CardContent>

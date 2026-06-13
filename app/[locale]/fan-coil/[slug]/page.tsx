@@ -11,6 +11,7 @@ import { ProductGalleryCarousel } from '@/components/product-gallery-carousel'
 import { getProductBySlugAndLocale } from '@/app/actions/products'
 import { getProductImages } from '@/app/actions/gallery'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
+import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { type Locale } from '@/i18n/config'
@@ -38,10 +39,15 @@ export async function generateMetadata({ params }: Props) {
     return { title: 'Product Not Found' }
   }
 
-  return {
-    title: `${product.name} | Fan Coil | Monocool`,
-    description: product.shortDescription || product.description?.slice(0, 160),
-  }
+  return buildSeoMetadata({
+    domain: getDomainFromLocale(locale),
+    seoTitle: product.seoTitle,
+    seoDescription: product.seoDescription,
+    ogImage: product.ogImage,
+    fallbackTitle: `${product.name} | Fan Coil | Monocool`,
+    fallbackDescription: product.shortDescription || product.description?.slice(0, 160),
+    path: `fan-coil/${product.slug}`,
+  })
 }
 
 export default async function FanCoilProductDetailPage({ params }: Props) {
