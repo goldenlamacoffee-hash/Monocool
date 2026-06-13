@@ -35,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
-import { getDomainFromLocale } from '@/lib/domain-utils'
+import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
 import { Plus, Pencil, Trash2, ArrowLeft, ToggleLeft, ToggleRight, ImageIcon, SlidersHorizontal, Check } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
@@ -57,6 +57,9 @@ interface Product {
   weight: string | null
   features: string[] | null
   technicalData: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImage: string | null
   isActive: boolean
   sortOrder: number
 }
@@ -76,6 +79,11 @@ interface ProductFormData {
   weight: string
   features: string
   technicalData: string
+  seoTitle: string
+  seoDescription: string
+  ogImage: string
+  sortOrder: string
+  isActive: boolean
 }
 
 interface ProductImage {
@@ -104,6 +112,11 @@ const emptyForm: ProductFormData = {
   weight: '',
   features: '',
   technicalData: '',
+  seoTitle: '',
+  seoDescription: '',
+  ogImage: '',
+  sortOrder: '0',
+  isActive: true,
 }
 
 export function ProductsManager({ initialProducts, locale }: { initialProducts: Product[], locale: Locale }) {
@@ -159,6 +172,11 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
       weight: product.weight || '',
       features: product.features?.join('\n') || '',
       technicalData: product.technicalData || '',
+      seoTitle: product.seoTitle || '',
+      seoDescription: product.seoDescription || '',
+      ogImage: product.ogImage || '',
+      sortOrder: String(product.sortOrder ?? 0),
+      isActive: product.isActive,
     })
     setIsDialogOpen(true)
   }
@@ -184,6 +202,11 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
         weight: formData.weight || undefined,
         features: formData.features ? formData.features.split('\n').filter(f => f.trim()) : undefined,
         technicalData: formData.technicalData || undefined,
+        seoTitle: formData.seoTitle || undefined,
+        seoDescription: formData.seoDescription || undefined,
+        ogImage: formData.ogImage || undefined,
+        sortOrder: formData.sortOrder ? parseInt(formData.sortOrder, 10) : undefined,
+        isActive: formData.isActive,
       }
 
       if (editingProduct) {
@@ -261,6 +284,56 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                       onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                       placeholder={t('slugPlaceholder')}
                     />
+                    {(formData.slug || formData.name) && (
+                      <p className="break-all text-xs text-muted-foreground">
+                        {getPreviewUrl(
+                          getDomainFromLocale(locale),
+                          `produkte/${formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-')}`,
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+                  <div className="space-y-2">
+                    <Label htmlFor="sortOrder">
+                      {locale === 'sk' ? 'Poradie' : locale === 'cs' ? 'Pořadí' : locale === 'de' ? 'Reihenfolge' : 'Sort order'}
+                    </Label>
+                    <Input
+                      id="sortOrder"
+                      type="number"
+                      value={formData.sortOrder}
+                      onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
+                      placeholder="0"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {locale === 'sk'
+                        ? 'Nižšie čísla sa zobrazujú skôr.'
+                        : locale === 'cs'
+                        ? 'Nižší čísla se zobrazují dříve.'
+                        : locale === 'de'
+                        ? 'Niedrigere Zahlen erscheinen zuerst.'
+                        : 'Lower numbers appear first.'}
+                    </p>
+                  </div>
+                  <div className="flex items-end pb-1">
+                    <label htmlFor="isActive" className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                      <input
+                        id="isActive"
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-border accent-primary"
+                        checked={formData.isActive}
+                        onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      />
+                      {locale === 'sk'
+                        ? 'Aktívny (viditeľný na stránke)'
+                        : locale === 'cs'
+                        ? 'Aktivní (viditelný na webu)'
+                        : locale === 'de'
+                        ? 'Aktiv (auf der Website sichtbar)'
+                        : 'Active (visible on site)'}
+                    </label>
                   </div>
                 </div>
 
@@ -385,6 +458,59 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                     rows={4}
                     placeholder={locale === 'sk' ? 'Zadajte technické údaje produktu...' : locale === 'cs' ? 'Zadejte technické údaje produktu...' : locale === 'de' ? 'Technische Daten eingeben...' : 'Enter product technical data...'}
                   />
+                </div>
+
+                <div className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-foreground">SEO</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {locale === 'sk'
+                        ? 'Ak ostane prázdne, použijú sa predvolené hodnoty produktu.'
+                        : locale === 'cs'
+                        ? 'Pokud zůstane prázdné, použijí se výchozí hodnoty produktu.'
+                        : locale === 'de'
+                        ? 'Wenn leer, werden die Standardwerte des Produkts verwendet.'
+                        : 'If left empty, the product defaults are used.'}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="seoTitle">SEO Title</Label>
+                    <Input
+                      id="seoTitle"
+                      value={formData.seoTitle}
+                      onChange={(e) => setFormData({ ...formData, seoTitle: e.target.value })}
+                      maxLength={70}
+                      placeholder={locale === 'de' ? 'z.B. Produktname | Monocool' : 'e.g. Product name | Monocool'}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {formData.seoTitle.length}/60{' '}
+                      {locale === 'sk' ? 'znakov (odporúčané 50–60)' : locale === 'cs' ? 'znaků (doporučeno 50–60)' : locale === 'de' ? 'Zeichen (empfohlen 50–60)' : 'chars (50–60 recommended)'}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="seoDescription">SEO Description</Label>
+                    <Textarea
+                      id="seoDescription"
+                      value={formData.seoDescription}
+                      onChange={(e) => setFormData({ ...formData, seoDescription: e.target.value })}
+                      rows={2}
+                      maxLength={180}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {formData.seoDescription.length}/160{' '}
+                      {locale === 'sk' ? 'znakov (odporúčané 140–160)' : locale === 'cs' ? 'znaků (doporučeno 140–160)' : locale === 'de' ? 'Zeichen (empfohlen 140–160)' : 'chars (140–160 recommended)'}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ogImage">OG Image URL</Label>
+                    <Input
+                      id="ogImage"
+                      type="url"
+                      value={formData.ogImage}
+                      onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-3">

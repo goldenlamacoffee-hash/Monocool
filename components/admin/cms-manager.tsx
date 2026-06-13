@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { upsertCmsContent } from '@/app/actions/products'
-import { getDomainFromLocale } from '@/lib/domain-utils'
+import { getDomainFromLocale, getMarketName } from '@/lib/domain-utils'
 import { ArrowLeft, Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 
@@ -31,6 +31,9 @@ interface CmsContentItem {
   imageUrl: string | null
   gallery: string[] | null
   metadata: unknown
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImage: string | null
 }
 
 interface CMSManagerProps {
@@ -187,6 +190,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
     imageUrl: string
     gallery: string[]
     metadata: string
+    seoTitle: string
+    seoDescription: string
+    ogImage: string
   }>({
     key: '',
     title: '',
@@ -195,15 +201,20 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
     imageUrl: '',
     gallery: [],
     metadata: '{}',
+    seoTitle: '',
+    seoDescription: '',
+    ogImage: '',
   })
   const [loading, setSaving] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isCustom, setIsCustom] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const openEditDialog = (sectionKey: string, custom = false) => {
     const existingContent = content[sectionKey]
     setEditingSection(sectionKey)
     setIsCustom(custom)
+    setSaveError(null)
     setFormData({
       key: sectionKey,
       title: existingContent?.title || '',
@@ -212,6 +223,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
       imageUrl: existingContent?.imageUrl || '',
       gallery: (existingContent?.gallery as string[]) || [],
       metadata: existingContent?.metadata ? JSON.stringify(existingContent.metadata, null, 2) : '{}',
+      seoTitle: existingContent?.seoTitle || '',
+      seoDescription: existingContent?.seoDescription || '',
+      ogImage: existingContent?.ogImage || '',
     })
     setIsDialogOpen(true)
   }
@@ -219,6 +233,7 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
   const openCreateDialog = () => {
     setEditingSection(null)
     setIsCustom(true)
+    setSaveError(null)
     setFormData({
       key: '',
       title: '',
@@ -227,6 +242,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
       imageUrl: '',
       gallery: [],
       metadata: '{}',
+      seoTitle: '',
+      seoDescription: '',
+      ogImage: '',
     })
     setIsDialogOpen(true)
   }
@@ -235,6 +253,7 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
     const key = editingSection || formData.key
     if (!key) return
     setSaving(true)
+    setSaveError(null)
 
     try {
       let parsedMetadata = {}
@@ -252,6 +271,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
         imageUrl: formData.imageUrl || undefined,
         gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
         metadata: parsedMetadata,
+        seoTitle: formData.seoTitle || undefined,
+        seoDescription: formData.seoDescription || undefined,
+        ogImage: formData.ogImage || undefined,
         domain: getDomainFromLocale(locale),
       })
 
@@ -267,6 +289,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
           imageUrl: formData.imageUrl,
           gallery: formData.gallery,
           metadata: parsedMetadata,
+          seoTitle: formData.seoTitle,
+          seoDescription: formData.seoDescription,
+          ogImage: formData.ogImage,
         } as CmsContentItem,
       })
 
@@ -274,6 +299,7 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
       router.refresh()
     } catch (error) {
       console.error('Error saving content:', error)
+      setSaveError(error instanceof Error ? error.message : 'Failed to save content')
     } finally {
       setSaving(false)
     }
@@ -288,6 +314,10 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
               <ArrowLeft className="h-4 w-4" />
               {t('backToAdmin')}
             </Link>
+            <span className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
+              <Globe className="h-3.5 w-3.5" />
+              {getMarketName(getDomainFromLocale(locale))} &middot; {getDomainFromLocale(locale)}
+            </span>
           </div>
           <Button onClick={openCreateDialog}>
             <Plus className="mr-2 h-4 w-4" />
@@ -525,6 +555,64 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
                    'Additional data like button texts: {"ctaText": "Discover products", "learnMoreText": "Learn more"}'}
                 </p>
               </div>
+
+              <div className="space-y-4 rounded-lg border border-border bg-muted/30 p-4">
+                <div className="space-y-1">
+                  <h3 className="text-sm font-semibold text-foreground">SEO</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {locale === 'sk'
+                      ? 'Voliteľné. Ak ostane prázdne, použijú sa predvolené hodnoty stránky.'
+                      : locale === 'cs'
+                      ? 'Volitelné. Pokud zůstane prázdné, použijí se výchozí hodnoty stránky.'
+                      : locale === 'de'
+                      ? 'Optional. Wenn leer, werden die Standardwerte der Seite verwendet.'
+                      : 'Optional. If left empty, the page defaults are used.'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="seoTitle">SEO Title</Label>
+                  <Input
+                    id="seoTitle"
+                    value={formData.seoTitle}
+                    onChange={(e) => setFormData({ ...formData, seoTitle: e.target.value })}
+                    maxLength={70}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {formData.seoTitle.length}/60{' '}
+                    {locale === 'sk' ? 'znakov (odporúčané 50–60)' : locale === 'cs' ? 'znaků (doporučeno 50–60)' : locale === 'de' ? 'Zeichen (empfohlen 50–60)' : 'chars (50–60 recommended)'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="seoDescription">SEO Description</Label>
+                  <Textarea
+                    id="seoDescription"
+                    value={formData.seoDescription}
+                    onChange={(e) => setFormData({ ...formData, seoDescription: e.target.value })}
+                    rows={2}
+                    maxLength={180}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {formData.seoDescription.length}/160{' '}
+                    {locale === 'sk' ? 'znakov (odporúčané 140–160)' : locale === 'cs' ? 'znaků (doporučeno 140–160)' : locale === 'de' ? 'Zeichen (empfohlen 140–160)' : 'chars (140–160 recommended)'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ogImage">OG Image URL</Label>
+                  <Input
+                    id="ogImage"
+                    type="url"
+                    value={formData.ogImage}
+                    onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              {saveError && (
+                <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {saveError}
+                </p>
+              )}
 
               <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

@@ -8,6 +8,7 @@ import { FanCoilFeatures } from '@/components/fan-coil/features'
 import { FanCoilCTA } from '@/components/fan-coil/cta'
 import { getProductsByCategoryAndLocale, getFancoilCmsContentByLocale } from '@/app/actions/products'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
+import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { type Locale } from '@/i18n/config'
 
 interface Props {
@@ -17,11 +18,18 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'fanCoil' })
-  
-  return {
-    title: t('meta.title'),
-    description: t('meta.description'),
-  }
+  const cms = await getFancoilCmsContentByLocale(locale)
+  const seo = cms[`fancoil_hero_${locale}`] || cms['fancoil_hero']
+
+  return buildSeoMetadata({
+    domain: getDomainFromLocale(locale),
+    seoTitle: seo?.seoTitle,
+    seoDescription: seo?.seoDescription,
+    ogImage: seo?.ogImage,
+    fallbackTitle: t('meta.title'),
+    fallbackDescription: t('meta.description'),
+    path: 'fan-coil',
+  })
 }
 
 export default async function FanCoilPage({ params }: Props) {
