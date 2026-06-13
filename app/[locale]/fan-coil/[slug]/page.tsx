@@ -113,7 +113,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
 
             <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
               {/* Product Gallery */}
-              <div className="relative">
+              <div className="relative min-w-0">
                 <ProductGalleryCarousel 
                   images={galleryImages}
                   productName={product.name}
@@ -126,7 +126,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
               </div>
 
               {/* Product Info */}
-              <div className="flex flex-col justify-center">
+              <div className="flex min-w-0 flex-col justify-center">
                 <h1 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{product.name}</h1>
                 
                 {product.shortDescription && (
@@ -204,7 +204,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
         {/* Content Section */}
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="w-full justify-start border-b bg-transparent p-0">
+            <TabsList className="w-full max-w-full justify-start overflow-x-auto border-b bg-transparent p-0">
               <TabsTrigger 
                 value="description" 
                 className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"

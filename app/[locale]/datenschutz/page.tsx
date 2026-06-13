@@ -29,7 +29,7 @@ export default async function DatenschutzPage({ params }: Props) {
       <Header />
       <main className="flex-1 py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{t('title')}</h1>
+          <h1 className="text-balance break-words text-3xl font-bold text-foreground sm:text-4xl">{t('title')}</h1>
           
           <p className="mt-6 text-muted-foreground">{t('intro')}</p>
 

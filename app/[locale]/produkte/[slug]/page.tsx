@@ -90,7 +90,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Product Gallery */}
-            <div className="relative">
+            <div className="relative min-w-0">
               <ProductGalleryCarousel 
                 images={galleryImages}
                 productName={product.name}
@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
 
             {/* Product Info */}
-            <div>
+            <div className="min-w-0">
               <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
               
               {product.shortDescription && (
@@ -174,7 +174,7 @@ export default async function ProductDetailPage({ params }: Props) {
           {/* Tabs Section */}
           <div className="mt-12">
             <Tabs defaultValue="beschreibung" className="w-full">
-              <TabsList className="w-full justify-start">
+              <TabsList className="w-full max-w-full justify-start overflow-x-auto">
                 <TabsTrigger value="beschreibung">{t('description')}</TabsTrigger>
                 <TabsTrigger value="spezifikationen">{t('specifications')}</TabsTrigger>
                 {product.features && product.features.length > 0 && (
