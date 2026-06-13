@@ -352,7 +352,7 @@
       "country": "Österreich",
       "contact": "Kontakt",
       "phone": "Telefon: wird vor dem Start ergänzt",
-      "email": "E-Mail: info@monocool.at",
+      "email": "E-Mail: wird vor dem Start ergänzt",
       "registration": "Handelsregister",
       "registrationInfo": "Registergericht: wird vor dem Start ergänzt",
       "registrationNumber": "Firmenbuchnummer: wird vor dem Start ergänzt",
@@ -375,7 +375,7 @@
       "rights": "Ihre Rechte",
       "rightsText": "Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu. Wenn Sie glauben, dass die Verarbeitung Ihrer Daten gegen das Datenschutzrecht verstößt, können Sie sich bei der Aufsichtsbehörde beschweren.",
       "contact": "Kontakt",
-      "contactText": "Für Fragen zum Datenschutz können Sie uns jederzeit unter info@monocool.at kontaktieren.",
+      "contactText": "Für Fragen zum Datenschutz können Sie uns jederzeit kontaktieren. Die Kontaktdaten werden vor dem Start ergänzt.",
       "updates": "Änderungen",
       "updatesText": "Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie an geänderte Rechtslagen oder bei Änderungen unserer Dienste anzupassen."
     }
