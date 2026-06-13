@@ -37,20 +37,23 @@ export type SiteSettings = {
   updatedAt: Date
 }
 
-// Default fallback settings
+// Default fallback settings used only when a domain has no site_settings row.
+// Intentionally contains no invented contact/legal data: every field is null so
+// that missing values hide CTAs rather than rendering placeholder/fake content.
+// `domain` is a non-rendered key and is always overridden by the caller.
 const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   domain: 'monocool.at',
-  companyName: 'MonoCool GmbH',
-  email: 'info@monocool.at',
-  emailSales: 'verkauf@monocool.at',
-  emailSupport: 'support@monocool.at',
+  companyName: null,
+  email: null,
+  emailSales: null,
+  emailSupport: null,
   phone: null,
   phoneSecondary: null,
   fax: null,
   address: null,
   city: null,
   postalCode: null,
-  country: 'Österreich',
+  country: null,
   companyId: null,
   vatNumber: null,
   registrationCourt: null,
@@ -60,7 +63,7 @@ const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   instagram: null,
   linkedin: null,
   youtube: null,
-  businessHours: 'Mo-Fr 9:00-17:00',
+  businessHours: null,
   seoTitle: null,
   seoDescription: null,
   ogImage: null,
