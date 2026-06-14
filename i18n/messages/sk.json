@@ -1,4 +1,14 @@
 {
+  "siteGate": {
+    "title": "Chránené – MonoCool",
+    "heading": "Webová stránka MonoCool je dočasne chránená.",
+    "subheading": "Pre pokračovanie zadajte heslo.",
+    "passwordLabel": "Heslo",
+    "passwordPlaceholder": "Zadajte heslo",
+    "submit": "Pokračovať",
+    "submitting": "Overujem …",
+    "error": "Nesprávne heslo. Skúste to znova."
+  },
   "metadata": {
     "title": "MonoCool - Klimatizácie bez vonkajšej jednotky | Slovensko",
     "description": "MonoCool ponúka inovatívne klimatizácie bez vonkajšej jednotky pre Slovensko. Efektívne chladenie a kúrenie bez zložitej inštalácie."
