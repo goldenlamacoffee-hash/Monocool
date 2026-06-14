@@ -1,4 +1,14 @@
 {
+  "siteGate": {
+    "title": "Geschützt – MonoCool",
+    "heading": "Die MonoCool-Website ist vorübergehend geschützt.",
+    "subheading": "Bitte geben Sie das Passwort ein, um fortzufahren.",
+    "passwordLabel": "Passwort",
+    "passwordPlaceholder": "Passwort eingeben",
+    "submit": "Weiter",
+    "submitting": "Wird geprüft …",
+    "error": "Falsches Passwort. Bitte versuchen Sie es erneut."
+  },
   "metadata": {
     "title": "MonoCool - Klimaanlagen ohne Außengerät | Österreich",
     "description": "MonoCool bietet innovative Klimaanlagen ohne Außengerät für Österreich. Effiziente Kühlung und Heizung ohne komplizierte Installation."

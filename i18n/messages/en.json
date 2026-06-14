@@ -1,4 +1,14 @@
 {
+  "siteGate": {
+    "title": "Protected – MonoCool",
+    "heading": "The MonoCool website is temporarily protected.",
+    "subheading": "Enter password to continue.",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter password",
+    "submit": "Continue",
+    "submitting": "Checking …",
+    "error": "Incorrect password. Please try again."
+  },
   "metadata": {
     "title": "MonoCool - Air Conditioners Without Outdoor Unit | Europe",
     "description": "MonoCool offers innovative air conditioners without outdoor units for Europe. Efficient cooling and heating without complicated installation."

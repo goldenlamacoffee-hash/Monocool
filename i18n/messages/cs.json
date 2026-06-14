@@ -1,4 +1,14 @@
 {
+  "siteGate": {
+    "title": "Chráněno – MonoCool",
+    "heading": "Web MonoCool je dočasně chráněn.",
+    "subheading": "Pro pokračování zadejte heslo.",
+    "passwordLabel": "Heslo",
+    "passwordPlaceholder": "Zadejte heslo",
+    "submit": "Pokračovat",
+    "submitting": "Ověřuji …",
+    "error": "Nesprávné heslo. Zkuste to prosím znovu."
+  },
   "metadata": {
     "title": "MonoCool - Klimatizace bez venkovní jednotky | Česká republika",
     "description": "MonoCool nabízí inovativní klimatizace bez venkovní jednotky pro Českou republiku. Efektivní chlazení a topení bez složité instalace."
