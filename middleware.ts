@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import { NextRequest, NextResponse } from 'next/server'
 import { locales, defaultLocale, domainLocales, type Locale } from './i18n/config'
-import { SITE_GATE_COOKIE, getSitePassword, isValidAccessToken } from './lib/site-gate'
+import { SITE_GATE_COOKIE, getSitePassword, isValidAccessToken, resolveDomainKey } from './lib/site-gate'
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -32,10 +32,14 @@ export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // --- Temporary public password gate (V1.3C.3) -------------------------
-  const sitePassword = getSitePassword()
+  // Per-domain password: each domain has its own password (with a shared
+  // fallback). Cookies are domain-scoped so unlocking one domain never
+  // unlocks another.
+  const sitePassword = getSitePassword(hostname)
   if (sitePassword && !GATE_EXCLUDED.test(pathname)) {
+    const domainKey = resolveDomainKey(hostname)
     const cookie = request.cookies.get(SITE_GATE_COOKIE)?.value
-    const unlocked = await isValidAccessToken(cookie, sitePassword)
+    const unlocked = await isValidAccessToken(cookie, domainKey, sitePassword)
 
     if (!unlocked) {
       // Show the branded unlock screen without revealing public content.
