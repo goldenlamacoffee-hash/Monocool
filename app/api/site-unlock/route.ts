@@ -4,13 +4,18 @@ import {
   SITE_GATE_MAX_AGE,
   computeAccessToken,
   getSitePassword,
+  resolveDomainKey,
   tokensMatch,
 } from '@/lib/site-gate'
 
 // Verifies the submitted password server-side and, on success, sets an
 // httpOnly unlock cookie. Never returns or stores the raw password.
+// The password is validated against the requesting domain's configured
+// password, and the cookie is domain-scoped via the token salt.
 export async function POST(request: NextRequest) {
-  const sitePassword = getSitePassword()
+  const hostname = request.headers.get('host') || ''
+  const sitePassword = getSitePassword(hostname)
+  const domainKey = resolveDomainKey(hostname)
 
   // Gate disabled -> nothing to unlock.
   if (!sitePassword) {
@@ -30,8 +35,8 @@ export async function POST(request: NextRequest) {
   }
 
   // Compare server-side using derived tokens (constant-time-ish).
-  const submittedToken = await computeAccessToken(submitted)
-  const expectedToken = await computeAccessToken(sitePassword)
+  const submittedToken = await computeAccessToken(domainKey, submitted)
+  const expectedToken = await computeAccessToken(domainKey, sitePassword)
 
   if (!submitted || !tokensMatch(submittedToken, expectedToken)) {
     return NextResponse.json({ ok: false }, { status: 401 })
