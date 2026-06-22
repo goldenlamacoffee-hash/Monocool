@@ -16,7 +16,11 @@
   "nav": {
     "home": "Domů",
     "products": "Produkty",
+    "productsAll": "Všechny produkty",
+    "categoryMonoblock": "Klimatizace bez venkovní jednotky",
+    "categoryFancoil": "Fan Coil jednotky",
     "benefits": "Výhody",
+    "partners": "Pro partnery",
     "contact": "Kontakt",
     "login": "Přihlásit",
     "logout": "Odhlásit",
@@ -91,7 +95,19 @@
     "noiseLevel": "Hlučnost",
     "dimensions": "Rozměry",
     "weight": "Hmotnost",
-    "notFound": "Produkt nenalezen"
+    "notFound": "Produkt nenalezen",
+    "categories": {
+      "klimageraete": "Klimatizace",
+      "fancoil": "Fan Coil"
+    },
+    "sectionMonoblock": {
+      "title": "Klimatizace bez venkovní jednotky",
+      "description": "Monoblock technologie – chlazení a topení zcela bez venkovní jednotky."
+    },
+    "sectionFancoil": {
+      "title": "Fan Coil jednotky",
+      "description": "Designové ventilkonvektory pro efektivní topení a chlazení."
+    }
   },
   "contact": {
     "title": "Kontakt",

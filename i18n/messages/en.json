@@ -16,7 +16,11 @@
   "nav": {
     "home": "Home",
     "products": "Products",
+    "productsAll": "All Products",
+    "categoryMonoblock": "Air Conditioners Without Outdoor Unit",
+    "categoryFancoil": "Fan Coil Units",
     "benefits": "Benefits",
+    "partners": "For Partners",
     "contact": "Contact",
     "login": "Login",
     "logout": "Logout",
@@ -91,7 +95,19 @@
     "noiseLevel": "Noise Level",
     "dimensions": "Dimensions",
     "weight": "Weight",
-    "notFound": "Product not found"
+    "notFound": "Product not found",
+    "categories": {
+      "klimageraete": "Air Conditioner",
+      "fancoil": "Fan Coil"
+    },
+    "sectionMonoblock": {
+      "title": "Air Conditioners Without Outdoor Unit",
+      "description": "Monoblock technology — cooling and heating with no outdoor unit at all."
+    },
+    "sectionFancoil": {
+      "title": "Fan Coil Units",
+      "description": "Designer ventilconvectors for efficient heating and cooling."
+    }
   },
   "contact": {
     "title": "Contact",
