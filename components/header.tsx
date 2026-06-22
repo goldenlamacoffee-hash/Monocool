@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Flag } from '@/components/flag'
-import { Menu, User, LogOut, Settings } from 'lucide-react'
+import { Menu, User, LogOut, Settings, ChevronDown } from 'lucide-react'
 import { locales, localeNames, localeDomains, domainLocales, type Locale } from '@/i18n/config'
 
 export function Header() {
@@ -35,13 +35,24 @@ export function Header() {
     }
   }, [])
 
+  const productLinks = [
+    { name: t('productsAll'), href: `/${locale}/produkte` },
+    { name: t('categoryMonoblock'), href: `/${locale}/produkte#klimageraete` },
+    { name: t('categoryFancoil'), href: `/${locale}/fan-coil` },
+  ]
+
   const navigation = [
     { name: t('home'), href: `/${locale}` },
-    { name: t('products'), href: `/${locale}/produkte` },
-    { name: 'Fan Coil', href: `/${locale}/fan-coil` },
     { name: t('benefits'), href: `/${locale}#vorteile` },
+    { name: t('partners'), href: `/${locale}/anmelden` },
     { name: t('contact'), href: `/${locale}#kontakt` },
   ]
+
+  const isProductsActive =
+    pathname === `/${locale}/produkte` ||
+    pathname.startsWith(`/${locale}/produkte/`) ||
+    pathname === `/${locale}/fan-coil` ||
+    pathname.startsWith(`/${locale}/fan-coil/`)
 
   const switchLocale = (newLocale: Locale) => {
     const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
@@ -70,13 +81,51 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2" aria-label="MonoCool home">
-          <Image src="/logo.png" alt="MonoCool Logo" width={160} height={48} className="h-9 w-auto" priority />
+        <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2.5" aria-label="MonoCool home">
+          <Image src="/logo.png" alt="" aria-hidden="true" width={40} height={40} className="h-9 w-9 rounded-md" priority />
+          <span className="font-heading text-xl font-semibold tracking-tight text-foreground">
+            Mono<span className="text-[color:var(--mono-steel)]">Cool</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-1 md:flex">
-          {navigation.map((item) => (
+          <Link
+            href={`/${locale}`}
+            aria-current={isActive(`/${locale}`) ? 'page' : undefined}
+            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              isActive(`/${locale}`)
+                ? 'text-primary'
+                : 'text-muted-foreground hover:bg-accent hover:text-primary'
+            }`}
+          >
+            {t('home')}
+          </Link>
+
+          {/* Products dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+                isProductsActive
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:bg-accent hover:text-primary'
+              }`}
+            >
+              {t('products')}
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              {productLinks.map((item) => (
+                <DropdownMenuItem key={item.name}>
+                  <Link href={item.href} className="w-full cursor-pointer">
+                    {item.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {navigation.slice(1).map((item) => (
             <Link
               key={item.name}
               href={item.href}
@@ -162,11 +211,43 @@ export function Header() {
               <span className="sr-only">Menu</span>
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <div className="flex items-center gap-2 border-b border-border pb-4">
-                <Image src="/logo.png" alt="MonoCool Logo" width={140} height={42} className="h-8 w-auto" />
+              <div className="flex items-center gap-2.5 border-b border-border pb-4">
+                <Image src="/logo.png" alt="" aria-hidden="true" width={36} height={36} className="h-8 w-8 rounded-md" />
+                <span className="font-heading text-lg font-semibold tracking-tight text-foreground">
+                  Mono<span className="text-[color:var(--mono-steel)]">Cool</span>
+                </span>
               </div>
               <nav className="mt-6 flex flex-col gap-1">
-                {navigation.map((item) => (
+                <Link
+                  href={`/${locale}`}
+                  onClick={() => setOpen(false)}
+                  aria-current={isActive(`/${locale}`) ? 'page' : undefined}
+                  className={`rounded-lg px-3 py-2.5 text-base font-medium transition-colors ${
+                    isActive(`/${locale}`)
+                      ? 'bg-accent text-primary'
+                      : 'text-foreground hover:bg-accent hover:text-primary'
+                  }`}
+                >
+                  {t('home')}
+                </Link>
+
+                {/* Products group */}
+                <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  {t('products')}
+                </p>
+                {productLinks.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-primary"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+
+                <div className="mt-2" />
+                {navigation.slice(1).map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}

@@ -13,10 +13,19 @@
     "title": "MonoCool - Air Conditioners Without Outdoor Unit | Europe",
     "description": "MonoCool offers innovative air conditioners without outdoor units for Europe. Efficient cooling and heating without complicated installation."
   },
+  "notFound": {
+    "heading": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "button": "Back to homepage"
+  },
   "nav": {
     "home": "Home",
     "products": "Products",
+    "productsAll": "All Products",
+    "categoryMonoblock": "Air Conditioners Without Outdoor Unit",
+    "categoryFancoil": "Fan Coil Units",
     "benefits": "Benefits",
+    "partners": "For Partners",
     "contact": "Contact",
     "login": "Login",
     "logout": "Logout",
@@ -91,7 +100,19 @@
     "noiseLevel": "Noise Level",
     "dimensions": "Dimensions",
     "weight": "Weight",
-    "notFound": "Product not found"
+    "notFound": "Product not found",
+    "categories": {
+      "klimageraete": "Air Conditioner",
+      "fancoil": "Fan Coil"
+    },
+    "sectionMonoblock": {
+      "title": "Air Conditioners Without Outdoor Unit",
+      "description": "Monoblock technology — cooling and heating with no outdoor unit at all."
+    },
+    "sectionFancoil": {
+      "title": "Fan Coil Units",
+      "description": "Designer ventilconvectors for efficient heating and cooling."
+    }
   },
   "contact": {
     "title": "Contact",

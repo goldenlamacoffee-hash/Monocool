@@ -13,10 +13,19 @@
     "title": "MonoCool - Klimatizácie bez vonkajšej jednotky | Slovensko",
     "description": "MonoCool ponúka inovatívne klimatizácie bez vonkajšej jednotky pre Slovensko. Efektívne chladenie a kúrenie bez zložitej inštalácie."
   },
+  "notFound": {
+    "heading": "Stránka sa nenašla",
+    "description": "Hľadaná stránka neexistuje alebo bola presunutá.",
+    "button": "Späť na úvodnú stránku"
+  },
   "nav": {
     "home": "Domov",
     "products": "Produkty",
+    "productsAll": "Všetky produkty",
+    "categoryMonoblock": "Klimatizácie bez vonkajšej jednotky",
+    "categoryFancoil": "Fan Coil jednotky",
     "benefits": "Výhody",
+    "partners": "Pre partnerov",
     "contact": "Kontakt",
     "login": "Prihlásiť",
     "logout": "Odhlásiť",
@@ -91,7 +100,19 @@
     "noiseLevel": "Hlučnosť",
     "dimensions": "Rozmery",
     "weight": "Hmotnosť",
-    "notFound": "Produkt nenájdený"
+    "notFound": "Produkt nenájdený",
+    "categories": {
+      "klimageraete": "Klimatizácia",
+      "fancoil": "Fan Coil"
+    },
+    "sectionMonoblock": {
+      "title": "Klimatizácie bez vonkajšej jednotky",
+      "description": "Monoblock technológia – chladenie a kúrenie úplne bez vonkajšej jednotky."
+    },
+    "sectionFancoil": {
+      "title": "Fan Coil jednotky",
+      "description": "Dizajnové ventilkonvektory pre efektívne kúrenie a chladenie."
+    }
   },
   "contact": {
     "title": "Kontakt",

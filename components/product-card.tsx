@@ -35,6 +35,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const productUrl = `/${locale}/produkte/${product.slug}`
 
+  // Map raw DB category keys to localized, human-readable labels.
+  const categoryLabel = product.category
+    ? t.has(`categories.${product.category}`)
+      ? t(`categories.${product.category}`)
+      : product.category
+    : null
+
   return (
     <Link href={productUrl} className="block h-full focus-visible:outline-none">
       <Card className="group flex h-full flex-col overflow-hidden rounded-2xl border-border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.35)] hover:ring-1 hover:ring-secondary/40 group-focus-visible:ring-2 group-focus-visible:ring-ring">
@@ -52,9 +59,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 <Thermometer className="h-14 w-14 text-secondary/30" aria-hidden="true" />
               </div>
             )}
-            {product.category && (
+            {categoryLabel && (
               <span className="absolute left-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-primary backdrop-blur">
-                {product.category}
+                {categoryLabel}
               </span>
             )}
           </div>

@@ -186,7 +186,7 @@ export default async function HomePage({ params }: Props) {
                   <div className="mt-1 text-sm text-muted-foreground">{tBenefits('outdoor.label')}</div>
                 </div>
                 <div className="rounded-xl border border-border bg-card p-6">
-                  <div className="font-heading text-4xl font-semibold text-primary">{tBenefits('warranty.value').split(' ')[0]}</div>
+                  <div className="font-heading text-4xl font-semibold text-primary">{tBenefits('warranty.value')}</div>
                   <div className="mt-1 text-sm text-muted-foreground">{tBenefits('warranty.label')}</div>
                 </div>
               </div>

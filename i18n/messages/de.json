@@ -13,10 +13,19 @@
     "title": "MonoCool - Klimaanlagen ohne Außengerät | Österreich",
     "description": "MonoCool bietet innovative Klimaanlagen ohne Außengerät für Österreich. Effiziente Kühlung und Heizung ohne komplizierte Installation."
   },
+  "notFound": {
+    "heading": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "button": "Zurück zur Startseite"
+  },
   "nav": {
     "home": "Startseite",
     "products": "Produkte",
+    "productsAll": "Alle Produkte",
+    "categoryMonoblock": "Klimaanlagen ohne Außengerät",
+    "categoryFancoil": "Fan Coil Geräte",
     "benefits": "Vorteile",
+    "partners": "Für Partner",
     "contact": "Kontakt",
     "login": "Anmelden",
     "logout": "Abmelden",
@@ -91,7 +100,19 @@
     "noiseLevel": "Lautstärke",
     "dimensions": "Abmessungen",
     "weight": "Gewicht",
-    "notFound": "Produkt nicht gefunden"
+    "notFound": "Produkt nicht gefunden",
+    "categories": {
+      "klimageraete": "Klimaanlage",
+      "fancoil": "Fan Coil"
+    },
+    "sectionMonoblock": {
+      "title": "Klimaanlagen ohne Außengerät",
+      "description": "Monoblock-Technologie – kühlen und heizen ganz ohne Außeneinheit."
+    },
+    "sectionFancoil": {
+      "title": "Fan Coil Geräte",
+      "description": "Design-Ventilkonvektoren für effizientes Heizen und Kühlen."
+    }
   },
   "contact": {
     "title": "Kontakt",
