@@ -13,6 +13,11 @@
     "title": "MonoCool - Klimaanlagen ohne Außengerät | Österreich",
     "description": "MonoCool bietet innovative Klimaanlagen ohne Außengerät für Österreich. Effiziente Kühlung und Heizung ohne komplizierte Installation."
   },
+  "notFound": {
+    "heading": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "button": "Zurück zur Startseite"
+  },
   "nav": {
     "home": "Startseite",
     "products": "Produkte",

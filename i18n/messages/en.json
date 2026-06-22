@@ -13,6 +13,11 @@
     "title": "MonoCool - Air Conditioners Without Outdoor Unit | Europe",
     "description": "MonoCool offers innovative air conditioners without outdoor units for Europe. Efficient cooling and heating without complicated installation."
   },
+  "notFound": {
+    "heading": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "button": "Back to homepage"
+  },
   "nav": {
     "home": "Home",
     "products": "Products",

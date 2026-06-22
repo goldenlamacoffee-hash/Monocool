@@ -13,6 +13,11 @@
     "title": "MonoCool - Klimatizácie bez vonkajšej jednotky | Slovensko",
     "description": "MonoCool ponúka inovatívne klimatizácie bez vonkajšej jednotky pre Slovensko. Efektívne chladenie a kúrenie bez zložitej inštalácie."
   },
+  "notFound": {
+    "heading": "Stránka sa nenašla",
+    "description": "Hľadaná stránka neexistuje alebo bola presunutá.",
+    "button": "Späť na úvodnú stránku"
+  },
   "nav": {
     "home": "Domov",
     "products": "Produkty",
