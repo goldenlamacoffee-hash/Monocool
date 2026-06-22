@@ -87,7 +87,8 @@ export default async function AdminPage({ params }: Props) {
           {/* Header */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+              <p className="eyebrow">Admin</p>
+              <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
               <p className="mt-2 text-muted-foreground">
                 {t('welcome')}, {session.user.name}!
               </p>
@@ -97,7 +98,7 @@ export default async function AdminPage({ params }: Props) {
 
           {/* Stats Grid */}
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('stats.totalUsers')}
@@ -105,14 +106,14 @@ export default async function AdminPage({ params }: Props) {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                <div className="font-heading text-2xl font-semibold text-foreground">{stats.totalUsers}</div>
                 <p className="text-xs text-muted-foreground">
                   {stats.pendingUsers} {t('stats.pendingApproval').toLowerCase()}
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('stats.approvedUsers')}
@@ -120,14 +121,14 @@ export default async function AdminPage({ params }: Props) {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.approvedUsers}</div>
+                <div className="font-heading text-2xl font-semibold text-foreground">{stats.approvedUsers}</div>
                 <p className="text-xs text-muted-foreground">
                   {Math.round((stats.approvedUsers / Math.max(stats.totalUsers, 1)) * 100)}{t('stats.approved')}
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('stats.totalProducts')}
@@ -135,14 +136,14 @@ export default async function AdminPage({ params }: Props) {
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalProducts}</div>
+                <div className="font-heading text-2xl font-semibold text-foreground">{stats.totalProducts}</div>
                 <p className="text-xs text-muted-foreground">
                   {t('stats.activeProducts')}
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {t('stats.totalOrders')}
@@ -150,7 +151,7 @@ export default async function AdminPage({ params }: Props) {
                 <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalOrders}</div>
+                <div className="font-heading text-2xl font-semibold text-foreground">{stats.totalOrders}</div>
                 <p className="text-xs text-muted-foreground">
                   {t('stats.totalOrders')}
                 </p>
@@ -159,12 +160,12 @@ export default async function AdminPage({ params }: Props) {
           </div>
 
           {/* Quick Actions */}
-          <h2 className="mb-4 text-lg font-semibold text-foreground">{t('quickActions')}</h2>
+          <h2 className="mb-4 font-heading text-lg font-semibold text-foreground">{t('quickActions')}</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            <Card className="transition-all hover:shadow-lg hover:border-primary/50">
+            <Card className="rounded-2xl border-border transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
               <CardHeader>
-                <Users className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{t('users')}</CardTitle>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary"><Users className="h-6 w-6" aria-hidden="true" /></div>
+                <CardTitle className="mt-4 font-heading">{t('users')}</CardTitle>
                 <CardDescription>{t('usersDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -182,10 +183,10 @@ export default async function AdminPage({ params }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="transition-all hover:shadow-lg hover:border-primary/50">
+            <Card className="rounded-2xl border-border transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
               <CardHeader>
-                <Package className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{t('products')}</CardTitle>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary"><Package className="h-6 w-6" aria-hidden="true" /></div>
+                <CardTitle className="mt-4 font-heading">{t('products')}</CardTitle>
                 <CardDescription>{t('productsDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -195,10 +196,10 @@ export default async function AdminPage({ params }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="transition-all hover:shadow-lg hover:border-primary/50">
+            <Card className="rounded-2xl border-border transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
               <CardHeader>
-                <ShoppingCart className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{t('orders')}</CardTitle>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary"><ShoppingCart className="h-6 w-6" aria-hidden="true" /></div>
+                <CardTitle className="mt-4 font-heading">{t('orders')}</CardTitle>
                 <CardDescription>{t('ordersDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -208,10 +209,10 @@ export default async function AdminPage({ params }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="transition-all hover:shadow-lg hover:border-primary/50">
+            <Card className="rounded-2xl border-border transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
               <CardHeader>
-                <FileText className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{t('cms')}</CardTitle>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary"><FileText className="h-6 w-6" aria-hidden="true" /></div>
+                <CardTitle className="mt-4 font-heading">{t('cms')}</CardTitle>
                 <CardDescription>{t('cmsDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -221,10 +222,10 @@ export default async function AdminPage({ params }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="transition-all hover:shadow-lg hover:border-primary/50">
+            <Card className="rounded-2xl border-border transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
               <CardHeader>
-                <Phone className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{locale === 'sk' ? 'Kontakty' : locale === 'cs' ? 'Kontakty' : 'Kontakte'}</CardTitle>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary"><Phone className="h-6 w-6" aria-hidden="true" /></div>
+                <CardTitle className="mt-4 font-heading">{locale === 'sk' ? 'Kontakty' : locale === 'cs' ? 'Kontakty' : 'Kontakte'}</CardTitle>
                 <CardDescription>{locale === 'sk' ? 'Spravovať kontaktné údaje' : locale === 'cs' ? 'Spravovat kontaktní údaje' : 'Kontaktdaten verwalten'}</CardDescription>
               </CardHeader>
               <CardContent>

@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ButtonLink } from '@/components/button-link'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProductGalleryCarousel } from '@/components/product-gallery-carousel'
@@ -238,7 +237,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
             </TabsList>
             
             <TabsContent value="description" className="mt-8">
-              <Card className="border-none shadow-lg">
+              <Card className="rounded-2xl border border-border shadow-sm">
                 <CardContent className="p-8">
                   {product.description ? (
                     <div className="prose prose-slate dark:prose-invert max-w-none">
@@ -252,7 +251,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
             </TabsContent>
             
             <TabsContent value="specifications" className="mt-8">
-              <Card className="border-none shadow-lg">
+              <Card className="rounded-2xl border border-border shadow-sm">
                 <CardHeader>
                   <CardTitle>{tProducts('specifications')}</CardTitle>
                 </CardHeader>
@@ -262,11 +261,11 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                       {[...standardSpecs, ...specGridItems].map((spec) => (
                         <div 
                           key={spec.label} 
-                          className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-4"
+                          className="flex items-center justify-between rounded-xl border border-border bg-soft-ice p-4"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                              <spec.icon className="h-5 w-5 text-primary" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
+                              <spec.icon className="h-5 w-5 text-secondary" aria-hidden="true" />
                             </div>
                             <span className="text-muted-foreground">{spec.label}</span>
                           </div>
@@ -283,15 +282,15 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
             
             {product.features && product.features.length > 0 && (
               <TabsContent value="features" className="mt-8">
-                <Card className="border-none shadow-lg">
+                <Card className="rounded-2xl border border-border shadow-sm">
                   <CardHeader>
                     <CardTitle>{tProducts('features')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="grid gap-3 sm:grid-cols-2">
                       {product.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-3 rounded-lg bg-muted/30 p-4">
-                          <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                        <li key={index} className="flex items-start gap-3 rounded-xl bg-soft-ice p-4">
+                          <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                           <span className="text-foreground">{feature}</span>
                         </li>
                       ))}
@@ -303,7 +302,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
 
             {product.technicalData && (
               <TabsContent value="technical" className="mt-8">
-                <Card className="border-none shadow-lg">
+                <Card className="rounded-2xl border border-border shadow-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="h-5 w-5" />

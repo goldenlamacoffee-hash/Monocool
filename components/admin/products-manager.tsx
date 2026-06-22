@@ -37,9 +37,10 @@ import {
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
 import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
-import { Plus, Pencil, Trash2, ArrowLeft, ToggleLeft, ToggleRight, ImageIcon, SlidersHorizontal, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, ArrowLeft, ToggleLeft, ToggleRight, ImageIcon, SlidersHorizontal, Check, Package } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
+import { MarketBanner } from './market-banner'
 
 interface Product {
   id: number
@@ -250,7 +251,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
             <DialogTrigger asChild>
               <button 
                 onClick={openCreateDialog}
-                className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-mono-deep"
               >
                 <Plus className="h-4 w-4" />
                 {t('newProduct')}
@@ -533,7 +534,14 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="mb-4 text-3xl font-bold text-foreground">{t('title')}</h1>
+        <div className="mb-6">
+          <p className="eyebrow">Admin</p>
+          <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
+        </div>
+
+        <div className="mb-6">
+          <MarketBanner locale={locale} previewPath="produkte" />
+        </div>
         
         {/* Column visibility dropdown */}
         <div className="mb-4 flex justify-end">
@@ -563,7 +571,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
           </DropdownMenu>
         </div>
 
-        <Card>
+        <Card className="rounded-2xl border-border shadow-sm">
           <CardContent className="p-0">
             {products.length > 0 ? (
               <Table>
@@ -647,9 +655,12 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                 </TableBody>
               </Table>
             ) : (
-              <div className="p-8 text-center">
-                <p className="text-muted-foreground">{t('noProducts')}</p>
-                <Button className="mt-4" onClick={openCreateDialog}>
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-secondary">
+                  <Package className="h-7 w-7" aria-hidden="true" />
+                </div>
+                <p className="mt-4 font-heading text-lg font-semibold text-foreground">{t('noProducts')}</p>
+                <Button className="mt-5" onClick={openCreateDialog}>
                   <Plus className="mr-2 h-4 w-4" />
                   {t('firstProduct')}
                 </Button>

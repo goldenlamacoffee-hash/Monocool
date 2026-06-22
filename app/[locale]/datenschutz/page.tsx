@@ -27,51 +27,55 @@ export default async function DatenschutzPage({ params }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className="flex-1 py-12">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-balance break-words text-3xl font-bold text-foreground sm:text-4xl">{t('title')}</h1>
-          
-          <p className="mt-6 text-muted-foreground">{t('intro')}</p>
+      <main className="flex-1">
+        <div className="border-b border-border bg-soft-ice">
+          <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+            <p className="eyebrow">MonoCool</p>
+            <h1 className="mt-3 text-balance break-words font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t('title')}</h1>
+          </div>
+        </div>
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+          <p className="text-lg leading-relaxed text-muted-foreground">{t('intro')}</p>
 
-          <div className="mt-8 space-y-8">
-            <Card>
+          <div className="mt-8 space-y-6">
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('responsible')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('responsible')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('responsibleText')}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('dataCollection')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('dataCollection')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('dataCollectionText')}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('cookies')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('cookies')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('cookiesText')}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('rights')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('rights')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('rightsText')}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('contact')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('contact')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('contactText')}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-border shadow-sm">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-foreground">{t('updates')}</h2>
+                <h2 className="font-heading text-xl font-semibold text-foreground">{t('updates')}</h2>
                 <p className="mt-4 text-muted-foreground">{t('updatesText')}</p>
               </CardContent>
             </Card>

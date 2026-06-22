@@ -151,7 +151,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
 
   if (success) {
     return (
-      <Card className="mx-auto w-full max-w-lg">
+      <Card className="mx-auto w-full max-w-lg rounded-2xl border-border shadow-[0_24px_60px_-30px_rgba(5,25,65,0.35)]">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
           </p>
           <Link 
             href={`/${locale}`}
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-mono-deep"
           >
             {t('backToHome')}
           </Link>
@@ -179,9 +179,9 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
+    <Card className="mx-auto w-full max-w-lg rounded-2xl border-border shadow-[0_24px_60px_-30px_rgba(5,25,65,0.35)]">
       <CardHeader>
-        <CardTitle className="text-2xl">{t('registerTitle')}</CardTitle>
+        <CardTitle className="font-heading text-2xl">{t('registerTitle')}</CardTitle>
         <CardDescription>{t('registerSubtitle')}</CardDescription>
         {/* Progress indicator */}
         <div className="mt-4 flex gap-2">
@@ -205,8 +205,8 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
           {/* Step 1: Personal Information */}
           {step === 1 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-lg font-semibold">
-                <User className="h-5 w-5" />
+              <div className="flex items-center gap-2 font-heading text-lg font-semibold">
+                <User className="h-5 w-5 text-secondary" aria-hidden="true" />
                 {t('personalInfo')}
               </div>
               
@@ -273,8 +273,8 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
           {/* Step 2: Company Information */}
           {step === 2 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-lg font-semibold">
-                <Building2 className="h-5 w-5" />
+              <div className="flex items-center gap-2 font-heading text-lg font-semibold">
+                <Building2 className="h-5 w-5 text-secondary" aria-hidden="true" />
                 {t('companyInfo')}
               </div>
               
@@ -314,8 +314,8 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
           {/* Step 3: Address */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-lg font-semibold">
-                <MapPin className="h-5 w-5" />
+              <div className="flex items-center gap-2 font-heading text-lg font-semibold">
+                <MapPin className="h-5 w-5 text-secondary" aria-hidden="true" />
                 {t('addressInfo')}
               </div>
               
@@ -394,7 +394,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
 
           <div className="text-center text-sm text-muted-foreground">
             {t('haveAccount')}{' '}
-            <Link href={`/${locale}/anmelden`} className="text-primary hover:underline">
+            <Link href={`/${locale}/anmelden`} className="font-semibold text-secondary hover:underline">
               {t('login')}
             </Link>
           </div>

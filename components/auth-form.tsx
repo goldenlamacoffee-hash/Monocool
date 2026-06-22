@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { Lock } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 
 interface AuthFormProps {
@@ -58,9 +59,12 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md rounded-2xl border-border shadow-[0_24px_60px_-30px_rgba(5,25,65,0.35)]">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">
+        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-secondary">
+          <Lock className="h-6 w-6" aria-hidden="true" />
+        </div>
+        <CardTitle className="font-heading text-2xl">
           {mode === 'sign-in' ? t('loginTitle') : t('registerTitle')}
         </CardTitle>
         <CardDescription>
@@ -109,7 +113,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" size="lg" className="h-11 w-full text-base font-semibold" disabled={loading}>
             {loading
               ? tCommon('loading')
               : mode === 'sign-in'
@@ -121,14 +125,14 @@ export function AuthForm({ mode }: AuthFormProps) {
             {mode === 'sign-in' ? (
               <>
                 {t('noAccount')}{' '}
-                <Link href={`/${locale}/registrieren`} className="text-primary hover:underline">
+                <Link href={`/${locale}/registrieren`} className="font-semibold text-secondary hover:underline">
                   {t('registerLink')}
                 </Link>
               </>
             ) : (
               <>
                 {t('hasAccount')}{' '}
-                <Link href={`/${locale}/anmelden`} className="text-primary hover:underline">
+                <Link href={`/${locale}/anmelden`} className="font-semibold text-secondary hover:underline">
                   {t('loginLink')}
                 </Link>
               </>

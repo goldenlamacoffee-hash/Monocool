@@ -24,7 +24,7 @@ export default async function SignInPage({ params }: Props) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
+      <main className="flex flex-1 items-center justify-center bg-soft-ice px-4 py-16">
         <AuthForm mode="sign-in" />
       </main>
       <Footer />
