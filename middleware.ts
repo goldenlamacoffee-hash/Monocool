@@ -9,6 +9,12 @@ const intlMiddleware = createMiddleware({
   localePrefix: 'always'
 })
 
+// Master switch for the temporary public password gate. Set to `false` to lower
+// the gate on every domain at once (public site fully accessible); set back to
+// `true` to re-enable per-domain password protection. When disabled, the
+// per-domain password env vars are ignored entirely.
+const SITE_GATE_ENABLED = false
+
 // Routes that must stay reachable even when the public password gate is active:
 // the admin area + auth flow (protected separately by Better Auth) and the gate
 // page itself. Static assets, Next.js internals, and /api are already excluded
@@ -35,7 +41,7 @@ export default async function middleware(request: NextRequest) {
   // Per-domain password: each domain has its own password (with a shared
   // fallback). Cookies are domain-scoped so unlocking one domain never
   // unlocks another.
-  const sitePassword = getSitePassword(hostname)
+  const sitePassword = SITE_GATE_ENABLED ? getSitePassword(hostname) : undefined
   if (sitePassword && !GATE_EXCLUDED.test(pathname)) {
     const domainKey = resolveDomainKey(hostname)
     const cookie = request.cookies.get(SITE_GATE_COOKIE)?.value
