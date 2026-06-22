@@ -75,6 +75,7 @@
     "subtitle": "Najděte ideální klimatizaci pro váš prostor",
     "viewAll": "Zobrazit všechny produkty",
     "details": "Zobrazit detaily",
+    "priceLabel": "Cena",
     "priceOnLogin": "Cena po přihlášení",
     "loginToSeePrice": "Cena pouze pro registrované zákazníky",
     "loginPrompt": "Přihlaste se pro zobrazení ceny",
@@ -184,7 +185,7 @@
     "cmsDesc": "Upravovat obsah webu",
     "setup": {
       "title": "Admin Setup",
-      "description": "Vytvořte administrátorský účet pro MonoCool",
+      "description": "Vytvořte administrátorsk�� účet pro MonoCool",
       "setupSecret": "Setup heslo",
       "setupSecretPlaceholder": "Zadejte setup heslo",
       "setupSecretHint": "ADMIN_SETUP_SECRET z vašich environment proměnných",

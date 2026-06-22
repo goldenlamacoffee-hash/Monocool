@@ -95,18 +95,18 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
       <Header />
       
       <main className="flex-1">
-        {/* Hero Section with gradient background */}
-        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Hero Section with navy background */}
+        <div className="relative bg-soft-navy text-primary-foreground">
           {/* Grid pattern overlay */}
           <div 
-            className="pointer-events-none absolute inset-0 opacity-20"
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
           />
           
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <ButtonLink href={`/${locale}/fan-coil`} variant="ghost" size="sm" className="mb-6 text-white/80 hover:text-white hover:bg-white/10">
+            <ButtonLink href={`/${locale}/fan-coil`} variant="ghost" size="sm" className="mb-6 text-white/80 hover:bg-white/10 hover:text-white">
               <ArrowLeft className="mr-2 h-4 w-4" />
               {locale === 'sk' ? 'Späť na Fan Coil' : locale === 'cs' ? 'Zpět na Fan Coil' : locale === 'de' ? 'Zurück zu Fan Coil' : 'Back to Fan Coil'}
             </ButtonLink>
@@ -119,18 +119,18 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                   productName={product.name}
                 />
                 {product.category && (
-                  <Badge className="absolute left-4 top-4 z-10 bg-primary text-primary-foreground">
+                  <span className="absolute left-4 top-4 z-10 rounded-full bg-background/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-primary backdrop-blur">
                     {product.category}
-                  </Badge>
+                  </span>
                 )}
               </div>
 
               {/* Product Info */}
               <div className="flex min-w-0 flex-col justify-center">
-                <h1 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{product.name}</h1>
+                <h1 className="font-heading text-3xl font-semibold tracking-tight text-white text-balance sm:text-4xl lg:text-5xl">{product.name}</h1>
                 
                 {product.shortDescription && (
-                  <p className="mt-4 text-lg text-slate-300">{product.shortDescription}</p>
+                  <p className="mt-4 text-lg leading-relaxed text-white/70">{product.shortDescription}</p>
                 )}
 
                 {/* Specs Grid */}
@@ -139,10 +139,10 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                     {specGridItems.map((spec) => (
                       <div 
                         key={spec.label} 
-                        className="rounded-xl border border-slate-700 bg-slate-800/50 p-4"
+                        className="rounded-xl border border-white/10 bg-white/5 p-4"
                       >
-                        <div className="flex items-center gap-2 text-slate-400">
-                          <spec.icon className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-white/60">
+                          <spec.icon className="h-4 w-4 text-secondary" aria-hidden="true" />
                           <span className="text-sm">{spec.label}</span>
                         </div>
                         <div className="mt-1 text-lg font-semibold text-white">{spec.value}</div>
@@ -152,11 +152,11 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                 )}
 
                 {/* Price Box */}
-                <div className="mt-8 rounded-xl border border-slate-700 bg-slate-800/50 p-6">
+                <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6">
                   {session?.user ? (
                     <div>
-                      <div className="text-sm text-slate-400">{tProducts('priceOnLogin')}</div>
-                      <div className="mt-1 text-3xl font-bold text-primary">
+                      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-white/60">{tProducts('priceLabel')}</div>
+                      <div className="mt-1 font-heading text-3xl font-semibold text-white">
                         {product.price 
                           ? `${Number(product.price).toLocaleString(locale)} EUR` 
                           : tProducts('priceOnLogin')}
@@ -164,11 +164,13 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <Lock className="h-5 w-5 text-slate-400" />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-secondary">
+                        <Lock className="h-5 w-5" aria-hidden="true" />
+                      </span>
                       <div>
                         <div className="font-medium text-white">{tProducts('loginToSeePrice')}</div>
-                        <div className="text-sm text-slate-400">
-                          <Link href={`/${locale}/anmelden`} className="text-primary hover:underline">
+                        <div className="text-sm text-white/60">
+                          <Link href={`/${locale}/anmelden`} className="font-medium text-secondary hover:underline">
                             {tProducts('loginPrompt')}
                           </Link>
                         </div>
@@ -178,11 +180,11 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="mt-6 flex flex-wrap gap-4">
+                <div className="mt-6 flex flex-wrap gap-3">
                   {siteSettings.email?.trim() && (
                     <a 
                       href={`mailto:${siteSettings.email.trim()}?subject=${locale === 'sk' ? 'Dopyt' : locale === 'cs' ? 'Poptávka' : locale === 'de' ? 'Anfrage' : 'Inquiry'}: ${product.name}`}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-secondary px-6 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/90"
                     >
                       {tProducts('requestQuote')}
                     </a>
@@ -190,7 +192,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                   {siteSettings.phone && (
                     <a 
                       href={`tel:${siteSettings.phone.replace(/[^+\d]/g, '')}`}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-6 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
                     >
                       {tProducts('callNow')}
                     </a>
