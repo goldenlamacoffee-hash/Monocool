@@ -40,7 +40,6 @@ import { getProductImages } from '@/app/actions/gallery'
 import { Plus, Pencil, Trash2, ArrowLeft, ToggleLeft, ToggleRight, ImageIcon, SlidersHorizontal, Check, Package } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
-import { MarketBanner } from './market-banner'
 
 interface Product {
   id: number
@@ -539,10 +538,6 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
           <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
         </div>
 
-        <div className="mb-6">
-          <MarketBanner locale={locale} previewPath="produkte" />
-        </div>
-        
         {/* Column visibility dropdown */}
         <div className="mb-4 flex justify-end">
           <DropdownMenu>
