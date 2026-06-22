@@ -21,7 +21,6 @@ import { upsertCmsContent } from '@/app/actions/products'
 import { getDomainFromLocale, getMarketName } from '@/lib/domain-utils'
 import { ArrowLeft, Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
-import { MarketBanner } from './market-banner'
 
 interface CmsContentItem {
   id: number
@@ -330,13 +329,9 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <p className="eyebrow">Admin</p>
         <h1 className="mb-2 mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
-        <p className="mb-6 text-muted-foreground">
+        <p className="mb-8 text-muted-foreground">
           {t('description')}
         </p>
-
-        <div className="mb-8">
-          <MarketBanner locale={locale} />
-        </div>
 
         <Tabs defaultValue="homepage" className="space-y-6">
           <TabsList>
