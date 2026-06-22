@@ -53,10 +53,11 @@ export function FanCoilFeatures({ cmsContent }: FanCoilFeaturesProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <p className="eyebrow">Fan Coil</p>
+          <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground text-balance sm:text-4xl">
             {sectionTitle}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             {sectionSubtitle}
           </p>
         </motion.div>
@@ -76,17 +77,17 @@ export function FanCoilFeatures({ cmsContent }: FanCoilFeaturesProps) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow bg-card">
+                <Card className="h-full rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_40px_-18px_rgba(5,25,65,0.3)]">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-accent">
+                        <Icon className="h-6 w-6 text-secondary" aria-hidden="true" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-foreground mb-2">
+                        <h3 className="mb-2 font-heading font-semibold text-foreground">
                           {featureTitle}
                         </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-sm leading-relaxed text-muted-foreground">
                           {featureDescription}
                         </p>
                       </div>

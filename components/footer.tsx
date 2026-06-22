@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
@@ -32,38 +31,45 @@ export function Footer({ contactInfo }: FooterProps) {
   const hasContact = Boolean(email || phone || location)
 
   return (
-    <footer className="border-t border-border bg-muted/30">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-4">
-          {/* Logo & Description */}
+    <footer className="bg-soft-navy text-primary-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 md:grid-cols-4">
+          {/* Wordmark & Description (text wordmark used on dark per brand manual) */}
           <div className="md:col-span-2">
-            <Image src="/logo.png" alt="MonoCool Logo" width={140} height={42} className="h-10 w-auto" />
-            <p className="mt-4 max-w-md text-sm text-muted-foreground">
+            <span className="font-heading text-2xl font-semibold tracking-tight text-primary-foreground">
+              Mono<span className="text-[color:var(--mono-steel)]">Cool</span>
+            </span>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-primary-foreground/70">
               {t('description')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('quickLinks')}</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--mono-steel)]">{t('quickLinks')}</h3>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href={`/${locale}/produkte`} className="text-muted-foreground hover:text-primary">
+                <Link href={`/${locale}/produkte`} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
                   {tNav('products')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}#vorteile`} className="text-muted-foreground hover:text-primary">
+                <Link href={`/${locale}/fan-coil`} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
+                  Fan Coil
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}#vorteile`} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
                   {tNav('benefits')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/impressum`} className="text-muted-foreground hover:text-primary">
+                <Link href={`/${locale}/impressum`} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
                   {t('imprint')}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/datenschutz`} className="text-muted-foreground hover:text-primary">
+                <Link href={`/${locale}/datenschutz`} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
                   {t('privacy')}
                 </Link>
               </li>
@@ -72,39 +78,39 @@ export function Footer({ contactInfo }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('contact')}</h3>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--mono-steel)]">{t('contact')}</h3>
             {hasContact ? (
-              <ul className="space-y-3 text-sm text-muted-foreground">
+              <ul className="space-y-3 text-sm text-primary-foreground/70">
                 {email && (
-                  <li className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    <a href={`mailto:${email}`} className="hover:text-primary">
+                  <li className="flex items-center gap-2.5">
+                    <Mail className="h-4 w-4 shrink-0 text-[color:var(--mono-steel)]" />
+                    <a href={`mailto:${email}`} className="break-all transition-colors hover:text-primary-foreground">
                       {email}
                     </a>
                   </li>
                 )}
                 {phone && (
-                  <li className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary">
+                  <li className="flex items-center gap-2.5">
+                    <Phone className="h-4 w-4 shrink-0 text-[color:var(--mono-steel)]" />
+                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="transition-colors hover:text-primary-foreground">
                       {phone}
                     </a>
                   </li>
                 )}
                 {location && (
-                  <li className="flex items-start gap-2">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                  <li className="flex items-start gap-2.5">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--mono-steel)]" />
                     <span>{location}</span>
                   </li>
                 )}
               </ul>
             ) : (
-              <p className="text-sm text-muted-foreground">{t('location')}</p>
+              <p className="text-sm text-primary-foreground/70">{t('location')}</p>
             )}
           </div>
         </div>
 
-        <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
+        <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm text-primary-foreground/60">
           <p>&copy; {new Date().getFullYear()} MonoCool. {t('rights')}</p>
         </div>
       </div>

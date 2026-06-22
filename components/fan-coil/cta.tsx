@@ -34,36 +34,36 @@ export function FanCoilCTA({ cmsContent, contactInfo }: FanCoilCTAProps) {
   const catalogText = cmsContent?.metadata?.catalogText || t('catalog')
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <section className="bg-soft-navy py-20 text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto text-center"
+          className="mx-auto max-w-3xl text-center"
         >
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
+          <h2 className="mb-6 font-heading text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
             {title}
           </h2>
-          <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+          <p className="mb-10 text-lg leading-relaxed text-white/70">
             {description}
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
             {contactInfo?.phone?.trim() && (
               <a 
                 href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} 
-                className="inline-flex h-9 gap-1.5 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-6 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/90"
               >
-                <Phone className="h-5 w-5" />
+                <Phone className="h-5 w-5" aria-hidden="true" />
                 {contactText}
               </a>
             )}
-            <Link href={`/${locale}/produkte`} className="inline-flex h-9 gap-1.5 items-center justify-center rounded-lg border border-slate-600 bg-slate-800/50 px-4 text-sm font-medium text-white transition-colors hover:bg-slate-700">
-              <FileText className="h-5 w-5" />
+            <Link href={`/${locale}/produkte`} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10">
+              <FileText className="h-5 w-5" aria-hidden="true" />
               {catalogText}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
         </motion.div>

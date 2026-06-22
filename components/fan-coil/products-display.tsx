@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ChevronRight, Thermometer, Wind, Volume2, Ruler, X, ChevronLeft, ChevronRight as ChevronRightIcon, ZoomIn, ArrowRight } from 'lucide-react'
@@ -46,6 +45,9 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
   const t = useTranslations('fanCoil.products')
   const params = useParams()
   const locale = params.locale as string
+  const imagesLabel = locale === 'sk' ? 'obrázkov' : locale === 'cs' ? 'obrázků' : locale === 'de' ? 'Bilder' : 'images'
+  const detailsLabel = locale === 'sk' ? 'Zobraziť detaily' : locale === 'cs' ? 'Zobrazit detaily' : locale === 'de' ? 'Details anzeigen' : 'View details'
+  const galleryAriaLabel = locale === 'sk' ? 'Otvoriť galériu pre' : locale === 'cs' ? 'Otevřít galerii pro' : locale === 'de' ? 'Galerie öffnen für' : 'Open gallery for'
   const [activeProduct, setActiveProduct] = useState(products[0]?.slug || '')
   const [productImages, setProductImages] = useState<Record<number, ProductImage[]>>({})
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -144,21 +146,22 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <p className="eyebrow">Fan Coil</p>
+            <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground text-balance sm:text-4xl">
               {t('title')}
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
               {t('subtitle')}
             </p>
           </motion.div>
 
           <Tabs value={activeProduct} onValueChange={setActiveProduct} className="w-full">
-            <TabsList className="flex flex-wrap justify-center gap-2 bg-transparent h-auto mb-8">
+            <TabsList className="mb-8 flex h-auto flex-wrap justify-center gap-2 bg-transparent">
               {products.map((product) => (
                 <TabsTrigger
                   key={product.slug}
                   value={product.slug}
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-3 rounded-full text-base font-medium border border-border data-[state=active]:border-primary"
+                  className="rounded-full border border-border px-6 py-2.5 text-base font-medium data-[state=active]:border-secondary data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   {product.name}
                 </TabsTrigger>
@@ -180,13 +183,13 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <Card className="overflow-hidden border shadow-xl rounded-2xl">
+                      <Card className="overflow-hidden rounded-2xl border border-border shadow-[0_24px_60px_-30px_rgba(5,25,65,0.4)]">
                         <CardContent className="p-0">
-                          <div className="grid lg:grid-cols-2 gap-0">
+                          <div className="grid gap-0 lg:grid-cols-2">
                             {/* Image Section - Full height, larger image */}
                             <div 
                               className={cn(
-                                "relative bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center min-h-[500px] lg:min-h-[600px]",
+                                "relative flex min-h-[500px] items-center justify-center bg-soft-ice lg:min-h-[600px]",
                                 hasImages && "cursor-pointer group"
                               )}
                             >
@@ -196,7 +199,7 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                   type="button"
                                   className="absolute inset-0 z-20 w-full h-full bg-transparent"
                                   onClick={() => openLightbox(product)}
-                                  aria-label={`Otevřít galerii pro ${product.name}`}
+                                  aria-label={`${galleryAriaLabel} ${product.name}`}
                                 />
                               )}
                               <div className="relative w-full h-full pointer-events-none">
@@ -221,30 +224,30 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                 )}
                               </div>
                               {product.category && (
-                                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground z-10 pointer-events-none">
+                                <span className="pointer-events-none absolute left-4 top-4 z-10 rounded-full bg-background/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-primary backdrop-blur">
                                   {product.category}
-                                </Badge>
+                                </span>
                               )}
                               {/* Gallery indicator */}
                               {galleryImages.length > 0 && (
-                                <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm font-medium z-10 pointer-events-none">
-                                  {galleryImages.length} obrázkov
+                                <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-full bg-primary/80 px-3 py-1.5 text-sm font-medium text-primary-foreground backdrop-blur">
+                                  {galleryImages.length} {imagesLabel}
                                 </div>
                               )}
                             </div>
 
                           {/* Content Section */}
-                          <div className="p-8 lg:p-12 flex flex-col justify-center bg-background">
-                            <h3 className="text-3xl font-bold text-foreground mb-2">
+                          <div className="flex flex-col justify-center bg-background p-8 lg:p-12">
+                            <h3 className="mb-2 font-heading text-3xl font-semibold tracking-tight text-foreground">
                               {product.name}
                             </h3>
                             {product.shortDescription && (
-                              <p className="text-lg text-primary font-medium mb-4">
+                              <p className="mb-4 text-lg font-medium text-secondary">
                                 {product.shortDescription}
                               </p>
                             )}
                             {product.description && (
-                              <p className="text-muted-foreground mb-8 leading-relaxed">
+                              <p className="mb-8 leading-relaxed text-muted-foreground">
                                 {product.description}
                               </p>
                             )}
@@ -253,8 +256,8 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                             {Object.keys(specs).length > 0 && (
                               <div className="grid grid-cols-2 gap-4 mb-8">
                                 {specs.power && (
-                                  <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-border">
-                                    <Thermometer className="h-5 w-5 text-primary flex-shrink-0" />
+                                  <div className="flex items-center gap-3 rounded-xl border border-border bg-soft-ice p-4">
+                                    <Thermometer className="h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                                     <div>
                                       <p className="text-xs text-muted-foreground">{t('specs.power')}</p>
                                       <p className="font-semibold text-foreground">{specs.power}</p>
@@ -262,8 +265,8 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                   </div>
                                 )}
                                 {specs.airflow && (
-                                  <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-border">
-                                    <Wind className="h-5 w-5 text-primary flex-shrink-0" />
+                                  <div className="flex items-center gap-3 rounded-xl border border-border bg-soft-ice p-4">
+                                    <Wind className="h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                                     <div>
                                       <p className="text-xs text-muted-foreground">{t('specs.airflow')}</p>
                                       <p className="font-semibold text-foreground">{specs.airflow}</p>
@@ -271,8 +274,8 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                   </div>
                                 )}
                                 {specs.noise && (
-                                  <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-border">
-                                    <Volume2 className="h-5 w-5 text-primary flex-shrink-0" />
+                                  <div className="flex items-center gap-3 rounded-xl border border-border bg-soft-ice p-4">
+                                    <Volume2 className="h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                                     <div>
                                       <p className="text-xs text-muted-foreground">{t('specs.noise')}</p>
                                       <p className="font-semibold text-foreground">{specs.noise}</p>
@@ -280,8 +283,8 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                   </div>
                                 )}
                                 {specs.dimensions && (
-                                  <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-border">
-                                    <Ruler className="h-5 w-5 text-primary flex-shrink-0" />
+                                  <div className="flex items-center gap-3 rounded-xl border border-border bg-soft-ice p-4">
+                                    <Ruler className="h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                                     <div>
                                       <p className="text-xs text-muted-foreground">{t('specs.dimensions')}</p>
                                       <p className="font-semibold text-foreground">{specs.dimensions}</p>
@@ -296,7 +299,7 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                               <div className="space-y-3 mb-8">
                                 {features.map((feature, i) => (
                                   <div key={i} className="flex items-center gap-3 text-muted-foreground">
-                                    <ChevronRight className="h-5 w-5 text-primary flex-shrink-0" />
+                                    <ChevronRight className="h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                                     <span>{feature}</span>
                                   </div>
                                 ))}
@@ -306,10 +309,10 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                             {/* View Details Button */}
                             <Link 
                               href={`/${locale}/fan-coil/${product.slug}`}
-                              className="inline-flex items-center gap-2 text-primary font-medium hover:underline group"
+                              className="group inline-flex items-center gap-2 font-semibold text-secondary transition-all hover:gap-3"
                             >
-                              {locale === 'sk' ? 'Zobraziť detaily' : locale === 'cs' ? 'Zobrazit detaily' : locale === 'de' ? 'Details anzeigen' : 'View details'}
-                              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                              {detailsLabel}
+                              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                             </Link>
                           </div>
                         </div>

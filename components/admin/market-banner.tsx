@@ -21,13 +21,13 @@ export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketB
   const previewUrl = getPreviewUrl(domain, previewPath)
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-4 py-3">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-soft-ice px-4 py-3">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <Globe className="h-5 w-5" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-secondary">
+          <Globe className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-secondary">
             Aktiver Markt / Active market
           </span>
           <span className="text-sm font-semibold text-foreground">
@@ -39,7 +39,7 @@ export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketB
         href={previewUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
       >
         <ExternalLink className="h-4 w-4" />
         {previewLabel ?? 'Öffentliche Seite ansehen / View public page'}

@@ -61,20 +61,31 @@ export function Header() {
     }
   }
 
+  const isActive = (href: string) => {
+    const base = href.split('#')[0]
+    if (base === `/${locale}`) return pathname === `/${locale}`
+    return pathname === base || pathname.startsWith(`${base}/`)
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href={`/${locale}`} className="flex items-center gap-2">
-          <Image src="/logo.png" alt="MonoCool Logo" width={160} height={48} className="h-10 w-auto" priority />
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link href={`/${locale}`} className="flex shrink-0 items-center gap-2" aria-label="MonoCool home">
+          <Image src="/logo.png" alt="MonoCool Logo" width={160} height={48} className="h-9 w-auto" priority />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                isActive(item.href)
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:bg-accent hover:text-primary'
+              }`}
             >
               {item.name}
             </Link>
@@ -151,19 +162,27 @@ export function Header() {
               <span className="sr-only">Menu</span>
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <nav className="mt-8 flex flex-col gap-4">
+              <div className="flex items-center gap-2 border-b border-border pb-4">
+                <Image src="/logo.png" alt="MonoCool Logo" width={140} height={42} className="h-8 w-auto" />
+              </div>
+              <nav className="mt-6 flex flex-col gap-1">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="text-lg font-medium text-foreground transition-colors hover:text-primary"
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    className={`rounded-lg px-3 py-2.5 text-base font-medium transition-colors ${
+                      isActive(item.href)
+                        ? 'bg-accent text-primary'
+                        : 'text-foreground hover:bg-accent hover:text-primary'
+                    }`}
                   >
                     {item.name}
                   </Link>
                 ))}
-                <div className="mt-4 border-t pt-4">
-                  <p className="mb-2 text-sm font-medium text-muted-foreground">{t('language')}</p>
+                <div className="mt-4 border-t border-border pt-4">
+                  <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('language')}</p>
                   {locales.map((loc) => (
                     <button
                       key={loc}
@@ -171,8 +190,8 @@ export function Header() {
                         switchLocale(loc)
                         setOpen(false)
                       }}
-                      className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm ${
-                        loc === locale ? 'bg-accent' : 'hover:bg-accent/50'
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium ${
+                        loc === locale ? 'bg-accent text-primary' : 'text-foreground hover:bg-accent/50'
                       }`}
                     >
                       <Flag locale={loc} className="w-5 h-4" />

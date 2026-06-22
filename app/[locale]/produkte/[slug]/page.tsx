@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ButtonLink } from '@/components/button-link'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProductGalleryCarousel } from '@/components/product-gallery-carousel'
@@ -96,26 +95,26 @@ export default async function ProductDetailPage({ params }: Props) {
                 productName={product.name}
               />
               {product.category && (
-                <Badge className="absolute left-4 top-4 z-10 bg-primary text-primary-foreground">
+                <span className="absolute left-4 top-4 z-10 rounded-full bg-background/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-primary backdrop-blur">
                   {product.category}
-                </Badge>
+                </span>
               )}
             </div>
 
             {/* Product Info */}
             <div className="min-w-0">
-              <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+              <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{product.name}</h1>
               
               {product.shortDescription && (
-                <p className="mt-4 text-lg text-muted-foreground">{product.shortDescription}</p>
+                <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{product.shortDescription}</p>
               )}
 
               {/* Price */}
-              <div className="mt-6 rounded-lg border border-border bg-muted/50 p-4">
+              <div className="mt-6 rounded-2xl border border-border bg-soft-ice p-5">
                 {session?.user ? (
                   <div>
-                    <div className="text-sm text-muted-foreground">{t('priceOnLogin')}</div>
-                    <div className="mt-1 text-3xl font-bold text-primary">
+                    <div className="eyebrow">{t('priceLabel')}</div>
+                    <div className="mt-1 font-heading text-3xl font-semibold text-primary">
                       {product.price 
                         ? `${Number(product.price).toLocaleString(locale)} EUR` 
                         : t('priceOnLogin')}
@@ -123,11 +122,13 @@ export default async function ProductDetailPage({ params }: Props) {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <Lock className="h-5 w-5 text-muted-foreground" />
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background text-secondary">
+                      <Lock className="h-5 w-5" aria-hidden="true" />
+                    </span>
                     <div>
                       <div className="font-medium text-foreground">{t('loginToSeePrice')}</div>
                       <div className="text-sm text-muted-foreground">
-                        <Link href={`/${locale}/anmelden`} className="text-primary hover:underline">
+                        <Link href={`/${locale}/anmelden`} className="font-medium text-secondary hover:underline">
                           {t('loginPrompt')}
                         </Link>
                       </div>
@@ -138,23 +139,23 @@ export default async function ProductDetailPage({ params }: Props) {
 
               {/* Quick Specs */}
               {specs.length > 0 && (
-                <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {specs.slice(0, 4).map((spec) => (
-                    <div key={spec.label} className="flex items-center gap-2 text-sm">
-                      <spec.icon className="h-4 w-4 text-primary" />
+                    <div key={spec.label} className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-2.5 text-sm">
+                      <spec.icon className="h-4 w-4 shrink-0 text-secondary" aria-hidden="true" />
                       <span className="text-muted-foreground">{spec.label}:</span>
-                      <span className="font-medium text-foreground">{spec.value}</span>
+                      <span className="ml-auto font-medium text-foreground">{spec.value}</span>
                     </div>
                   ))}
                 </div>
               )}
 
               {/* CTA Buttons */}
-              <div className="mt-8 flex flex-wrap gap-4">
+              <div className="mt-8 flex flex-wrap gap-3">
                 {siteSettings.email?.trim() && (
                   <a 
                     href={`mailto:${siteSettings.email.trim()}?subject=Anfrage: ${product.name}`}
-                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-mono-deep"
                   >
                     {t('requestQuote')}
                   </a>
@@ -162,7 +163,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 {siteSettings.phone && (
                   <a 
                     href={`tel:${siteSettings.phone.replace(/[^+\d]/g, '')}`}
-                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
+                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-background px-6 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
                   >
                     {t('callNow')}
                   </a>
@@ -172,9 +173,10 @@ export default async function ProductDetailPage({ params }: Props) {
           </div>
 
           {/* Tabs Section */}
-          <div className="mt-12">
+          <div className="mt-14">
             <Tabs defaultValue="beschreibung" className="w-full">
               <TabsList className="w-full max-w-full justify-start overflow-x-auto">
+                {/* horizontally scrollable on narrow screens */}
                 <TabsTrigger value="beschreibung">{t('description')}</TabsTrigger>
                 <TabsTrigger value="spezifikationen">{t('specifications')}</TabsTrigger>
                 {product.features && product.features.length > 0 && (
@@ -205,10 +207,10 @@ export default async function ProductDetailPage({ params }: Props) {
                         {specs.map((spec) => (
                           <div 
                             key={spec.label} 
-                            className="flex items-center justify-between rounded-lg border border-border p-3"
+                            className="flex items-center justify-between rounded-xl border border-border bg-soft-ice p-3.5"
                           >
                             <div className="flex items-center gap-2">
-                              <spec.icon className="h-4 w-4 text-primary" />
+                              <spec.icon className="h-4 w-4 text-secondary" aria-hidden="true" />
                               <span className="text-muted-foreground">{spec.label}</span>
                             </div>
                             <span className="font-medium text-foreground">{spec.value}</span>
@@ -229,10 +231,10 @@ export default async function ProductDetailPage({ params }: Props) {
                       <CardTitle>{t('features')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <ul className="grid gap-2 sm:grid-cols-2">
+                      <ul className="grid gap-3 sm:grid-cols-2">
                         {product.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                          <li key={index} className="flex items-start gap-2.5">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-secondary" aria-hidden="true" />
                             <span className="text-foreground">{feature}</span>
                           </li>
                         ))}

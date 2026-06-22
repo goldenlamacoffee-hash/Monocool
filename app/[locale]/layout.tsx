@@ -1,13 +1,24 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { Inter } from 'next/font/google'
+import { Sora, Manrope } from 'next/font/google'
 import { locales, type Locale } from '@/i18n/config'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, getMarketBaseUrl } from '@/lib/domain-utils'
 import '../globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+})
+
+const sora = Sora({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sora',
+  display: 'swap',
+})
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
@@ -56,8 +67,8 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className="bg-background">
-      <body className={`${inter.className} antialiased`}>
+    <html lang={locale} className={`bg-background ${manrope.variable} ${sora.variable}`}>
+      <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

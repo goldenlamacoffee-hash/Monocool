@@ -130,8 +130,9 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{translations.title}</h1>
-          <p className="text-muted-foreground mt-1">{translations.description}</p>
+          <p className="eyebrow">Admin</p>
+          <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{translations.title}</h1>
+          <p className="mt-1 text-muted-foreground">{translations.description}</p>
         </div>
       </div>
 
