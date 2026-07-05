@@ -196,7 +196,8 @@
       "passwordLength": "Password must be at least 8 characters",
       "passwordMismatch": "Passwords do not match",
       "companyRequired": "Please enter your company name",
-      "registrationFailed": "Registration failed. Please try again."
+      "registrationFailed": "Registration failed. Please try again.",
+      "phoneRequired": "Phone number is required."
     },
     "error": "Login failed. Please check your credentials.",
     "wrongMarketSession": "This account belongs to another market. Please sign in on the correct domain.",

@@ -196,7 +196,8 @@
       "passwordLength": "Heslo musí mať aspoň 8 znakov",
       "passwordMismatch": "Heslá sa nezhodujú",
       "companyRequired": "Zadajte prosím názov firmy",
-      "registrationFailed": "Registrácia zlyhala. Skúste to prosím znova."
+      "registrationFailed": "Registrácia zlyhala. Skúste to prosím znova.",
+      "phoneRequired": "Telefónne číslo je povinné."
     },
     "error": "Prihlásenie zlyhalo. Skontrolujte prosím svoje údaje.",
     "wrongMarketSession": "Tento účet patrí k inému trhu. Pre pokračovanie sa prihláste na správnej doméne.",
