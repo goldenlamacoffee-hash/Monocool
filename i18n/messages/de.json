@@ -307,7 +307,9 @@
       "usersCount": "Benutzer",
       "market": "Markt",
       "allMarkets": "Alle Märkte",
-      "globalMarket": "Global"
+      "globalMarket": "Global",
+      "marketRequired": "Für Nicht-Admin-Konten ist ein Markt erforderlich.",
+      "marketHint": "Bestimmt, auf welchem Markt Partnerpreise sichtbar sind. Unabhängig vom Land (Rechnungsadresse)."
     },
     "productManagement": {
       "title": "Produktverwaltung",

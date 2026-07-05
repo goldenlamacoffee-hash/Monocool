@@ -307,7 +307,9 @@
       "usersCount": "používateľov",
       "market": "Trh",
       "allMarkets": "Všetky trhy",
-      "globalMarket": "Globálny"
+      "globalMarket": "Globálny",
+      "marketRequired": "Pre účty, ktoré nie sú administrátormi, je trh povinný.",
+      "marketHint": "Určuje, na ktorom trhu sú viditeľné partnerské ceny. Nezávislé od krajiny (fakturačná adresa)."
     },
     "productManagement": {
       "title": "Správa produktov",

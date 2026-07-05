@@ -307,7 +307,9 @@
       "usersCount": "users",
       "market": "Market",
       "allMarkets": "All markets",
-      "globalMarket": "Global"
+      "globalMarket": "Global",
+      "marketRequired": "A market is required for non-admin accounts.",
+      "marketHint": "Determines on which market partner prices are visible. Independent of Country (billing address)."
     },
     "productManagement": {
       "title": "Product Management",

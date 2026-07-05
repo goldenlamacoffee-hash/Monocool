@@ -8,6 +8,7 @@ import { eq, desc, count, and, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { assertAdmin } from '@/lib/auth-utils'
 import { MIN_DISCOUNT, MAX_DISCOUNT } from '@/lib/pricing'
+import { isValidMarket } from '@/lib/domain-utils'
 
 // Get all users (admin only)
 export async function getUsers(status?: string) {
@@ -76,15 +77,57 @@ export async function updateUser(id: string, data: {
   country?: string
   phone?: string
   notes?: string
+  // Market is optional in the payload; when present it is validated below and
+  // saved. `null` means "global" and is only allowed for admin accounts.
+  market?: string | null
 }) {
   await assertAdmin()
-  
+
+  // Separate `market` from the free-form fields so we can validate it against
+  // the allowed market list and the target user's role. Market is NOT derived
+  // from `country` — it is an explicit, admin-controlled value.
+  const { market, ...rest } = data
+  const updates: Record<string, unknown> = { ...rest, updatedAt: new Date() }
+
+  if (market !== undefined) {
+    // Determine the target user's role (source of truth = DB), since only
+    // admins may be saved with a null/global market.
+    const [target] = await db
+      .select({ role: user.role })
+      .from(user)
+      .where(eq(user.id, id))
+      .limit(1)
+    if (!target) {
+      throw new Error('User not found')
+    }
+    const isAdmin = target.role === 'admin'
+
+    if (market === null || market === '') {
+      if (!isAdmin) {
+        throw new Error('Market is required for non-admin users')
+      }
+      updates.market = null
+    } else {
+      if (!isValidMarket(market)) {
+        throw new Error('Invalid market')
+      }
+      updates.market = market
+    }
+  }
+
   await db
     .update(user)
-    .set({ ...data, updatedAt: new Date() })
+    .set(updates)
     .where(eq(user.id, id))
-  
+
   revalidatePath('/admin/benutzer')
+  // Market changes affect partner-price visibility, so refresh public surfaces.
+  const locales = ['de', 'en', 'cs', 'sk']
+  locales.forEach((locale) => {
+    revalidatePath(`/${locale}`)
+    revalidatePath(`/${locale}/produkte`)
+    revalidatePath(`/${locale}/fan-coil`)
+  })
   return { success: true }
 }
 
