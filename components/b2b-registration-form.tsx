@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, Building2, User, Mail, Phone, MapPin } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 
@@ -17,16 +16,15 @@ interface B2BRegistrationFormProps {
   locale: Locale
 }
 
-const countries = [
-  { code: 'AT', name: 'Österreich' },
-  { code: 'CZ', name: 'Česká republika' },
-  { code: 'SK', name: 'Slovensko' },
-  { code: 'DE', name: 'Deutschland' },
-  { code: 'HU', name: 'Magyarország' },
-  { code: 'PL', name: 'Polska' },
-  { code: 'SI', name: 'Slovenija' },
-  { code: 'IT', name: 'Italia' },
-]
+// The country selector was removed from the address step — the market/domain
+// already determines the country — so we derive a sensible default country code
+// from the active locale and still persist it via the profile API.
+const LOCALE_COUNTRY: Record<string, string> = {
+  sk: 'SK',
+  cs: 'CZ',
+  de: 'AT',
+  en: 'AT',
+}
 
 export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -52,7 +50,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     address: '',
     city: '',
     postalCode: '',
-    country: 'AT',
+    country: LOCALE_COUNTRY[locale] ?? 'AT',
   })
 
   const updateField = (field: string, value: string) => {
@@ -361,22 +359,6 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
                     placeholder={t('cityPlaceholder')}
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="country">{t('country')}</Label>
-                <Select value={formData.country} onValueChange={(v) => updateField('country', v ?? '')}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('selectCountry')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           )}
