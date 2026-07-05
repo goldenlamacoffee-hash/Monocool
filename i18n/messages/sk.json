@@ -198,7 +198,9 @@
       "companyRequired": "Zadajte prosím názov firmy",
       "registrationFailed": "Registrácia zlyhala. Skúste to prosím znova."
     },
-    "error": "Prihlásenie zlyhalo. Skontrolujte prosím svoje údaje."
+    "error": "Prihlásenie zlyhalo. Skontrolujte prosím svoje údaje.",
+    "wrongMarketSession": "Tento účet patrí k inému trhu. Pre pokračovanie sa prihláste na správnej doméne.",
+    "dismiss": "Zavrieť"
   },
   "admin": {
     "market": {
