@@ -7,6 +7,7 @@ import { headers } from 'next/headers'
 import { eq, desc, count, and, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { assertAdmin } from '@/lib/auth-utils'
+import { MIN_DISCOUNT, MAX_DISCOUNT } from '@/lib/pricing'
 
 // Get all users (admin only)
 export async function getUsers(status?: string) {
@@ -85,6 +86,51 @@ export async function updateUser(id: string, data: {
   
   revalidatePath('/admin/benutzer')
   return { success: true }
+}
+
+// Update a partner account's B2B discount (admin only).
+// Validates the percentage server-side (0-100) so a partner price can never be
+// negative or exceed the base price, and never trusts a client-calculated value.
+export async function updatePartnerDiscount(
+  id: string,
+  data: {
+    discountPercent: number
+    discountNote?: string | null
+    partnerTier?: string | null
+  },
+) {
+  await assertAdmin()
+
+  const raw = Number(data.discountPercent)
+  if (!Number.isFinite(raw)) {
+    throw new Error('Discount must be a number')
+  }
+  if (raw < MIN_DISCOUNT || raw > MAX_DISCOUNT) {
+    throw new Error(`Discount must be between ${MIN_DISCOUNT} and ${MAX_DISCOUNT}`)
+  }
+  // Round to 2 decimals to match the numeric(5,2) column.
+  const discountPercent = Math.round(raw * 100) / 100
+
+  await db
+    .update(user)
+    .set({
+      discountPercent: discountPercent.toString(),
+      discountNote: data.discountNote?.trim() || null,
+      partnerTier: data.partnerTier?.trim() || null,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, id))
+
+  // Refresh admin + public product surfaces so the new partner price shows up.
+  revalidatePath('/admin/benutzer')
+  const locales = ['de', 'en', 'cs', 'sk']
+  locales.forEach((locale) => {
+    revalidatePath(`/${locale}`)
+    revalidatePath(`/${locale}/produkte`)
+    revalidatePath(`/${locale}/fan-coil`)
+  })
+
+  return { success: true, discountPercent }
 }
 
 // Delete user (admin only)

@@ -288,7 +288,15 @@
       "city": "Stadt",
       "country": "Land",
       "saveChanges": "Änderungen speichern",
-      "close": "Schließen"
+      "close": "Schließen",
+      "partnerPricingTitle": "Partner-Preisgestaltung",
+      "discountPercent": "Partnerrabatt (%)",
+      "discountNote": "Rabatt-Notiz",
+      "partnerTier": "Partner-Stufe",
+      "partnerTierPlaceholder": "z. B. Gold, Silber",
+      "discountExplanation": "Dieser Rabatt wird auf alle aktiven Produkte für dieses Partnerkonto angewendet.",
+      "discountRangeHint": "Wert zwischen 0 und 100.",
+      "discountError": "Rabatt muss zwischen 0 und 100 liegen."
     },
     "productManagement": {
       "title": "Produktverwaltung",

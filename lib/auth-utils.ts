@@ -8,7 +8,7 @@ export async function getSessionWithRole() {
   const session = await auth.api.getSession({ headers: await headers() })
   
   if (!session?.user) {
-    return { session: null, role: null }
+    return { session: null, role: null, status: null }
   }
 
   // Fetch user role from database since session may not include custom fields

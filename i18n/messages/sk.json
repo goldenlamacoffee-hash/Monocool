@@ -288,7 +288,15 @@
       "city": "Mesto",
       "country": "Krajina",
       "saveChanges": "Uložiť zmeny",
-      "close": "Zavrieť"
+      "close": "Zavrieť",
+      "partnerPricingTitle": "Partnerské ceny",
+      "discountPercent": "Partnerská zľava (%)",
+      "discountNote": "Poznámka k zľave",
+      "partnerTier": "Partnerská úroveň",
+      "partnerTierPlaceholder": "napr. Gold, Silver",
+      "discountExplanation": "Táto zľava sa uplatní na všetky aktívne produkty pre tento partnerský účet.",
+      "discountRangeHint": "Hodnota medzi 0 a 100.",
+      "discountError": "Zľava musí byť medzi 0 a 100."
     },
     "productManagement": {
       "title": "Správa produktov",

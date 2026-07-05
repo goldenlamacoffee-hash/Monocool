@@ -288,7 +288,15 @@
       "city": "Město",
       "country": "Země",
       "saveChanges": "Uložit změny",
-      "close": "Zavřít"
+      "close": "Zavřít",
+      "partnerPricingTitle": "Partnerské ceny",
+      "discountPercent": "Partnerská sleva (%)",
+      "discountNote": "Poznámka ke slevě",
+      "partnerTier": "Partnerská úroveň",
+      "partnerTierPlaceholder": "např. Gold, Silver",
+      "discountExplanation": "Tato sleva se použije na všechny aktivní produkty pro tento partnerský účet.",
+      "discountRangeHint": "Hodnota mezi 0 a 100.",
+      "discountError": "Sleva musí být mezi 0 a 100."
     },
     "productManagement": {
       "title": "Správa produktů",
@@ -299,7 +307,7 @@
       "createProduct": "Vytvořit nový produkt",
       "deleteProduct": "Smazat produkt",
       "confirmDelete": "Opravdu chcete tento produkt smazat?",
-      "noProducts": "Zatím žádné produkty.",
+      "noProducts": "Zatím ��ádné produkty.",
       "firstProduct": "Vytvořit první produkt",
       "active": "Aktivní",
       "inactive": "Neaktivní",
