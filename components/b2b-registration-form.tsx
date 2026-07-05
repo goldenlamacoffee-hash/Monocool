@@ -60,10 +60,15 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
   }
 
-  // Only email + password + confirmation are required — login depends on them.
-  // Name is optional (falls back to email on submit); phone is optional.
+  // Only phone + password + confirmation are required. Email is optional; when
+  // provided it must be valid, and when omitted a placeholder is generated from
+  // the phone on submit so the account can still be created.
   const validateStep1 = () => {
-    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.phone.trim()) {
+      setError(t('errors.phoneRequired'))
+      return false
+    }
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError(t('errors.invalidEmail'))
       return false
     }
@@ -102,12 +107,18 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
 
     try {
+      // Email is optional. When omitted, derive a stable placeholder from the
+      // (required) phone number so Better Auth can still create the account.
+      // The user won't be able to sign in by email until they add a real one.
+      const phoneDigits = formData.phone.replace(/\D/g, '')
+      const email = formData.email.trim() || `phone-${phoneDigits}@noemail.monocool`
+
       const result = await signUp.email({
-        email: formData.email,
+        email,
         password: formData.password,
         // Better Auth requires a non-empty name; fall back to the email so an
         // empty display name never blocks registration.
-        name: formData.name.trim() || formData.email,
+        name: formData.name.trim() || email,
         // Additional fields will be stored via the auth plugin
       })
 
@@ -219,25 +230,25 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{t('email')} *</Label>
+                <Label htmlFor="email">{t('email')}</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => updateField('email', e.target.value)}
                   placeholder={t('emailPlaceholder')}
-                  required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">{t('phone')}</Label>
+                <Label htmlFor="phone">{t('phone')} *</Label>
                 <Input
                   id="phone"
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => updateField('phone', e.target.value)}
                   placeholder={t('phonePlaceholder')}
+                  required
                 />
               </div>
 
