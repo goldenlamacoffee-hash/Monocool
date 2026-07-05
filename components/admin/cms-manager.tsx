@@ -17,9 +17,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { upsertCmsContent } from '@/app/actions/products'
-import { getDomainFromLocale, getMarketName } from '@/lib/domain-utils'
-import { ArrowLeft, Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
+import { getDomainFromLocale } from '@/lib/domain-utils'
+import { Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
+import { MarketBanner } from './market-banner'
 
 interface CmsContentItem {
   id: number

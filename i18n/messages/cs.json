@@ -301,7 +301,8 @@
       "partnerTierPlaceholder": "např. Gold, Silver",
       "discountExplanation": "Tato sleva se použije na všechny aktivní produkty pro tento partnerský účet.",
       "discountRangeHint": "Hodnota mezi 0 a 100.",
-      "discountError": "Sleva musí být mezi 0 a 100."
+      "discountError": "Sleva musí být mezi 0 a 100.",
+      "usersCount": "uživatelů"
     },
     "productManagement": {
       "title": "Správa produktů",
@@ -335,7 +336,8 @@
       "status": "Stav",
       "actions": "Akce",
       "saving": "Ukládání...",
-      "create": "Vytvořit"
+      "create": "Vytvořit",
+      "subtitle": "Spravujte produkty, ceny a obrázky pro tento trh."
     },
     "gallery": {
       "title": "Galerie obrázků",
@@ -395,6 +397,31 @@
       "imageUrl": "URL obrázku",
       "metadata": "Další data (JSON)",
       "saving": "Ukládání..."
+    },
+    "nav": {
+      "dashboard": "Přehled",
+      "products": "Produkty",
+      "partners": "Partneři",
+      "cms": "Obsah",
+      "contact": "Kontakt",
+      "orders": "Objednávky",
+      "soon": "Brzy",
+      "adminPanel": "Administrace",
+      "backToSite": "Zobrazit web",
+      "signOut": "Odhlásit se",
+      "openMenu": "Otevřít menu"
+    },
+    "dashboard": {
+      "overview": "Přehled",
+      "pendingPartners": "Čekající partneři",
+      "allActive": "Vše aktivní",
+      "addProduct": "Přidat produkt",
+      "editContact": "Upravit kontakt",
+      "missingContactTitle": "Chybí kontaktní údaje",
+      "missingContactDesc": "Přidejte telefon a e-mail pro tento trh.",
+      "missingSeoTitle": "Neúplné SEO",
+      "missingSeoDesc": "Doplňte SEO titulek a popis pro lepší viditelnost.",
+      "needsAttention": "Vyžaduje pozornost"
     }
   },
   "legal": {

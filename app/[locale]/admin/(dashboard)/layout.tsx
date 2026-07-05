@@ -11,11 +11,12 @@ import { type Locale } from '@/i18n/config'
 
 interface Props {
   children: React.ReactNode
-  params: Promise<{ locale: Locale }>
+  params: Promise<{ locale: string }>
 }
 
 export default async function AdminDashboardLayout({ children, params }: Props) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = localeParam as Locale
   setRequestLocale(locale)
 
   const { session, role } = await getSessionWithRole()

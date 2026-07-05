@@ -301,7 +301,8 @@
       "partnerTierPlaceholder": "z. B. Gold, Silber",
       "discountExplanation": "Dieser Rabatt wird auf alle aktiven Produkte für dieses Partnerkonto angewendet.",
       "discountRangeHint": "Wert zwischen 0 und 100.",
-      "discountError": "Rabatt muss zwischen 0 und 100 liegen."
+      "discountError": "Rabatt muss zwischen 0 und 100 liegen.",
+      "usersCount": "Benutzer"
     },
     "productManagement": {
       "title": "Produktverwaltung",
@@ -335,7 +336,8 @@
       "status": "Status",
       "actions": "Aktionen",
       "saving": "Wird gespeichert...",
-      "create": "Erstellen"
+      "create": "Erstellen",
+      "subtitle": "Verwalten Sie Produkte, Preise und Bilder für diesen Markt."
     },
     "gallery": {
       "title": "Bildergalerie",
@@ -395,6 +397,31 @@
       "imageUrl": "Bild URL",
       "metadata": "Zusätzliche Daten (JSON)",
       "saving": "Wird gespeichert..."
+    },
+    "nav": {
+      "dashboard": "Übersicht",
+      "products": "Produkte",
+      "partners": "Partner",
+      "cms": "Inhalte",
+      "contact": "Kontakt",
+      "orders": "Bestellungen",
+      "soon": "Bald",
+      "adminPanel": "Admin-Bereich",
+      "backToSite": "Zur Website",
+      "signOut": "Abmelden",
+      "openMenu": "Menü öffnen"
+    },
+    "dashboard": {
+      "overview": "Übersicht",
+      "pendingPartners": "Ausstehende Partner",
+      "allActive": "Alle aktiv",
+      "addProduct": "Produkt hinzufügen",
+      "editContact": "Kontakt bearbeiten",
+      "missingContactTitle": "Kontaktdaten fehlen",
+      "missingContactDesc": "Fügen Sie Telefon und E-Mail für diesen Markt hinzu.",
+      "missingSeoTitle": "SEO unvollständig",
+      "missingSeoDesc": "Ergänzen Sie SEO-Titel und -Beschreibung für bessere Sichtbarkeit.",
+      "needsAttention": "Benötigt Aufmerksamkeit"
     }
   },
   "legal": {

@@ -218,11 +218,13 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
                   <AdminMarketSelector locale={locale} variant="compact" />
                 </div>
                 <DropdownMenuSeparator className="sm:hidden" />
-                <DropdownMenuItem asChild>
-                  <a href={getPreviewUrl(getDomainFromLocale(locale))} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {t('backToSite')}
-                  </a>
+                <DropdownMenuItem
+                  render={
+                    <a href={getPreviewUrl(getDomainFromLocale(locale))} target="_blank" rel="noopener noreferrer" />
+                  }
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {t('backToSite')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
