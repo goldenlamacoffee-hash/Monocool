@@ -575,24 +575,29 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                 admins may be Global (null). */}
             <div className="space-y-2">
               <Label htmlFor="edit-market">{t('market')}</Label>
-              <Select
-                value={editForm.market ?? undefined}
-                onValueChange={(v) => setEditForm({ ...editForm, market: v })}
+              {/* Native <select> on purpose: a Base UI Select popup portals to
+                  <body>, which conflicts with the Radix Dialog focus trap and
+                  makes the dropdown close instantly. A native select has no such
+                  conflict and is styled to match the sibling Input fields. */}
+              <select
+                id="edit-market"
+                value={editForm.market ?? ''}
+                onChange={(e) => setEditForm({ ...editForm, market: e.target.value })}
+                className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SelectTrigger id="edit-market">
-                  <SelectValue placeholder={t('market')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedUser?.role === 'admin' && (
-                    <SelectItem value="global">{t('globalMarket')}</SelectItem>
-                  )}
-                  {DOMAINS.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {getLocalizedMarketName(d.id, locale)} ({d.id})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {selectedUser?.role === 'admin' ? (
+                  <option value="global">{t('globalMarket')}</option>
+                ) : (
+                  <option value="" disabled>
+                    {t('market')}
+                  </option>
+                )}
+                {DOMAINS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {getLocalizedMarketName(d.id, locale)} ({d.id})
+                  </option>
+                ))}
+              </select>
               <p className="text-xs text-muted-foreground">{t('marketHint')}</p>
             </div>
             <div className="space-y-2">
