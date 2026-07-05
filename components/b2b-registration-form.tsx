@@ -60,11 +60,9 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
   }
 
+  // Only email + password + confirmation are required — login depends on them.
+  // Name is optional (falls back to email on submit); phone is optional.
   const validateStep1 = () => {
-    if (!formData.name.trim()) {
-      setError(t('errors.nameRequired'))
-      return false
-    }
     if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError(t('errors.invalidEmail'))
       return false
@@ -80,18 +78,12 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     return true
   }
 
-  const validateStep2 = () => {
-    if (!formData.companyName.trim()) {
-      setError(t('errors.companyRequired'))
-      return false
-    }
-    return true
-  }
-
   const handleNext = () => {
+    // Steps 2 (company) and 3 (address) are fully voluntary — no validation
+    // gate, so the user can always advance and reach the address step.
     if (step === 1 && validateStep1()) {
       setStep(2)
-    } else if (step === 2 && validateStep2()) {
+    } else if (step === 2) {
       setStep(3)
     }
   }
@@ -103,7 +95,8 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validateStep1() || !validateStep2()) return
+    // Only the credential step is required; company/address are optional.
+    if (!validateStep1()) return
 
     setIsLoading(true)
     setError(null)
@@ -112,7 +105,9 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
       const result = await signUp.email({
         email: formData.email,
         password: formData.password,
-        name: formData.name,
+        // Better Auth requires a non-empty name; fall back to the email so an
+        // empty display name never blocks registration.
+        name: formData.name.trim() || formData.email,
         // Additional fields will be stored via the auth plugin
       })
 
@@ -214,13 +209,12 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="name">{t('name')} *</Label>
+                <Label htmlFor="name">{t('name')}</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => updateField('name', e.target.value)}
                   placeholder={t('namePlaceholder')}
-                  required
                 />
               </div>
 
@@ -282,13 +276,12 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="companyName">{t('companyName')} *</Label>
+                <Label htmlFor="companyName">{t('companyName')}</Label>
                 <Input
                   id="companyName"
                   value={formData.companyName}
                   onChange={(e) => updateField('companyName', e.target.value)}
                   placeholder={t('companyNamePlaceholder')}
-                  required
                 />
               </div>
 
