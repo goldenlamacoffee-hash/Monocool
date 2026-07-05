@@ -99,6 +99,12 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Guard against early/implicit submits (e.g. pressing Enter in a field on
+    // step 1 or 2). Only the final step actually registers; otherwise advance.
+    if (step < 3) {
+      handleNext()
+      return
+    }
     // Only the credential step is required; company/address are optional.
     if (!validateStep1()) return
 
