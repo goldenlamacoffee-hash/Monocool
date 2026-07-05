@@ -3,17 +3,39 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
+import { getDomainFromLocale } from '@/lib/domain-utils'
+
+// Markets a partner/customer account can belong to (V1.4E.1). Foundation only —
+// no access is enforced here; we just record where the account registered.
+const ALLOWED_MARKETS = ['monocool.at', 'monocool.sk', 'monocool.cz', 'monocool.eu']
+
+/**
+ * Resolve the market for a new registration, server-side and untrusted-input safe.
+ * Prefers the real request host (production domains force their own locale), and
+ * falls back to the locale the form was rendered in (covers preview/localhost).
+ */
+function resolveRegistrationMarket(host: string | null, locale?: unknown): string | undefined {
+  const cleanHost = (host ?? '').replace(/^www\./, '').split(':')[0]
+  if (ALLOWED_MARKETS.includes(cleanHost)) return cleanHost
+  if (typeof locale === 'string' && locale) {
+    const fromLocale = getDomainFromLocale(locale)
+    if (ALLOWED_MARKETS.includes(fromLocale)) return fromLocale
+  }
+  return undefined
+}
 
 export async function POST(request: Request) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() })
+    const requestHeaders = await headers()
+    const session = await auth.api.getSession({ headers: requestHeaders })
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const data = await request.json()
+    const market = resolveRegistrationMarket(requestHeaders.get('host'), data.locale)
 
     await db
       .update(user)
@@ -26,6 +48,9 @@ export async function POST(request: Request) {
         postalCode: data.postalCode,
         country: data.country,
         phone: data.phone,
+        // Record the registration market once; never overwrite an existing value
+        // (admins stay NULL because they are not created through this flow).
+        ...(market ? { market: sql`COALESCE(${user.market}, ${market})` } : {}),
         updatedAt: new Date(),
       })
       .where(eq(user.id, session.user.id))

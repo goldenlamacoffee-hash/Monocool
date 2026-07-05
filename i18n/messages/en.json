@@ -302,7 +302,10 @@
       "discountExplanation": "This discount is applied to all active products for this partner account.",
       "discountRangeHint": "Value between 0 and 100.",
       "discountError": "Discount must be between 0 and 100.",
-      "usersCount": "users"
+      "usersCount": "users",
+      "market": "Market",
+      "allMarkets": "All markets",
+      "globalMarket": "Global"
     },
     "productManagement": {
       "title": "Product Management",
