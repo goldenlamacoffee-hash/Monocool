@@ -5,6 +5,8 @@ import { Sora, Manrope } from 'next/font/google'
 import { locales, type Locale } from '@/i18n/config'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, getMarketBaseUrl } from '@/lib/domain-utils'
+import { enforceMarketSession } from '@/lib/market-session'
+import { WrongMarketNotice } from '@/components/wrong-market-notice'
 import '../globals.css'
 
 const manrope = Manrope({
@@ -66,10 +68,16 @@ export default async function LocaleLayout({
   setRequestLocale(locale)
   const messages = await getMessages()
 
+  // V1.4E.3 — complete market session isolation. Runs on every locale route
+  // (public + admin). Admins stay global; a non-admin session on the wrong
+  // market is invalidated server-side here and reported via the notice.
+  const { wrongMarket } = await enforceMarketSession()
+
   return (
     <html lang={locale} className={`bg-background ${manrope.variable} ${sora.variable}`}>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
+          {wrongMarket && <WrongMarketNotice />}
           {children}
         </NextIntlClientProvider>
       </body>

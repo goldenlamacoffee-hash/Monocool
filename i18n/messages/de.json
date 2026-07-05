@@ -198,7 +198,9 @@
       "companyRequired": "Bitte geben Sie Ihren Firmennamen ein",
       "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
-    "error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
+    "error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
+    "wrongMarketSession": "Dieses Konto gehört zu einem anderen Markt. Bitte melden Sie sich auf der richtigen Domain an.",
+    "dismiss": "Schließen"
   },
   "admin": {
     "market": {
