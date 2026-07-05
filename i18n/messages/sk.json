@@ -432,7 +432,10 @@
       "missingSeoTitle": "Neúplné SEO",
       "missingSeoDesc": "Doplňte SEO titulok a popis pre lepšiu viditeľnosť.",
       "needsAttention": "Vyžaduje pozornosť"
-    }
+    },
+    "errorTitle": "Niečo sa pokazilo",
+    "errorDescription": "Stránku sa nepodarilo načítať. Skúste to znova.",
+    "tryAgain": "Skúsiť znova"
   },
   "legal": {
     "imprint": {

@@ -432,7 +432,10 @@
       "missingSeoTitle": "SEO incomplete",
       "missingSeoDesc": "Add an SEO title and description to improve visibility.",
       "needsAttention": "Needs attention"
-    }
+    },
+    "errorTitle": "Something went wrong",
+    "errorDescription": "This page could not be loaded. Please try again.",
+    "tryAgain": "Try again"
   },
   "legal": {
     "imprint": {

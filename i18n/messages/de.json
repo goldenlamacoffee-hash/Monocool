@@ -432,7 +432,10 @@
       "missingSeoTitle": "SEO unvollständig",
       "missingSeoDesc": "Ergänzen Sie SEO-Titel und -Beschreibung für bessere Sichtbarkeit.",
       "needsAttention": "Benötigt Aufmerksamkeit"
-    }
+    },
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "errorDescription": "Die Seite konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "tryAgain": "Erneut versuchen"
   },
   "legal": {
     "imprint": {
