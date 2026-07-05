@@ -60,15 +60,14 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
   }
 
-  // Only phone + password + confirmation are required. Email is optional; when
-  // provided it must be valid, and when omitted a placeholder is generated from
-  // the phone on submit so the account can still be created.
+  // Email, phone, password and confirmation are required. Everything else
+  // (name, company, address) is voluntary.
   const validateStep1 = () => {
     if (!formData.phone.trim()) {
       setError(t('errors.phoneRequired'))
       return false
     }
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError(t('errors.invalidEmail'))
       return false
     }
@@ -107,11 +106,7 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
 
     try {
-      // Email is optional. When omitted, derive a stable placeholder from the
-      // (required) phone number so Better Auth can still create the account.
-      // The user won't be able to sign in by email until they add a real one.
-      const phoneDigits = formData.phone.replace(/\D/g, '')
-      const email = formData.email.trim() || `phone-${phoneDigits}@noemail.monocool`
+      const email = formData.email.trim()
 
       const result = await signUp.email({
         email,
@@ -230,13 +225,14 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{t('email')}</Label>
+                <Label htmlFor="email">{t('email')} *</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => updateField('email', e.target.value)}
                   placeholder={t('emailPlaceholder')}
+                  required
                 />
               </div>
 
