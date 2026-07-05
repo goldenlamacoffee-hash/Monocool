@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { user, product, siteSettings } from '@/lib/db/schema'
 import { eq, and, count } from 'drizzle-orm'
 import { getSessionWithRole } from '@/lib/auth-utils'
-import { getDomainFromLocale, getMarketName, getPreviewUrl } from '@/lib/domain-utils'
+import { getDomainFromLocale, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { type Locale } from '@/i18n/config'
 import { DashboardCards } from '@/components/admin/dashboard-cards'
 
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage({ params }: Props) {
     <DashboardCards
       locale={locale}
       userName={session?.user.name ?? ''}
-      marketName={getMarketName(domain)}
+      marketName={getLocalizedMarketName(domain, locale)}
       domain={domain}
       previewUrl={getPreviewUrl(domain)}
       stats={stats}

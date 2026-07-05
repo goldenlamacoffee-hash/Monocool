@@ -27,9 +27,52 @@ export const DOMAINS = [
   { id: 'monocool.eu', name: 'European Union', locale: 'en' },
 ] as const
 
-// Human-readable market name for a given domain
+// Human-readable market name for a given domain (native/default label).
 export function getMarketName(domain: string): string {
   return DOMAINS.find((d) => d.id === domain)?.name ?? domain
+}
+
+/**
+ * Market (country) names translated into each admin UI locale.
+ * Outer key = the admin's current locale (the language they read the UI in).
+ * Inner key = the market domain being labelled.
+ * This is what makes the market selector/banner show e.g. "Rakúsko" for a
+ * Slovak admin instead of the hardcoded native "Österreich".
+ */
+const MARKET_NAMES: Record<string, Record<string, string>> = {
+  de: {
+    'monocool.at': 'Österreich',
+    'monocool.sk': 'Slowakei',
+    'monocool.cz': 'Tschechien',
+    'monocool.eu': 'Europäische Union',
+  },
+  en: {
+    'monocool.at': 'Austria',
+    'monocool.sk': 'Slovakia',
+    'monocool.cz': 'Czech Republic',
+    'monocool.eu': 'European Union',
+  },
+  sk: {
+    'monocool.at': 'Rakúsko',
+    'monocool.sk': 'Slovensko',
+    'monocool.cz': 'Česká republika',
+    'monocool.eu': 'Európska únia',
+  },
+  cs: {
+    'monocool.at': 'Rakousko',
+    'monocool.sk': 'Slovensko',
+    'monocool.cz': 'Česká republika',
+    'monocool.eu': 'Evropská unie',
+  },
+}
+
+/**
+ * Market name localized to the current admin locale.
+ * Falls back to the native default name, then the raw domain, so it is always
+ * safe even for unknown locales/domains.
+ */
+export function getLocalizedMarketName(domain: string, adminLocale: string): string {
+  return MARKET_NAMES[adminLocale]?.[domain] ?? getMarketName(domain)
 }
 
 // Absolute base URL (production hostname) for a given domain
