@@ -435,7 +435,35 @@
     },
     "errorTitle": "Etwas ist schiefgelaufen",
     "errorDescription": "Die Seite konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
-    "tryAgain": "Erneut versuchen"
+    "tryAgain": "Erneut versuchen",
+    "variants": {
+      "title": "Varianten",
+      "subtitle": "Verwalten Sie Varianten / Leistungsversionen dieses Produkts.",
+      "addVariant": "Variante hinzufügen",
+      "name": "Variantenname",
+      "sku": "SKU",
+      "price": "Preis (EUR)",
+      "pricePlaceholder": "Leer = Produktpreis",
+      "priceFallback": "Preis laut Produkt",
+      "coolingOutput": "Kühlleistung",
+      "heatingOutput": "Heizleistung",
+      "coolingShort": "Kühlung",
+      "heatingShort": "Heizung",
+      "technicalData": "Technische Daten",
+      "sortOrder": "Reihenfolge",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "activate": "Aktivieren",
+      "deactivate": "Deaktivieren",
+      "delete": "Löschen",
+      "confirmDelete": "Möchten Sie diese Variante wirklich löschen?",
+      "empty": "Noch keine Varianten",
+      "nameRequired": "Variantenname ist erforderlich",
+      "priceInvalid": "Ungültiger Preis",
+      "saveError": "Speichern fehlgeschlagen",
+      "deleteError": "Löschen fehlgeschlagen",
+      "loadError": "Varianten konnten nicht geladen werden"
+    }
   },
   "legal": {
     "imprint": {

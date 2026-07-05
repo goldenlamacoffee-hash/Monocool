@@ -435,7 +435,35 @@
     },
     "errorTitle": "Niečo sa pokazilo",
     "errorDescription": "Stránku sa nepodarilo načítať. Skúste to znova.",
-    "tryAgain": "Skúsiť znova"
+    "tryAgain": "Skúsiť znova",
+    "variants": {
+      "title": "Varianty",
+      "subtitle": "Spravujte varianty / výkonové verzie tohto produktu.",
+      "addVariant": "Pridať variant",
+      "name": "Názov variantu",
+      "sku": "SKU",
+      "price": "Cena (EUR)",
+      "pricePlaceholder": "Prázdne = cena produktu",
+      "priceFallback": "Cena podľa produktu",
+      "coolingOutput": "Chladiaci výkon",
+      "heatingOutput": "Vykurovací výkon",
+      "coolingShort": "Chladenie",
+      "heatingShort": "Vykurovanie",
+      "technicalData": "Technické údaje",
+      "sortOrder": "Poradie",
+      "active": "Aktívny",
+      "inactive": "Neaktívny",
+      "activate": "Aktivovať",
+      "deactivate": "Deaktivovať",
+      "delete": "Vymazať",
+      "confirmDelete": "Naozaj chcete tento variant vymazať?",
+      "empty": "Zatiaľ žiadne varianty",
+      "nameRequired": "Názov variantu je povinný",
+      "priceInvalid": "Neplatná cena",
+      "saveError": "Uloženie zlyhalo",
+      "deleteError": "Vymazanie zlyhalo",
+      "loadError": "Načítanie variantov zlyhalo"
+    }
   },
   "legal": {
     "imprint": {
