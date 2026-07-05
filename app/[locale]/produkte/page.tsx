@@ -5,6 +5,8 @@ import { ProductCard } from '@/components/product-card'
 import { PageHero } from '@/components/site/page-hero'
 import { SectionHeader } from '@/components/site/section-header'
 import { getProductsByLocale } from '@/app/actions/products'
+import { getPartnerViewer } from '@/lib/partner-pricing'
+import { resolveProductPriceView } from '@/lib/pricing'
 import { type Locale } from '@/i18n/config'
 import { PackageSearch } from 'lucide-react'
 
@@ -17,7 +19,10 @@ export default async function ProductsPage({ params }: Props) {
   setRequestLocale(locale)
 
   const t = await getTranslations('products')
-  const products = await getProductsByLocale(locale)
+  const [products, viewer] = await Promise.all([
+    getProductsByLocale(locale),
+    getPartnerViewer(),
+  ])
 
   // Group products by category. The two known categories are
   // `klimageraete` (air conditioners without outdoor unit) and `fancoil`.
@@ -60,7 +65,11 @@ export default async function ProductsPage({ params }: Props) {
                   />
                   <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {section.items.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        priceView={resolveProductPriceView(product.price, viewer)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -70,7 +79,11 @@ export default async function ProductsPage({ params }: Props) {
                 <section className="scroll-mt-24">
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {other.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        priceView={resolveProductPriceView(product.price, viewer)}
+                      />
                     ))}
                   </div>
                 </section>

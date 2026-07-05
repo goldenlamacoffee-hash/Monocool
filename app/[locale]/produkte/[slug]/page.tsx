@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -11,12 +10,12 @@ import { getProductBySlugAndLocale } from '@/app/actions/products'
 import { getProductImages } from '@/app/actions/gallery'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { getPartnerViewer } from '@/lib/partner-pricing'
+import { resolveProductPriceView } from '@/lib/pricing'
+import { PartnerPrice } from '@/components/partner-price'
 import { type Locale } from '@/i18n/config'
 import { 
   ArrowLeft, 
-  Lock, 
   Zap, 
   Thermometer, 
   Volume2, 
@@ -65,7 +64,8 @@ export default async function ProductDetailPage({ params }: Props) {
   // Fetch site settings for contact info
   const siteSettings = await getSiteSettingsByLocale(locale)
 
-  const session = await auth.api.getSession({ headers: await headers() })
+  const viewer = await getPartnerViewer()
+  const priceView = resolveProductPriceView(product.price, viewer)
 
   const specs = [
     { icon: Thermometer, label: t('coolingCapacity'), value: product.coolingCapacity },
@@ -111,30 +111,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
               {/* Price */}
               <div className="mt-6 rounded-2xl border border-border bg-soft-ice p-5">
-                {session?.user ? (
-                  <div>
-                    <div className="eyebrow">{t('priceLabel')}</div>
-                    <div className="mt-1 font-heading text-3xl font-semibold text-primary">
-                      {product.price 
-                        ? `${Number(product.price).toLocaleString(locale)} EUR` 
-                        : t('priceOnLogin')}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background text-secondary">
-                      <Lock className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <div className="font-medium text-foreground">{t('loginToSeePrice')}</div>
-                      <div className="text-sm text-muted-foreground">
-                        <Link href={`/${locale}/anmelden`} className="font-medium text-secondary hover:underline">
-                          {t('loginPrompt')}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <PartnerPrice view={priceView} variant="detail" />
               </div>
 
               {/* Quick Specs */}

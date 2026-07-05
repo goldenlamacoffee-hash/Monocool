@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ChevronRight, Thermometer, Wind, Volume2, Ruler, X, ChevronLeft, ChevronRight as ChevronRightIcon, ZoomIn, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PartnerPrice } from '@/components/partner-price'
+import { type ProductPriceView } from '@/lib/pricing'
 
 interface ProductImage {
   id: number
@@ -39,9 +41,11 @@ interface FanCoilProduct {
 
 interface FanCoilProductsDisplayProps {
   products: FanCoilProduct[]
+  /** Server-resolved gated pricing view per product id. */
+  priceViewsById?: Record<number, ProductPriceView>
 }
 
-export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps) {
+export function FanCoilProductsDisplay({ products, priceViewsById }: FanCoilProductsDisplayProps) {
   const t = useTranslations('fanCoil.products')
   const params = useParams()
   const locale = params.locale as string
@@ -303,6 +307,13 @@ export function FanCoilProductsDisplay({ products }: FanCoilProductsDisplayProps
                                     <span>{feature}</span>
                                   </div>
                                 ))}
+                              </div>
+                            )}
+
+                            {/* Partner price (gated server-side) */}
+                            {priceViewsById?.[product.id] && (
+                              <div className="mb-6 rounded-xl border border-border bg-soft-ice p-4">
+                                <PartnerPrice view={priceViewsById[product.id]} variant="detail" />
                               </div>
                             )}
 

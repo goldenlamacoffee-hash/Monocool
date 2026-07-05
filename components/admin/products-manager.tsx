@@ -199,7 +199,9 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         description: formData.description || undefined,
         shortDescription: formData.shortDescription || undefined,
-        price: formData.price ? parseFloat(formData.price) : undefined,
+        // Empty field clears the price (null). A non-empty, valid number is
+        // saved; an invalid entry falls back to null rather than NaN.
+        price: formData.price.trim() === '' ? null : (Number.isNaN(parseFloat(formData.price)) ? null : parseFloat(formData.price)),
         category: formData.category || undefined,
         coolingCapacity: formData.coolingCapacity || undefined,
         heatingCapacity: formData.heatingCapacity || undefined,

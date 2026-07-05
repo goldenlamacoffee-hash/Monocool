@@ -88,7 +88,7 @@ export async function createProduct(data: {
   slug: string
   description?: string
   shortDescription?: string
-  price?: number
+  price?: number | null
   category?: string
   coolingCapacity?: string
   heatingCapacity?: string
@@ -131,7 +131,7 @@ export async function createProduct(data: {
     ...rest,
     name,
     slug,
-    ...(price !== undefined ? { price: price.toString() } : {}),
+    ...(price !== undefined ? { price: price === null ? null : price.toString() } : {}),
     domain,
   }).returning()
   revalidateProductPages(newProduct.slug)
@@ -145,7 +145,7 @@ export async function updateProduct(
     slug: string
     description: string
     shortDescription: string
-    price: number
+    price: number | null
     category: string
     coolingCapacity: string
     heatingCapacity: string
@@ -188,7 +188,8 @@ export async function updateProduct(
     .update(product)
     .set({
       ...rest,
-      ...(price !== undefined ? { price: price.toString() } : {}),
+      // `null` explicitly clears the price; `undefined` leaves it untouched.
+      ...(price !== undefined ? { price: price === null ? null : price.toString() } : {}),
       updatedAt: new Date(),
     })
     .where(eq(product.id, id))
