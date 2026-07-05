@@ -131,6 +131,15 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
     if (!selectedUser) return
     setSaveError(null)
 
+    // Resolve market: 'global' sentinel -> null. Non-admins must have a market.
+    const isAdmin = selectedUser.role === 'admin'
+    const marketSel = editForm.market
+    if (!isAdmin && (marketSel == null || marketSel === '' || marketSel === 'global')) {
+      setSaveError(t('marketRequired'))
+      return
+    }
+    const marketValue = marketSel === 'global' ? null : (marketSel ?? null)
+
     const payload = {
       name: editForm.name ?? undefined,
       email: editForm.email ?? undefined,
@@ -143,6 +152,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
       country: editForm.country ?? undefined,
       phone: editForm.phone ?? undefined,
       notes: editForm.notes ?? undefined,
+      market: marketValue,
     }
 
     // Validate the partner discount client-side for immediate feedback; the
@@ -163,7 +173,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
           partnerTier: editForm.partnerTier ?? null,
         })
         setUsers(users.map(u => u.id === selectedUser.id
-          ? { ...u, ...editForm, discountPercent: discountPercent.toString() }
+          ? { ...u, ...editForm, market: marketValue, discountPercent: discountPercent.toString() }
           : u))
         setViewMode(null)
         setSelectedUser(null)
@@ -200,6 +210,9 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
       city: user.city || '',
       postalCode: user.postalCode || '',
       country: user.country || '',
+      // Market: admins default to 'global' (null) when unset; non-admins start
+      // empty so the admin is forced to pick a valid market before saving.
+      market: user.market ?? (user.role === 'admin' ? 'global' : undefined),
       phone: user.phone || '',
       notes: user.notes || '',
       discountPercent: user.discountPercent != null ? String(normalizeDiscountPercent(user.discountPercent)) : '0',
@@ -556,6 +569,31 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                   onChange={(e) => setEditForm({ ...editForm, country: e.target.value })}
                 />
               </div>
+            </div>
+            {/* Market / Trh — deliberately separate from Country (billing/address).
+                Drives partner-price enforcement. Required for non-admins;
+                admins may be Global (null). */}
+            <div className="space-y-2">
+              <Label htmlFor="edit-market">{t('market')}</Label>
+              <Select
+                value={editForm.market ?? undefined}
+                onValueChange={(v) => setEditForm({ ...editForm, market: v })}
+              >
+                <SelectTrigger id="edit-market">
+                  <SelectValue placeholder={t('market')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedUser?.role === 'admin' && (
+                    <SelectItem value="global">{t('globalMarket')}</SelectItem>
+                  )}
+                  {DOMAINS.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {getLocalizedMarketName(d.id, locale)} ({d.id})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t('marketHint')}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit-notes">{t('notes')}</Label>

@@ -27,6 +27,15 @@ export const DOMAINS = [
   { id: 'monocool.eu', name: 'European Union', locale: 'en' },
 ] as const
 
+// The only market values that may be persisted on a user account. A user's
+// market is deliberately independent of their billing `country` — it is set
+// explicitly (by admins) and drives partner-price enforcement.
+export const MARKET_IDS = DOMAINS.map((d) => d.id) as readonly string[]
+
+export function isValidMarket(value: unknown): value is string {
+  return typeof value === 'string' && MARKET_IDS.includes(value)
+}
+
 // Human-readable market name for a given domain (native/default label).
 export function getMarketName(domain: string): string {
   return DOMAINS.find((d) => d.id === domain)?.name ?? domain
