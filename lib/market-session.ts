@@ -14,11 +14,11 @@
 
 import { headers } from 'next/headers'
 import { eq } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { user, session } from '@/lib/db/schema'
 import { domainLocales } from '@/i18n/config'
 import { MARKET_IDS } from '@/lib/domain-utils'
+import { getRequestSession } from '@/lib/auth-utils'
 
 /**
  * Resolve the market (domain) the current request is being served from, based
@@ -65,7 +65,7 @@ export async function enforceMarketSession(): Promise<{ wrongMarket: boolean }> 
   // No production-market context (preview/localhost) → do not isolate.
   if (!currentMarket) return { wrongMarket: false }
 
-  const authSession = await auth.api.getSession({ headers: hdrs })
+  const authSession = await getRequestSession()
   if (!authSession?.user) return { wrongMarket: false }
 
   const [row] = await db

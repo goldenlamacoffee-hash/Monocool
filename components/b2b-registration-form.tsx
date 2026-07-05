@@ -97,14 +97,18 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
     setError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Form onSubmit only ever runs via the Enter key (both nav buttons are
+  // type="button"). On steps 1-2 Enter advances; on step 3 it registers.
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Guard against early/implicit submits (e.g. pressing Enter in a field on
-    // step 1 or 2). Only the final step actually registers; otherwise advance.
     if (step < 3) {
       handleNext()
       return
     }
+    handleRegister()
+  }
+
+  const handleRegister = async () => {
     // Only the credential step is required; company/address are optional.
     if (!validateStep1()) return
 
@@ -390,11 +394,20 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
               </Button>
             )}
             {step < 3 ? (
-              <Button type="button" onClick={handleNext} className="flex-1">
+              // Distinct key + type="button" so a click on "Next" can never be
+              // reinterpreted as a form submit when React swaps this slot to the
+              // register button after advancing to step 3.
+              <Button key="next" type="button" onClick={handleNext} className="flex-1">
                 {t('next')}
               </Button>
             ) : (
-              <Button type="submit" disabled={isLoading} className="flex-1">
+              <Button
+                key="register"
+                type="button"
+                onClick={handleRegister}
+                disabled={isLoading}
+                className="flex-1"
+              >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('register')}
               </Button>

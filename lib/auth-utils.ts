@@ -1,11 +1,25 @@
+import { cache } from 'react'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { headers } from 'next/headers'
 
+/**
+ * Request-scoped, deduplicated session lookup.
+ *
+ * A single admin page render resolves the session in several places
+ * (`enforceMarketSession` in the locale layout, `getSessionWithRole` in the
+ * admin layout, etc.). Wrapping the Better Auth call in React `cache()` collapses
+ * those into one DB round-trip per request, reducing latency and the chance of a
+ * transient DB hiccup taking the whole page down.
+ */
+export const getRequestSession = cache(async () => {
+  return auth.api.getSession({ headers: await headers() })
+})
+
 export async function getSessionWithRole() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getRequestSession()
   
   if (!session?.user) {
     return { session: null, role: null, status: null }
