@@ -6,6 +6,8 @@ __v0_jsx-dev-runtime.ts
 .v0-trash/
 .v0-verify/
 .v0-audit/
+.v0-tmp/
+.v0-shot/
 .vercel/
 
 # Environment variables
