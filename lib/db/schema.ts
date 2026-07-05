@@ -25,6 +25,12 @@ export const user = pgTable('user', {
   phone: text('phone'),
   status: text('status').default('pending'), // pending, approved, rejected
   notes: text('notes'),
+  // --- B2B partner pricing (V1.4B) ---
+  // Percentage discount applied to every product's base price for this
+  // partner account. Stored as numeric(5,2); resolved to 0 when null.
+  discountPercent: decimal('discountPercent', { precision: 5, scale: 2 }).default('0'),
+  discountNote: text('discountNote'), // optional internal note about the discount
+  partnerTier: text('partnerTier'), // optional label, e.g. "Gold", "Silver"
 })
 
 // --- Site Settings table (per domain) --------------------------------------

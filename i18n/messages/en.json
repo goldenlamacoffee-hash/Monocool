@@ -88,6 +88,11 @@
     "priceOnLogin": "Price on Login",
     "loginToSeePrice": "Price only for registered customers",
     "loginPrompt": "Login to see the price",
+    "partnerPrice": "Your partner price",
+    "listPrice": "List price",
+    "discountLabel": "Discount",
+    "awaitingApproval": "Account awaiting approval",
+    "priceOnRequest": "Price on request",
     "backToProducts": "Back to Products",
     "requestQuote": "Request Quote",
     "callNow": "Call Now",
@@ -194,6 +199,16 @@
     "error": "Login failed. Please check your credentials."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Active market",
+      "viewPublicPage": "View public page",
+      "selectMarket": "Select market"
+    },
+    "categoryLabels": {
+      "klimageraete": "Air conditioners without outdoor unit",
+      "fancoil": "Fan Coil units",
+      "none": "No category"
+    },
     "title": "Admin Dashboard",
     "welcome": "Welcome",
     "products": "Manage Products",
@@ -278,7 +293,15 @@
       "city": "City",
       "country": "Country",
       "saveChanges": "Save Changes",
-      "close": "Close"
+      "close": "Close",
+      "partnerPricingTitle": "Partner Pricing",
+      "discountPercent": "Partner Discount (%)",
+      "discountNote": "Discount Note",
+      "partnerTier": "Partner Tier",
+      "partnerTierPlaceholder": "e.g. Gold, Silver",
+      "discountExplanation": "This discount is applied to all active products for this partner account.",
+      "discountRangeHint": "Value between 0 and 100.",
+      "discountError": "Discount must be between 0 and 100."
     },
     "productManagement": {
       "title": "Product Management",

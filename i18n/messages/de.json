@@ -88,6 +88,11 @@
     "priceOnLogin": "Preis nach Anmeldung",
     "loginToSeePrice": "Preis nur für registrierte Kunden",
     "loginPrompt": "Melden Sie sich an, um den Preis zu sehen",
+    "partnerPrice": "Ihr Partnerpreis",
+    "listPrice": "Listenpreis",
+    "discountLabel": "Rabatt",
+    "awaitingApproval": "Konto wartet auf Freigabe",
+    "priceOnRequest": "Preis auf Anfrage",
     "backToProducts": "Zurück zu Produkten",
     "requestQuote": "Anfrage senden",
     "callNow": "Jetzt anrufen",
@@ -194,6 +199,16 @@
     "error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktiver Markt",
+      "viewPublicPage": "Öffentliche Seite ansehen",
+      "selectMarket": "Markt auswählen"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimageräte ohne Außeneinheit",
+      "fancoil": "Fan Coil Geräte",
+      "none": "Keine Kategorie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Willkommen",
     "products": "Produkte verwalten",
@@ -278,7 +293,15 @@
       "city": "Stadt",
       "country": "Land",
       "saveChanges": "Änderungen speichern",
-      "close": "Schließen"
+      "close": "Schließen",
+      "partnerPricingTitle": "Partner-Preisgestaltung",
+      "discountPercent": "Partnerrabatt (%)",
+      "discountNote": "Rabatt-Notiz",
+      "partnerTier": "Partner-Stufe",
+      "partnerTierPlaceholder": "z. B. Gold, Silber",
+      "discountExplanation": "Dieser Rabatt wird auf alle aktiven Produkte für dieses Partnerkonto angewendet.",
+      "discountRangeHint": "Wert zwischen 0 und 100.",
+      "discountError": "Rabatt muss zwischen 0 und 100 liegen."
     },
     "productManagement": {
       "title": "Produktverwaltung",

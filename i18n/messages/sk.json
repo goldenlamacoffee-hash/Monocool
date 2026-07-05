@@ -88,6 +88,11 @@
     "priceOnLogin": "Cena po prihlásení",
     "loginToSeePrice": "Cena iba pre registrovaných zákazníkov",
     "loginPrompt": "Prihláste sa pre zobrazenie ceny",
+    "partnerPrice": "Vaša partnerská cena",
+    "listPrice": "Cenníková cena",
+    "discountLabel": "Zľava",
+    "awaitingApproval": "Účet čaká na schválenie",
+    "priceOnRequest": "Cena na vyžiadanie",
     "backToProducts": "Späť na produkty",
     "requestQuote": "Poslať dopyt",
     "callNow": "Zavolať",
@@ -194,6 +199,16 @@
     "error": "Prihlásenie zlyhalo. Skontrolujte prosím svoje údaje."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktívny trh",
+      "viewPublicPage": "Zobraziť verejnú stránku",
+      "selectMarket": "Vybrať trh"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimatizácie bez vonkajšej jednotky",
+      "fancoil": "Fan Coil jednotky",
+      "none": "Bez kategórie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Vitajte",
     "products": "Správa produktov",
@@ -278,7 +293,15 @@
       "city": "Mesto",
       "country": "Krajina",
       "saveChanges": "Uložiť zmeny",
-      "close": "Zavrieť"
+      "close": "Zavrieť",
+      "partnerPricingTitle": "Partnerské ceny",
+      "discountPercent": "Partnerská zľava (%)",
+      "discountNote": "Poznámka k zľave",
+      "partnerTier": "Partnerská úroveň",
+      "partnerTierPlaceholder": "napr. Gold, Silver",
+      "discountExplanation": "Táto zľava sa uplatní na všetky aktívne produkty pre tento partnerský účet.",
+      "discountRangeHint": "Hodnota medzi 0 a 100.",
+      "discountError": "Zľava musí byť medzi 0 a 100."
     },
     "productManagement": {
       "title": "Správa produktov",
@@ -381,7 +404,7 @@
       "companyName": "MonoCool GmbH",
       "address": "Adresa spoločnosti bude doplnená pred spustením",
       "city": "Mesto bude doplnené pred spustením",
-      "country": "Rakúsko",
+      "country": "Rak��sko",
       "contact": "Kontakt",
       "phone": "Telefón: bude doplnené pred spustením",
       "email": "E-mail: bude doplnené pred spustením",

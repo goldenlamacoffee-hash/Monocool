@@ -2,11 +2,11 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { useSession } from '@/lib/auth-client'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { Lock, Zap, Thermometer, ArrowRight } from 'lucide-react'
+import { Zap, Thermometer, ArrowRight } from 'lucide-react'
+import { PartnerPrice } from '@/components/partner-price'
+import { type ProductPriceView } from '@/lib/pricing'
 import { type Locale } from '@/i18n/config'
 
 interface ProductCardProps {
@@ -21,17 +21,13 @@ interface ProductCardProps {
     energyClass?: string | null
     coolingCapacity?: string | null
   }
+  /** Server-resolved gated pricing view. Defaults to guest when omitted. */
+  priceView?: ProductPriceView
 }
 
-export function ProductCard({ product }: ProductCardProps) {
-  const { data: session, isPending } = useSession()
-  const [mounted, setMounted] = useState(false)
+export function ProductCard({ product, priceView }: ProductCardProps) {
   const t = useTranslations('products')
   const locale = useLocale() as Locale
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const productUrl = `/${locale}/produkte/${product.slug}`
 
@@ -91,18 +87,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-3 border-t border-border p-5">
-          {!mounted || isPending ? (
-            <div className="h-6 w-24 animate-pulse rounded bg-muted" />
-          ) : session?.user ? (
-            <div className="font-heading text-lg font-semibold text-primary">
-              {product.price ? `${Number(product.price).toLocaleString(locale)} EUR` : t('priceOnLogin')}
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>{t('priceOnLogin')}</span>
-            </div>
-          )}
+          <PartnerPrice view={priceView ?? { state: 'guest' }} variant="card" />
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary transition-all group-hover:gap-2.5">
             {t('details')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />

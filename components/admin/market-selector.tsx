@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation'
 import { useTransition } from 'react'
+import { useTranslations } from 'next-intl'
 import { Globe } from 'lucide-react'
 import { DOMAINS, getDomainFromLocale } from '@/lib/domain-utils'
 import {
@@ -23,6 +24,7 @@ interface AdminMarketSelectorProps {
  * admin page to the matching locale prefix.
  */
 export function AdminMarketSelector({ locale }: AdminMarketSelectorProps) {
+  const t = useTranslations('admin.market')
   const router = useRouter()
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
@@ -47,12 +49,12 @@ export function AdminMarketSelector({ locale }: AdminMarketSelectorProps) {
       </div>
       <div className="flex flex-1 flex-col gap-0.5">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Aktiver Markt / Active market
+          {t('activeMarket')}
         </span>
         <span className="text-sm font-semibold text-foreground">{currentDomain}</span>
       </div>
       <Select value={locale} onValueChange={handleChange} disabled={isPending}>
-        <SelectTrigger className="w-[200px]" aria-label="Markt auswählen">
+        <SelectTrigger className="w-[200px]" aria-label={t('selectMarket')}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

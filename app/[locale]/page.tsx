@@ -12,6 +12,8 @@ import { CTAGroup } from '@/components/site/cta-group'
 import { B2BCallout } from '@/components/site/b2b-callout'
 import { getProductsByLocale, getHomepageCmsContentByLocale } from '@/app/actions/products'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
+import { getPartnerViewer } from '@/lib/partner-pricing'
+import { resolveProductPriceView } from '@/lib/pricing'
 import { Snowflake, Volume2, Wrench, Leaf, ArrowRight, Wind, Droplets, ShieldCheck } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 
@@ -30,10 +32,11 @@ export default async function HomePage({ params }: Props) {
   const tContact = await getTranslations('contact')
   const tFanCoil = await getTranslations('fanCoil')
 
-  const [products, cmsContent, siteSettings] = await Promise.all([
+  const [products, cmsContent, siteSettings, viewer] = await Promise.all([
     getProductsByLocale(locale),
     getHomepageCmsContentByLocale(locale),
     getSiteSettingsByLocale(locale),
+    getPartnerViewer(),
   ])
 
   // Helper to get CMS content with fallback (locale-specific)
@@ -210,9 +213,13 @@ export default async function HomePage({ params }: Props) {
                 </ButtonLink>
               </div>
               <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {products.slice(0, 3).map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+              {products.slice(0, 3).map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  priceView={resolveProductPriceView(product.price, viewer)}
+                />
+              ))}
               </div>
             </div>
           </section>

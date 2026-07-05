@@ -48,7 +48,8 @@ import {
   Phone,
   MapPin
 } from 'lucide-react'
-import { updateUserStatus, updateUserRole, updateUser, deleteUser } from '@/app/actions/users'
+import { updateUserStatus, updateUserRole, updateUser, updatePartnerDiscount, deleteUser } from '@/app/actions/users'
+import { normalizeDiscountPercent } from '@/lib/pricing'
 import { type Locale } from '@/i18n/config'
 
 interface User {
@@ -66,6 +67,9 @@ interface User {
   country: string | null
   phone: string | null
   notes: string | null
+  discountPercent: string | null
+  discountNote: string | null
+  partnerTier: string | null
   createdAt: Date
 }
 
@@ -84,6 +88,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [viewMode, setViewMode] = useState<'view' | 'edit' | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<User | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const router = useRouter()
 
   // Form state for editing
@@ -114,6 +119,8 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
 
   const handleEditSave = async () => {
     if (!selectedUser) return
+    setSaveError(null)
+
     const payload = {
       name: editForm.name ?? undefined,
       email: editForm.email ?? undefined,
@@ -127,11 +134,32 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
       phone: editForm.phone ?? undefined,
       notes: editForm.notes ?? undefined,
     }
+
+    // Validate the partner discount client-side for immediate feedback; the
+    // server re-validates and is the source of truth.
+    const rawDiscount = editForm.discountPercent
+    const discountNum = rawDiscount === '' || rawDiscount == null ? 0 : Number(rawDiscount)
+    if (!Number.isFinite(discountNum) || discountNum < 0 || discountNum > 100) {
+      setSaveError(t('discountError'))
+      return
+    }
+
     startTransition(async () => {
-      await updateUser(selectedUser.id, payload)
-      setUsers(users.map(u => u.id === selectedUser.id ? { ...u, ...editForm } : u))
-      setViewMode(null)
-      setSelectedUser(null)
+      try {
+        await updateUser(selectedUser.id, payload)
+        const { discountPercent } = await updatePartnerDiscount(selectedUser.id, {
+          discountPercent: discountNum,
+          discountNote: editForm.discountNote ?? null,
+          partnerTier: editForm.partnerTier ?? null,
+        })
+        setUsers(users.map(u => u.id === selectedUser.id
+          ? { ...u, ...editForm, discountPercent: discountPercent.toString() }
+          : u))
+        setViewMode(null)
+        setSelectedUser(null)
+      } catch (error) {
+        setSaveError(error instanceof Error ? error.message : t('discountError'))
+      }
     })
   }
 
@@ -151,6 +179,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
 
   const openEdit = (user: User) => {
     setSelectedUser(user)
+    setSaveError(null)
     setEditForm({
       name: user.name,
       email: user.email,
@@ -163,6 +192,9 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
       country: user.country || '',
       phone: user.phone || '',
       notes: user.notes || '',
+      discountPercent: user.discountPercent != null ? String(normalizeDiscountPercent(user.discountPercent)) : '0',
+      discountNote: user.discountNote || '',
+      partnerTier: user.partnerTier || '',
     })
     setViewMode('edit')
   }
@@ -233,6 +265,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                 <TableHead>{t('company')}</TableHead>
                 <TableHead>{t('status')}</TableHead>
                 <TableHead>{t('role')}</TableHead>
+                <TableHead>{t('discountPercent')}</TableHead>
                 <TableHead>{t('registered')}</TableHead>
                 <TableHead className="text-right">{t('actions')}</TableHead>
               </TableRow>
@@ -240,7 +273,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     {t('noUsers')}
                   </TableCell>
                 </TableRow>
@@ -252,6 +285,12 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                     <TableCell>{user.companyName || '-'}</TableCell>
                     <TableCell>{getStatusBadge(user.status)}</TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
+                    <TableCell>
+                      <span className="font-medium text-foreground">{normalizeDiscountPercent(user.discountPercent)}%</span>
+                      {user.partnerTier && (
+                        <span className="ml-2 text-xs text-muted-foreground">{user.partnerTier}</span>
+                      )}
+                    </TableCell>
                     <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -362,6 +401,19 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                   <p className="text-sm text-muted-foreground">{selectedUser.notes}</p>
                 </div>
               )}
+
+              <div className="rounded-lg border border-border p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">{t('discountPercent')}</p>
+                  <span className="font-semibold text-primary">{normalizeDiscountPercent(selectedUser.discountPercent)}%</span>
+                </div>
+                {selectedUser.partnerTier && (
+                  <p className="mt-1 text-sm text-muted-foreground">{t('partnerTier')}: {selectedUser.partnerTier}</p>
+                )}
+                {selectedUser.discountNote && (
+                  <p className="mt-1 text-sm text-muted-foreground">{selectedUser.discountNote}</p>
+                )}
+              </div>
 
               <p className="text-xs text-muted-foreground">
                 {t('registered')}: {new Date(selectedUser.createdAt).toLocaleString()}
@@ -480,9 +532,53 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                 onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
               />
             </div>
+
+            {/* Partner B2B discount */}
+            <div className="space-y-3 rounded-lg border border-border p-4">
+              <div>
+                <p className="text-sm font-semibold text-foreground">{t('partnerPricingTitle')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('discountExplanation')}</p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-discount">{t('discountPercent')}</Label>
+                  <Input
+                    id="edit-discount"
+                    type="number"
+                    min={0}
+                    max={100}
+                    step="0.01"
+                    inputMode="decimal"
+                    value={editForm.discountPercent ?? '0'}
+                    onChange={(e) => setEditForm({ ...editForm, discountPercent: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">{t('discountRangeHint')}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-tier">{t('partnerTier')}</Label>
+                  <Input
+                    id="edit-tier"
+                    value={editForm.partnerTier || ''}
+                    onChange={(e) => setEditForm({ ...editForm, partnerTier: e.target.value })}
+                    placeholder={t('partnerTierPlaceholder')}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-discount-note">{t('discountNote')}</Label>
+                <Input
+                  id="edit-discount-note"
+                  value={editForm.discountNote || ''}
+                  onChange={(e) => setEditForm({ ...editForm, discountNote: e.target.value })}
+                />
+              </div>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setViewMode(null); setSelectedUser(null); }}>
+          <DialogFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
+            {saveError && (
+              <p className="mr-auto text-sm font-medium text-destructive" role="alert">{saveError}</p>
+            )}
+            <Button variant="outline" onClick={() => { setViewMode(null); setSelectedUser(null); setSaveError(null); }}>
               {tCommon('cancel')}
             </Button>
             <Button onClick={handleEditSave} disabled={isPending}>

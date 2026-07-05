@@ -88,6 +88,11 @@
     "priceOnLogin": "Cena po přihlášení",
     "loginToSeePrice": "Cena pouze pro registrované zákazníky",
     "loginPrompt": "Přihlaste se pro zobrazení ceny",
+    "partnerPrice": "Vaše partnerská cena",
+    "listPrice": "Ceníková cena",
+    "discountLabel": "Sleva",
+    "awaitingApproval": "Účet čeká na schválení",
+    "priceOnRequest": "Cena na vyžádání",
     "backToProducts": "Zpět na produkty",
     "requestQuote": "Poslat poptávku",
     "callNow": "Zavolat",
@@ -186,7 +191,7 @@
     "errors": {
       "nameRequired": "Zadejte prosím své jméno",
       "invalidEmail": "Zadejte prosím platnou e-mailovou adresu",
-      "passwordLength": "Heslo musí mít alespoň 8 znaků",
+      "passwordLength": "Heslo musí m��t alespoň 8 znaků",
       "passwordMismatch": "Hesla se neshodují",
       "companyRequired": "Zadejte prosím název firmy",
       "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu."
@@ -194,6 +199,16 @@
     "error": "Přihlášení selhalo. Zkontrolujte prosím své údaje."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktivní trh",
+      "viewPublicPage": "Zobrazit veřejnou stránku",
+      "selectMarket": "Vybrat trh"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimatizace bez venkovní jednotky",
+      "fancoil": "Fan Coil jednotky",
+      "none": "Bez kategorie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Vítejte",
     "products": "Správa produktů",
@@ -278,7 +293,15 @@
       "city": "Město",
       "country": "Země",
       "saveChanges": "Uložit změny",
-      "close": "Zavřít"
+      "close": "Zavřít",
+      "partnerPricingTitle": "Partnerské ceny",
+      "discountPercent": "Partnerská sleva (%)",
+      "discountNote": "Poznámka ke slevě",
+      "partnerTier": "Partnerská úroveň",
+      "partnerTierPlaceholder": "např. Gold, Silver",
+      "discountExplanation": "Tato sleva se použije na všechny aktivní produkty pro tento partnerský účet.",
+      "discountRangeHint": "Hodnota mezi 0 a 100.",
+      "discountError": "Sleva musí být mezi 0 a 100."
     },
     "productManagement": {
       "title": "Správa produktů",
@@ -289,7 +312,7 @@
       "createProduct": "Vytvořit nový produkt",
       "deleteProduct": "Smazat produkt",
       "confirmDelete": "Opravdu chcete tento produkt smazat?",
-      "noProducts": "Zatím žádné produkty.",
+      "noProducts": "Zatím ��ádné produkty.",
       "firstProduct": "Vytvořit první produkt",
       "active": "Aktivní",
       "inactive": "Neaktivní",

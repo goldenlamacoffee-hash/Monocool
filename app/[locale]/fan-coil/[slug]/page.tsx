@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -11,12 +10,12 @@ import { getProductBySlugAndLocale } from '@/app/actions/products'
 import { getProductImages } from '@/app/actions/gallery'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { getPartnerViewer } from '@/lib/partner-pricing'
+import { resolveProductPriceView } from '@/lib/pricing'
+import { PartnerPrice } from '@/components/partner-price'
 import { type Locale } from '@/i18n/config'
 import { 
   ArrowLeft, 
-  Lock, 
   Zap, 
   Thermometer, 
   Volume2, 
@@ -67,7 +66,8 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
   // Fetch site settings for contact info
   const siteSettings = await getSiteSettingsByLocale(locale)
 
-  const session = await auth.api.getSession({ headers: await headers() })
+  const viewer = await getPartnerViewer()
+  const priceView = resolveProductPriceView(product.price, viewer)
 
   // Fan-coil specific specs from the specs JSON field
   const fanCoilSpecs = product.specs as Record<string, string> | null
@@ -152,30 +152,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
 
                 {/* Price Box */}
                 <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6">
-                  {session?.user ? (
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-white/60">{tProducts('priceLabel')}</div>
-                      <div className="mt-1 font-heading text-3xl font-semibold text-white">
-                        {product.price 
-                          ? `${Number(product.price).toLocaleString(locale)} EUR` 
-                          : tProducts('priceOnLogin')}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-secondary">
-                        <Lock className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                      <div>
-                        <div className="font-medium text-white">{tProducts('loginToSeePrice')}</div>
-                        <div className="text-sm text-white/60">
-                          <Link href={`/${locale}/anmelden`} className="font-medium text-secondary hover:underline">
-                            {tProducts('loginPrompt')}
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <PartnerPrice view={priceView} variant="detail" tone="onDark" />
                 </div>
 
                 {/* CTA Buttons */}

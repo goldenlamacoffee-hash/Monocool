@@ -9,6 +9,8 @@ import { FanCoilCTA } from '@/components/fan-coil/cta'
 import { getProductsByCategoryAndLocale, getFancoilCmsContentByLocale } from '@/app/actions/products'
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
+import { getPartnerViewer } from '@/lib/partner-pricing'
+import { resolveProductPriceView, type ProductPriceView } from '@/lib/pricing'
 import { type Locale } from '@/i18n/config'
 
 interface Props {
@@ -37,11 +39,18 @@ export default async function FanCoilPage({ params }: Props) {
   setRequestLocale(locale)
 
   // Fetch fan-coil products and CMS content from database
-  const [fanCoilProducts, cmsContent, siteSettings] = await Promise.all([
+  const [fanCoilProducts, cmsContent, siteSettings, viewer] = await Promise.all([
     getProductsByCategoryAndLocale('fancoil', locale),
     getFancoilCmsContentByLocale(locale),
-    getSiteSettingsByLocale(locale)
+    getSiteSettingsByLocale(locale),
+    getPartnerViewer(),
   ])
+
+  // Resolve gated partner pricing per product (server-side only).
+  const priceViewsById: Record<number, ProductPriceView> = {}
+  for (const p of fanCoilProducts) {
+    priceViewsById[p.id] = resolveProductPriceView(p.price, viewer)
+  }
 
   // Helper to get CMS content with locale fallback.
   // Coerces the jsonb `metadata` column (typed as unknown) into the
@@ -68,7 +77,7 @@ export default async function FanCoilPage({ params }: Props) {
       <Header />
       <main className="flex-1">
         <FanCoilHero cmsContent={getCms('fancoil_hero')} />
-        <FanCoilProductsDisplay products={fanCoilProductsForDisplay} />
+        <FanCoilProductsDisplay products={fanCoilProductsForDisplay} priceViewsById={priceViewsById} />
         <FanCoilFeatures 
           cmsContent={{
             section: getCms('fancoil_features'),
