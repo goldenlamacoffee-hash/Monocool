@@ -16,6 +16,11 @@ import { type Locale } from '@/i18n/config'
 
 interface AdminMarketSelectorProps {
   locale: Locale
+  /**
+   * "card" (default): full bordered card used inside content areas.
+   * "compact": slim control designed for the dark admin top bar.
+   */
+  variant?: 'card' | 'compact'
 }
 
 /**
@@ -23,7 +28,7 @@ interface AdminMarketSelectorProps {
  * Each market maps 1:1 to a locale, so switching navigates the current
  * admin page to the matching locale prefix.
  */
-export function AdminMarketSelector({ locale }: AdminMarketSelectorProps) {
+export function AdminMarketSelector({ locale, variant = 'card' }: AdminMarketSelectorProps) {
   const t = useTranslations('admin.market')
   const router = useRouter()
   const pathname = usePathname()
@@ -40,6 +45,30 @@ export function AdminMarketSelector({ locale }: AdminMarketSelectorProps) {
     startTransition(() => {
       router.push(nextPath)
     })
+  }
+
+  if (variant === 'compact') {
+    return (
+      <Select value={locale} onValueChange={handleChange} disabled={isPending}>
+        <SelectTrigger
+          aria-label={t('selectMarket')}
+          className="h-9 w-full gap-2 border-white/15 bg-white/5 text-white hover:bg-white/10 focus-visible:ring-white/30 data-[placeholder]:text-white/70 sm:w-[210px] [&_svg]:text-white/70"
+        >
+          <Globe className="h-4 w-4 shrink-0 text-[color:var(--mono-ice)]" />
+          <span className="truncate text-left text-xs">
+            <span className="text-white/50">{t('activeMarket')}: </span>
+            <SelectValue />
+          </span>
+        </SelectTrigger>
+        <SelectContent>
+          {DOMAINS.map((domain) => (
+            <SelectItem key={domain.id} value={domain.locale}>
+              {domain.name} ({domain.id})
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )
   }
 
   return (

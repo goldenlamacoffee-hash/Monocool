@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,7 +41,6 @@ import {
   Eye, 
   Pencil, 
   Trash2,
-  ArrowLeft,
   Building2,
   Mail,
   Phone,
@@ -89,7 +87,6 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   const [viewMode, setViewMode] = useState<'view' | 'edit' | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<User | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
-  const router = useRouter()
 
   // Form state for editing
   const [editForm, setEditForm] = useState<Partial<User>>({})
@@ -217,20 +214,16 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   }
 
   return (
-    <>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="mb-6 flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push(`/${locale}/admin`)}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-          <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
-        </div>
+      <div>
+        <p className="eyebrow">Admin</p>
+        <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t('title')}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{filteredUsers.length} {t('usersCount')}</p>
       </div>
 
       {/* Filters */}
-      <Card className="mb-6">
+      <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Tabs value={filter} onValueChange={setFilter}>
@@ -605,6 +598,6 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }

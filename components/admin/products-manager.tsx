@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -37,9 +36,10 @@ import {
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
 import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
-import { Plus, Pencil, Trash2, ArrowLeft, ToggleLeft, ToggleRight, ImageIcon, SlidersHorizontal, Check, Package } from 'lucide-react'
+import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
+import { MarketBanner } from './market-banner'
 
 interface Product {
   id: number
@@ -246,15 +246,15 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <Link href={`/${locale}/admin`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-              {t('backToAdmin') || 'Zurück'}
-            </Link>
-          </div>
+    <div className="space-y-6">
+      <MarketBanner locale={locale} previewPath="produkte" />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="eyebrow">Admin</p>
+          <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
+        </div>
+        <div className="shrink-0">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <button 
@@ -544,15 +544,9 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
             </DialogContent>
           </Dialog>
         </div>
-      </header>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <p className="eyebrow">Admin</p>
-          <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
-        </div>
-
-        {/* Column visibility dropdown */}
+      {/* Column visibility dropdown */}
         <div className="mb-4 flex justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
@@ -701,7 +695,6 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
             )}
           </DialogContent>
         </Dialog>
-      </main>
     </div>
   )
 }

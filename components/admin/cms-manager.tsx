@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -18,9 +17,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { upsertCmsContent } from '@/app/actions/products'
-import { getDomainFromLocale, getMarketName } from '@/lib/domain-utils'
-import { ArrowLeft, Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
+import { getDomainFromLocale } from '@/lib/domain-utils'
+import { Save, FileText, Image, Settings, Globe, Plus, Pencil, X, ImagePlus } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
+import { MarketBanner } from './market-banner'
 
 interface CmsContentItem {
   id: number
@@ -306,34 +306,21 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <Link href={`/${locale}/admin`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-              {t('backToAdmin')}
-            </Link>
-            <span className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
-              <Globe className="h-3.5 w-3.5" />
-              {getMarketName(getDomainFromLocale(locale))} &middot; {getDomainFromLocale(locale)}
-            </span>
-          </div>
-          <Button onClick={openCreateDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t('newContent')}
-          </Button>
+    <div className="space-y-6">
+      <MarketBanner locale={locale} previewPath="" />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="eyebrow">Admin</p>
+          <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
         </div>
-      </header>
+        <Button onClick={openCreateDialog} className="shrink-0">
+          <Plus className="mr-2 h-4 w-4" />
+          {t('newContent')}
+        </Button>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <p className="eyebrow">Admin</p>
-        <h1 className="mb-2 mt-2 font-heading text-3xl font-semibold tracking-tight text-foreground">{t('title')}</h1>
-        <p className="mb-8 text-muted-foreground">
-          {t('description')}
-        </p>
-
-        <Tabs defaultValue="homepage" className="space-y-6">
+      <Tabs defaultValue="homepage" className="space-y-6">
           <TabsList>
             <TabsTrigger value="homepage">{tabs.homepage}</TabsTrigger>
             <TabsTrigger value="fancoil">{tabs.fancoil}</TabsTrigger>
@@ -627,7 +614,6 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
             </div>
           </DialogContent>
         </Dialog>
-      </main>
     </div>
   )
 }

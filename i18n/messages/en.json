@@ -301,7 +301,8 @@
       "partnerTierPlaceholder": "e.g. Gold, Silver",
       "discountExplanation": "This discount is applied to all active products for this partner account.",
       "discountRangeHint": "Value between 0 and 100.",
-      "discountError": "Discount must be between 0 and 100."
+      "discountError": "Discount must be between 0 and 100.",
+      "usersCount": "users"
     },
     "productManagement": {
       "title": "Product Management",
@@ -335,7 +336,8 @@
       "status": "Status",
       "actions": "Actions",
       "saving": "Saving...",
-      "create": "Create"
+      "create": "Create",
+      "subtitle": "Manage products, pricing and images for this market."
     },
     "gallery": {
       "title": "Image Gallery",
@@ -395,6 +397,31 @@
       "imageUrl": "Image URL",
       "metadata": "Additional Data (JSON)",
       "saving": "Saving..."
+    },
+    "nav": {
+      "dashboard": "Overview",
+      "products": "Products",
+      "partners": "Partners",
+      "cms": "Content",
+      "contact": "Contact",
+      "orders": "Orders",
+      "soon": "Soon",
+      "adminPanel": "Admin Panel",
+      "backToSite": "View site",
+      "signOut": "Sign out",
+      "openMenu": "Open menu"
+    },
+    "dashboard": {
+      "overview": "Overview",
+      "pendingPartners": "Pending partners",
+      "allActive": "All active",
+      "addProduct": "Add product",
+      "editContact": "Edit contact",
+      "missingContactTitle": "Contact details missing",
+      "missingContactDesc": "Add a phone number and email for this market.",
+      "missingSeoTitle": "SEO incomplete",
+      "missingSeoDesc": "Add an SEO title and description to improve visibility.",
+      "needsAttention": "Needs attention"
     }
   },
   "legal": {
