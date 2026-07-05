@@ -302,7 +302,10 @@
       "discountExplanation": "Dieser Rabatt wird auf alle aktiven Produkte für dieses Partnerkonto angewendet.",
       "discountRangeHint": "Wert zwischen 0 und 100.",
       "discountError": "Rabatt muss zwischen 0 und 100 liegen.",
-      "usersCount": "Benutzer"
+      "usersCount": "Benutzer",
+      "market": "Markt",
+      "allMarkets": "Alle Märkte",
+      "globalMarket": "Global"
     },
     "productManagement": {
       "title": "Produktverwaltung",

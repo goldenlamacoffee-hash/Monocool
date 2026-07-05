@@ -302,7 +302,10 @@
       "discountExplanation": "Tato sleva se použije na všechny aktivní produkty pro tento partnerský účet.",
       "discountRangeHint": "Hodnota mezi 0 a 100.",
       "discountError": "Sleva musí být mezi 0 a 100.",
-      "usersCount": "uživatelů"
+      "usersCount": "uživatelů",
+      "market": "Trh",
+      "allMarkets": "Všechny trhy",
+      "globalMarket": "Globální"
     },
     "productManagement": {
       "title": "Správa produktů",
