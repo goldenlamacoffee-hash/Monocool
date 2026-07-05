@@ -1,4 +1,5 @@
 import { ExternalLink, Globe } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { getDomainFromLocale, getMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { type Locale } from '@/i18n/config'
 
@@ -16,6 +17,7 @@ interface MarketBannerProps {
  * verify their changes on the correct domain.
  */
 export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketBannerProps) {
+  const t = useTranslations('admin.market')
   const domain = getDomainFromLocale(locale)
   const marketName = getMarketName(domain)
   const previewUrl = getPreviewUrl(domain, previewPath)
@@ -28,7 +30,7 @@ export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketB
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-xs font-semibold uppercase tracking-[0.12em] text-secondary">
-            Aktiver Markt / Active market
+            {t('activeMarket')}
           </span>
           <span className="text-sm font-semibold text-foreground">
             {marketName} &middot; {domain} &middot; <span className="uppercase">{locale}</span>
@@ -42,7 +44,7 @@ export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketB
         className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
       >
         <ExternalLink className="h-4 w-4" />
-        {previewLabel ?? 'Öffentliche Seite ansehen / View public page'}
+        {previewLabel ?? t('viewPublicPage')}
       </a>
     </div>
   )

@@ -194,6 +194,16 @@
     "error": "Prihlásenie zlyhalo. Skontrolujte prosím svoje údaje."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktívny trh",
+      "viewPublicPage": "Zobraziť verejnú stránku",
+      "selectMarket": "Vybrať trh"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimatizácie bez vonkajšej jednotky",
+      "fancoil": "Fan Coil jednotky",
+      "none": "Bez kategórie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Vitajte",
     "products": "Správa produktov",
@@ -381,7 +391,7 @@
       "companyName": "MonoCool GmbH",
       "address": "Adresa spoločnosti bude doplnená pred spustením",
       "city": "Mesto bude doplnené pred spustením",
-      "country": "Rakúsko",
+      "country": "Rak��sko",
       "contact": "Kontakt",
       "phone": "Telefón: bude doplnené pred spustením",
       "email": "E-mail: bude doplnené pred spustením",

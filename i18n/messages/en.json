@@ -194,6 +194,16 @@
     "error": "Login failed. Please check your credentials."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Active market",
+      "viewPublicPage": "View public page",
+      "selectMarket": "Select market"
+    },
+    "categoryLabels": {
+      "klimageraete": "Air conditioners without outdoor unit",
+      "fancoil": "Fan Coil units",
+      "none": "No category"
+    },
     "title": "Admin Dashboard",
     "welcome": "Welcome",
     "products": "Manage Products",

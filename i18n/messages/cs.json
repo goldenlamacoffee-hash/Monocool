@@ -186,7 +186,7 @@
     "errors": {
       "nameRequired": "Zadejte prosím své jméno",
       "invalidEmail": "Zadejte prosím platnou e-mailovou adresu",
-      "passwordLength": "Heslo musí mít alespoň 8 znaků",
+      "passwordLength": "Heslo musí m��t alespoň 8 znaků",
       "passwordMismatch": "Hesla se neshodují",
       "companyRequired": "Zadejte prosím název firmy",
       "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu."
@@ -194,6 +194,16 @@
     "error": "Přihlášení selhalo. Zkontrolujte prosím své údaje."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktivní trh",
+      "viewPublicPage": "Zobrazit veřejnou stránku",
+      "selectMarket": "Vybrat trh"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimatizace bez venkovní jednotky",
+      "fancoil": "Fan Coil jednotky",
+      "none": "Bez kategorie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Vítejte",
     "products": "Správa produktů",

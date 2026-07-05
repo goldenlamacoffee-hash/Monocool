@@ -194,6 +194,16 @@
     "error": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben."
   },
   "admin": {
+    "market": {
+      "activeMarket": "Aktiver Markt",
+      "viewPublicPage": "Öffentliche Seite ansehen",
+      "selectMarket": "Markt auswählen"
+    },
+    "categoryLabels": {
+      "klimageraete": "Klimageräte ohne Außeneinheit",
+      "fancoil": "Fan Coil Geräte",
+      "none": "Keine Kategorie"
+    },
     "title": "Admin Dashboard",
     "welcome": "Willkommen",
     "products": "Produkte verwalten",

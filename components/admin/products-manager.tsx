@@ -123,6 +123,13 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const router = useRouter()
   const t = useTranslations('admin.productManagement')
   const tCommon = useTranslations('common')
+  const tCategories = useTranslations('admin.categoryLabels')
+
+  // Map raw internal category values (e.g. "klimageraete") to localized labels.
+  const categoryLabel = (category: string | null) => {
+    if (!category) return '-'
+    return tCategories.has(category) ? tCategories(category) : category
+  }
   const [products, setProducts] = useState(initialProducts)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -369,11 +376,16 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="category">{t('category')}</Label>
-                    <Input
+                    <select
                       id="category"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    />
+                      className="border-input bg-transparent flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-3"
+                    >
+                      <option value="">{tCategories('none')}</option>
+                      <option value="klimageraete">{tCategories('klimageraete')}</option>
+                      <option value="fancoil">{tCategories('fancoil')}</option>
+                    </select>
                   </div>
                 </div>
 
@@ -589,7 +601,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                   {products.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{product.category || '-'}</TableCell>
+                      <TableCell>{categoryLabel(product.category)}</TableCell>
                       <TableCell>
                         {product.price ? `${Number(product.price).toLocaleString('de-AT')} EUR` : '-'}
                       </TableCell>
