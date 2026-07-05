@@ -76,6 +76,16 @@ export default async function ProductDetailPage({ params }: Props) {
     { icon: Weight, label: t('weight'), value: product.weight },
   ].filter(spec => spec.value)
 
+  // Lower section = technical data (free-text datasheet and/or the structured
+  // spec grid) instead of the description, which now lives in the right column.
+  const technicalLabel =
+    locale === 'sk' ? 'Technické údaje'
+    : locale === 'cs' ? 'Technické údaje'
+    : locale === 'de' ? 'Technische Daten'
+    : 'Technical Data'
+  const hasTechnical = Boolean(product.technicalData) || specs.length > 0
+  const hasFeatures = Boolean(product.features && product.features.length > 0)
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -127,6 +137,14 @@ export default async function ProductDetailPage({ params }: Props) {
                 </div>
               )}
 
+              {/* Description (moved from lower tabs into the right column) */}
+              {product.description && (
+                <div className="mt-6">
+                  <h2 className="font-heading text-lg font-semibold text-foreground">{t('description')}</h2>
+                  <p className="mt-2 whitespace-pre-line leading-relaxed text-muted-foreground">{product.description}</p>
+                </div>
+              )}
+
               {/* CTA Buttons */}
               <div className="mt-8 flex flex-wrap gap-3">
                 {siteSettings.email?.trim() && (
@@ -149,79 +167,69 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Tabs Section */}
-          <div className="mt-14">
-            <Tabs defaultValue="beschreibung" className="w-full">
-              <TabsList className="w-full max-w-full justify-start overflow-x-auto">
-                {/* horizontally scrollable on narrow screens */}
-                <TabsTrigger value="beschreibung">{t('description')}</TabsTrigger>
-                <TabsTrigger value="spezifikationen">{t('specifications')}</TabsTrigger>
-                {product.features && product.features.length > 0 && (
-                  <TabsTrigger value="merkmale">{t('features')}</TabsTrigger>
-                )}
-              </TabsList>
-              
-              <TabsContent value="beschreibung" className="mt-6">
-                <Card>
-                  <CardContent className="prose prose-slate max-w-none p-6">
-                    {product.description ? (
-                      <p className="whitespace-pre-line text-foreground">{product.description}</p>
-                    ) : (
-                      <p className="text-muted-foreground">{t('notFound')}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="spezifikationen" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('specifications')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {specs.length > 0 ? (
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        {specs.map((spec) => (
-                          <div 
-                            key={spec.label} 
-                            className="flex items-center justify-between rounded-xl border border-border bg-soft-ice p-3.5"
-                          >
-                            <div className="flex items-center gap-2">
-                              <spec.icon className="h-4 w-4 text-secondary" aria-hidden="true" />
-                              <span className="text-muted-foreground">{spec.label}</span>
-                            </div>
-                            <span className="font-medium text-foreground">{spec.value}</span>
+          {/* Lower Section: technical data (default) + features. Description moved to the right column above. */}
+          {(hasTechnical || hasFeatures) && (
+            <div className="mt-14">
+              <Tabs defaultValue={hasTechnical ? 'technical' : 'merkmale'} className="w-full">
+                <TabsList className="w-full max-w-full justify-start overflow-x-auto">
+                  {/* horizontally scrollable on narrow screens */}
+                  {hasTechnical && <TabsTrigger value="technical">{technicalLabel}</TabsTrigger>}
+                  {hasFeatures && <TabsTrigger value="merkmale">{t('features')}</TabsTrigger>}
+                </TabsList>
+
+                {hasTechnical && (
+                  <TabsContent value="technical" className="mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{technicalLabel}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {product.technicalData && (
+                          <p className="whitespace-pre-line leading-relaxed text-foreground">{product.technicalData}</p>
+                        )}
+                        {specs.length > 0 && (
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            {specs.map((spec) => (
+                              <div
+                                key={spec.label}
+                                className="flex items-center justify-between rounded-xl border border-border bg-soft-ice p-3.5"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <spec.icon className="h-4 w-4 text-secondary" aria-hidden="true" />
+                                  <span className="text-muted-foreground">{spec.label}</span>
+                                </div>
+                                <span className="font-medium text-foreground">{spec.value}</span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground">{t('notFound')}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {product.features && product.features.length > 0 && (
-                <TabsContent value="merkmale" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>{t('features')}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="grid gap-3 sm:grid-cols-2">
-                        {product.features.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2.5">
-                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-secondary" aria-hidden="true" />
-                            <span className="text-foreground">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              )}
-            </Tabs>
-          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                )}
+
+                {hasFeatures && (
+                  <TabsContent value="merkmale" className="mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{t('features')}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="grid gap-3 sm:grid-cols-2">
+                          {product.features!.map((feature, index) => (
+                            <li key={index} className="flex items-start gap-2.5">
+                              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-secondary" aria-hidden="true" />
+                              <span className="text-foreground">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                )}
+              </Tabs>
+            </div>
+          )}
         </div>
       </main>
 

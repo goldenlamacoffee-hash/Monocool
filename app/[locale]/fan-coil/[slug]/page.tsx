@@ -89,6 +89,17 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
     { icon: Ruler, label: locale === 'sk' ? 'Rozmery' : locale === 'cs' ? 'Rozměry' : locale === 'de' ? 'Abmessungen' : 'Dimensions', value: fanCoilSpecs.dimensions },
   ].filter(spec => spec.value) : []
 
+  // Lower section defaults to technical data instead of the description, which
+  // now lives in the right column. Fall back to specs, then features.
+  const technicalLabel =
+    locale === 'sk' ? 'Technické údaje'
+    : locale === 'cs' ? 'Technické údaje'
+    : locale === 'de' ? 'Technische Daten'
+    : 'Technical Data'
+  const hasSpecs = standardSpecs.length > 0 || specGridItems.length > 0
+  const hasFeatures = Boolean(product.features && product.features.length > 0)
+  const defaultTab = product.technicalData ? 'technical' : hasSpecs ? 'specifications' : 'features'
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
@@ -155,6 +166,14 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                   <PartnerPrice view={priceView} variant="detail" tone="onDark" />
                 </div>
 
+                {/* Description (moved from lower tabs into the right column) */}
+                {product.description && (
+                  <div className="mt-8">
+                    <h2 className="font-heading text-lg font-semibold text-white">{tProducts('description')}</h2>
+                    <p className="mt-3 whitespace-pre-line leading-relaxed text-white/70">{product.description}</p>
+                  </div>
+                )}
+
                 {/* CTA Buttons */}
                 <div className="mt-6 flex flex-wrap gap-3">
                   {siteSettings.email?.trim() && (
@@ -181,21 +200,25 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
 
         {/* Content Section */}
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <Tabs defaultValue="description" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="w-full max-w-full justify-start overflow-x-auto border-b bg-transparent p-0">
-              <TabsTrigger 
-                value="description" 
-                className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
-              >
-                {tProducts('description')}
-              </TabsTrigger>
-              <TabsTrigger 
-                value="specifications"
-                className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
-              >
-                {tProducts('specifications')}
-              </TabsTrigger>
-              {product.features && product.features.length > 0 && (
+              {product.technicalData && (
+                <TabsTrigger 
+                  value="technical"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                >
+                  {technicalLabel}
+                </TabsTrigger>
+              )}
+              {hasSpecs && (
+                <TabsTrigger 
+                  value="specifications"
+                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                >
+                  {tProducts('specifications')}
+                </TabsTrigger>
+              )}
+              {hasFeatures && (
                 <TabsTrigger 
                   value="features"
                   className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
@@ -203,30 +226,9 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                   {tProducts('features')}
                 </TabsTrigger>
               )}
-              {product.technicalData && (
-                <TabsTrigger 
-                  value="technical"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
-                >
-                  {locale === 'sk' ? 'Technické údaje' : locale === 'cs' ? 'Technické údaje' : locale === 'de' ? 'Technische Daten' : 'Technical Data'}
-                </TabsTrigger>
-              )}
             </TabsList>
             
-            <TabsContent value="description" className="mt-8">
-              <Card className="rounded-2xl border border-border shadow-sm">
-                <CardContent className="p-8">
-                  {product.description ? (
-                    <div className="prose prose-slate dark:prose-invert max-w-none">
-                      <p className="whitespace-pre-line text-lg leading-relaxed text-foreground">{product.description}</p>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">{tProducts('notFound')}</p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
+            {hasSpecs && (
             <TabsContent value="specifications" className="mt-8">
               <Card className="rounded-2xl border border-border shadow-sm">
                 <CardHeader>
@@ -256,8 +258,9 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                 </CardContent>
               </Card>
             </TabsContent>
+            )}
             
-            {product.features && product.features.length > 0 && (
+            {hasFeatures && (
               <TabsContent value="features" className="mt-8">
                 <Card className="rounded-2xl border border-border shadow-sm">
                   <CardHeader>
@@ -265,7 +268,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                   </CardHeader>
                   <CardContent>
                     <ul className="grid gap-3 sm:grid-cols-2">
-                      {product.features.map((feature, index) => (
+                      {product.features!.map((feature, index) => (
                         <li key={index} className="flex items-start gap-3 rounded-xl bg-soft-ice p-4">
                           <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-secondary" aria-hidden="true" />
                           <span className="text-foreground">{feature}</span>
