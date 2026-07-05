@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2, Search, Globe, ExternalLink } from 'lucide-react'
 import { upsertSiteSettings, deleteSiteSettings, type SiteSettings } from '@/app/actions/site-settings'
-import { getLocaleFromDomain, getPreviewUrl } from '@/lib/domain-utils'
+import { getLocaleFromDomain, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { useRouter } from 'next/navigation'
 
 interface ContactSettingsManagerProps {
@@ -146,7 +146,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
             className="gap-2"
           >
             <span className="text-lg">{d.flag}</span>
-            {d.label}
+            {getLocalizedMarketName(d.domain, locale)}
           </Button>
         ))}
       </div>
@@ -157,7 +157,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
           <Globe className="h-4 w-4 text-primary" />
           <span className="font-medium text-muted-foreground">{translations.activeMarket}:</span>
           <span className="font-semibold text-foreground">
-            {DOMAINS.find((d) => d.domain === activeDomain)?.label} &middot; {activeDomain} &middot;{' '}
+            {getLocalizedMarketName(activeDomain, locale)} &middot; {activeDomain} &middot;{' '}
             <span className="uppercase">{getLocaleFromDomain(activeDomain)}</span>
           </span>
         </div>

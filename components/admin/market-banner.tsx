@@ -1,6 +1,6 @@
 import { ExternalLink, Globe } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { getDomainFromLocale, getMarketName, getPreviewUrl } from '@/lib/domain-utils'
+import { getDomainFromLocale, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { type Locale } from '@/i18n/config'
 
 interface MarketBannerProps {
@@ -19,7 +19,7 @@ interface MarketBannerProps {
 export function MarketBanner({ locale, previewPath = '', previewLabel }: MarketBannerProps) {
   const t = useTranslations('admin.market')
   const domain = getDomainFromLocale(locale)
-  const marketName = getMarketName(domain)
+  const marketName = getLocalizedMarketName(domain, locale)
   const previewUrl = getPreviewUrl(domain, previewPath)
 
   return (

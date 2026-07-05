@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import { Globe } from 'lucide-react'
-import { DOMAINS, getDomainFromLocale } from '@/lib/domain-utils'
+import { DOMAINS, getDomainFromLocale, getLocalizedMarketName } from '@/lib/domain-utils'
 import {
   Select,
   SelectContent,
@@ -63,7 +63,7 @@ export function AdminMarketSelector({ locale, variant = 'card' }: AdminMarketSel
         <SelectContent>
           {DOMAINS.map((domain) => (
             <SelectItem key={domain.id} value={domain.locale}>
-              {domain.name} ({domain.id})
+              {getLocalizedMarketName(domain.id, locale)} ({domain.id})
             </SelectItem>
           ))}
         </SelectContent>
@@ -89,7 +89,7 @@ export function AdminMarketSelector({ locale, variant = 'card' }: AdminMarketSel
         <SelectContent>
           {DOMAINS.map((domain) => (
             <SelectItem key={domain.id} value={domain.locale}>
-              {domain.name} ({domain.id})
+              {getLocalizedMarketName(domain.id, locale)} ({domain.id})
             </SelectItem>
           ))}
         </SelectContent>
