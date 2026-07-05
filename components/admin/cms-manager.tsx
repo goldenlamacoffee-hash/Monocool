@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -181,6 +181,11 @@ export function CMSManager({ initialContent, locale }: CMSManagerProps) {
   const [content, setContent] = useState<Record<string, CmsContentItem>>(
     initialContent.reduce((acc, item) => ({ ...acc, [item.key]: item }), {})
   )
+  // Re-sync from the server whenever fresh data arrives (after save/refresh or a
+  // market switch), so the editor never shows another market's stale content.
+  useEffect(() => {
+    setContent(initialContent.reduce((acc, item) => ({ ...acc, [item.key]: item }), {}))
+  }, [initialContent])
   const [editingSection, setEditingSection] = useState<string | null>(null)
   const [formData, setFormData] = useState<{
     key: string

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -80,6 +80,12 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   const t = useTranslations('admin.userManagement')
   const tCommon = useTranslations('common')
   const [users, setUsers] = useState(initialUsers)
+  // Keep the table in sync with fresh server data (e.g. new registrations after a
+  // refresh). Optimistic edits above still give instant feedback; the server
+  // remains the source of truth.
+  useEffect(() => {
+    setUsers(initialUsers)
+  }, [initialUsers])
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [isPending, startTransition] = useTransition()

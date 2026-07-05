@@ -131,6 +131,13 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
     return tCategories.has(category) ? tCategories(category) : category
   }
   const [products, setProducts] = useState(initialProducts)
+  // Re-sync the table whenever the server sends fresh data. `useState` only reads
+  // its initial value once, so after `router.refresh()` (post-save) or a market
+  // switch the new `initialProducts` prop must be pushed into state explicitly —
+  // otherwise the admin table keeps showing stale rows even though the DB updated.
+  useEffect(() => {
+    setProducts(initialProducts)
+  }, [initialProducts])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [formData, setFormData] = useState<ProductFormData>(emptyForm)
