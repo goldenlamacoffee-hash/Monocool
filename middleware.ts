@@ -21,6 +21,15 @@ const SITE_GATE_ENABLED = false
 // by the matcher below.
 const GATE_EXCLUDED = /^\/(de|cs|sk|en)\/(admin|anmelden|registrieren|site-locked)(\/|$)/
 
+// Admin routes are market-management tools: an authenticated admin may edit ANY
+// market regardless of which domain they are physically on. The admin market
+// selector switches the edited market by changing the locale segment while
+// staying on the SAME domain (so the per-domain session cookie stays valid).
+// If we forced the domain's own locale on admin routes, that switch would be
+// redirected straight back and market switching would be impossible. The public
+// site still enforces domain→locale below.
+const ADMIN_ROUTE = /^\/(de|cs|sk|en)\/admin(\/|$)/
+
 function resolveLocale(request: NextRequest, hostname: string): Locale {
   const domainLocale = Object.entries(domainLocales).find(
     ([domain]) => hostname === domain || hostname.endsWith(domain)
@@ -65,7 +74,9 @@ export default async function middleware(request: NextRequest) {
     ([domain]) => hostname === domain || hostname.endsWith(domain)
   )?.[1] as Locale | undefined
   
-  if (domainLocale) {
+  // Admin routes are exempt from domain→locale enforcement so a single admin
+  // session can manage every market from the domain they are logged into.
+  if (domainLocale && !ADMIN_ROUTE.test(pathname)) {
     // On production domain - enforce the correct locale
     const pathLocale = pathname.split('/')[1] as Locale
     
