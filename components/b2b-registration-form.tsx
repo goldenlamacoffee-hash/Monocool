@@ -134,6 +134,9 @@ export function B2BRegistrationForm({ locale }: B2BRegistrationFormProps) {
           postalCode: formData.postalCode,
           country: formData.country,
           phone: formData.phone,
+          // Used server-side (with the request host) to record the market this
+          // account registered on. The server validates it; never trusted blindly.
+          locale,
         }),
       })
 

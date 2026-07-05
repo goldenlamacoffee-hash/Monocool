@@ -31,6 +31,8 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DOMAINS, getLocalizedMarketName } from '@/lib/domain-utils'
 import { 
   Search, 
   MoreHorizontal, 
@@ -56,6 +58,7 @@ interface User {
   email: string
   role: string | null
   status: string | null
+  market: string | null
   companyName: string | null
   companyId: string | null
   vatNumber: string | null
@@ -87,6 +90,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
     setUsers(initialUsers)
   }, [initialUsers])
   const [filter, setFilter] = useState('all')
+  const [marketFilter, setMarketFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [isPending, startTransition] = useTransition()
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -99,11 +103,14 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
 
   const filteredUsers = users.filter(u => {
     const matchesFilter = filter === 'all' || u.status === filter
+    const matchesMarket =
+      marketFilter === 'all' ||
+      (marketFilter === 'global' ? !u.market : u.market === marketFilter)
     const matchesSearch = 
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase()) ||
       (u.companyName?.toLowerCase().includes(search.toLowerCase()) ?? false)
-    return matchesFilter && matchesSearch
+    return matchesFilter && matchesMarket && matchesSearch
   })
 
   const handleStatusChange = async (userId: string, status: 'pending' | 'approved' | 'rejected') => {
@@ -240,14 +247,30 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                 <TabsTrigger value="rejected">{t('rejected')}</TabsTrigger>
               </TabsList>
             </Tabs>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={t('searchPlaceholder')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 w-[300px]"
-              />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Select value={marketFilter} onValueChange={(v) => setMarketFilter(v ?? 'all')}>
+                <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectValue placeholder={t('allMarkets')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('allMarkets')}</SelectItem>
+                  <SelectItem value="global">{t('globalMarket')}</SelectItem>
+                  {DOMAINS.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {getLocalizedMarketName(d.id, locale)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder={t('searchPlaceholder')}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 w-full sm:w-[300px]"
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -262,6 +285,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                 <TableHead>{t('name')}</TableHead>
                 <TableHead>{t('email')}</TableHead>
                 <TableHead>{t('company')}</TableHead>
+                <TableHead>{t('market')}</TableHead>
                 <TableHead>{t('status')}</TableHead>
                 <TableHead>{t('role')}</TableHead>
                 <TableHead>{t('discountPercent')}</TableHead>
@@ -272,7 +296,7 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     {t('noUsers')}
                   </TableCell>
                 </TableRow>
@@ -282,6 +306,13 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.companyName || '-'}</TableCell>
+                    <TableCell>
+                      {user.market ? (
+                        <Badge variant="outline">{getLocalizedMarketName(user.market, locale)}</Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">{t('globalMarket')}</span>
+                      )}
+                    </TableCell>
                     <TableCell>{getStatusBadge(user.status)}</TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>
@@ -361,9 +392,12 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
           </DialogHeader>
           {selectedUser && (
             <div className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {getStatusBadge(selectedUser.status)}
                 {getRoleBadge(selectedUser.role)}
+                <Badge variant="outline">
+                  {t('market')}: {selectedUser.market ? getLocalizedMarketName(selectedUser.market, locale) : t('globalMarket')}
+                </Badge>
               </div>
               
               {selectedUser.companyName && (

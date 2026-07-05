@@ -25,6 +25,12 @@ export const user = pgTable('user', {
   phone: text('phone'),
   status: text('status').default('pending'), // pending, approved, rejected
   notes: text('notes'),
+  // --- Market scope (V1.4E.1) ---
+  // Which market (domain) this account belongs to: monocool.at | monocool.sk |
+  // monocool.cz | monocool.eu. Set from the registration domain for
+  // partner/customer accounts. Admins keep this NULL and remain global.
+  // Foundation only — no access enforcement is applied in this version.
+  market: text('market'),
   // --- B2B partner pricing (V1.4B) ---
   // Percentage discount applied to every product's base price for this
   // partner account. Stored as numeric(5,2); resolved to 0 when null.
