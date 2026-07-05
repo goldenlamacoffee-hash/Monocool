@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2, Search, Globe, ExternalLink } from 'lucide-react'
 import { upsertSiteSettings, deleteSiteSettings, type SiteSettings } from '@/app/actions/site-settings'
-import { getLocaleFromDomain, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
+import { getDomainFromLocale, getLocaleFromDomain, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { useRouter } from 'next/navigation'
 
 interface ContactSettingsManagerProps {
@@ -26,15 +26,34 @@ const DOMAINS = [
 
 export function ContactSettingsManager({ initialSettings, locale }: ContactSettingsManagerProps) {
   const router = useRouter()
-  const [settings, setSettings] = useState<Record<string, Partial<SiteSettings>>>(() => {
-    const initial: Record<string, Partial<SiteSettings>> = {}
+
+  // Build the per-domain settings record from the server-provided rows.
+  const buildSettings = (rows: SiteSettings[]) => {
+    const next: Record<string, Partial<SiteSettings>> = {}
     for (const domain of DOMAINS) {
-      const existing = initialSettings.find(s => s.domain === domain.domain)
-      initial[domain.domain] = existing || { domain: domain.domain }
+      const existing = rows.find(s => s.domain === domain.domain)
+      next[domain.domain] = existing || { domain: domain.domain }
     }
-    return initial
-  })
-  const [activeDomain, setActiveDomain] = useState(DOMAINS[0].domain)
+    return next
+  }
+
+  const [settings, setSettings] = useState<Record<string, Partial<SiteSettings>>>(() =>
+    buildSettings(initialSettings),
+  )
+
+  // Default the active market to the domain of the admin's current locale so an
+  // admin on e.g. /sk/admin/kontakt edits the Slovak market — not always AT.
+  // Falls back to the first known domain if the locale doesn't map to one.
+  const localeDomain = getDomainFromLocale(locale)
+  const initialDomain = DOMAINS.some(d => d.domain === localeDomain) ? localeDomain : DOMAINS[0].domain
+  const [activeDomain, setActiveDomain] = useState(initialDomain)
+
+  // Re-sync local state with fresh server data after router.refresh() (called on
+  // save). Without this the admin UI could show stale values post-refresh.
+  useEffect(() => {
+    setSettings(buildSettings(initialSettings))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSettings])
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
