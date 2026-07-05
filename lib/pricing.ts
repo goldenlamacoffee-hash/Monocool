@@ -47,7 +47,10 @@ export function formatPrice(value: number, locale: string): string {
 
 // --- View models -----------------------------------------------------------
 
-export type PartnerViewerState = 'guest' | 'pending' | 'approved'
+// `wrong_market` (V1.4E.2): an approved partner whose account belongs to a
+// different market than the one currently being viewed. Treated as fail-closed
+// (no prices), but shown a distinct message so the partner knows why.
+export type PartnerViewerState = 'guest' | 'pending' | 'wrong_market' | 'approved'
 
 /**
  * Serializable per-product pricing view passed from server components down to
@@ -58,6 +61,7 @@ export type PartnerViewerState = 'guest' | 'pending' | 'approved'
 export type ProductPriceView =
   | { state: 'guest' }
   | { state: 'pending' }
+  | { state: 'wrong_market' }
   | {
       state: 'approved'
       discountPercent: number
@@ -75,6 +79,7 @@ export function resolveProductPriceView(
 ): ProductPriceView {
   if (viewer.state === 'guest') return { state: 'guest' }
   if (viewer.state === 'pending') return { state: 'pending' }
+  if (viewer.state === 'wrong_market') return { state: 'wrong_market' }
 
   const discountPercent = normalizeDiscountPercent(viewer.discountPercent ?? 0)
   const listPrice = parseBasePrice(basePrice)

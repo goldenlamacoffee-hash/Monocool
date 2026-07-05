@@ -66,7 +66,7 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
   // Fetch site settings for contact info
   const siteSettings = await getSiteSettingsByLocale(locale)
 
-  const viewer = await getPartnerViewer()
+  const viewer = await getPartnerViewer(getDomainFromLocale(locale))
   const priceView = resolveProductPriceView(product.price, viewer)
 
   // Fan-coil specific specs from the specs JSON field

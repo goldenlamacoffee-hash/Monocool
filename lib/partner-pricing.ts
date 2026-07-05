@@ -19,27 +19,48 @@ export type PartnerViewer = {
  * Determine what pricing the current request may see:
  * - guest: no session → no prices at all
  * - pending: logged in but not an approved partner (and not admin) → no prices
- * - approved: approved partner or admin → prices with their discount applied
+ * - wrong_market: approved partner whose account market differs from the market
+ *   currently being viewed → no prices, distinct message (V1.4E.2)
+ * - approved: approved partner on their own market, or admin → prices with their
+ *   discount applied
  *
- * The discount is always read fresh from the database (never trusted from the
- * client), so a stale session or tampered request cannot change it.
+ * Market scoping (V1.4E.2):
+ * - Admins are global: they are never market-gated.
+ * - A non-admin approved partner only sees prices when their `user.market`
+ *   equals `currentMarket`. This FAILS CLOSED: a partner with `market = null`,
+ *   or on any other domain, gets no prices.
+ * - When `currentMarket` is omitted (e.g. a caller that has no domain context),
+ *   market scoping is skipped and behaviour matches V1.4E.1 for compatibility.
+ *
+ * The discount and market are always read fresh from the database (never
+ * trusted from the client), so a stale session or tampered request cannot
+ * change them.
  */
-export async function getPartnerViewer(): Promise<PartnerViewer> {
+export async function getPartnerViewer(currentMarket?: string): Promise<PartnerViewer> {
   const { session, role, status } = await getSessionWithRole()
 
   if (!session?.user) {
     return { state: 'guest', discountPercent: 0 }
   }
 
-  const isApproved = status === 'approved' || role === 'admin'
+  const isAdmin = role === 'admin'
+  const isApproved = status === 'approved' || isAdmin
   if (!isApproved) {
     return { state: 'pending', discountPercent: 0 }
   }
 
   const [row] = await db
-    .select({ discountPercent: user.discountPercent })
+    .select({ discountPercent: user.discountPercent, market: user.market })
     .from(user)
     .where(eq(user.id, session.user.id))
+
+  // Market enforcement for non-admins. Admins remain global.
+  if (!isAdmin && currentMarket) {
+    // Fail closed: no market on the account, or a different market → no prices.
+    if (!row?.market || row.market !== currentMarket) {
+      return { state: 'wrong_market', discountPercent: 0 }
+    }
+  }
 
   return {
     state: 'approved',

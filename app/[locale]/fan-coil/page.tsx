@@ -43,7 +43,7 @@ export default async function FanCoilPage({ params }: Props) {
     getProductsByCategoryAndLocale('fancoil', locale),
     getFancoilCmsContentByLocale(locale),
     getSiteSettingsByLocale(locale),
-    getPartnerViewer(),
+    getPartnerViewer(getDomainFromLocale(locale)),
   ])
 
   // Resolve gated partner pricing per product (server-side only).

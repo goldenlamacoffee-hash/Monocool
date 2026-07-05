@@ -117,7 +117,9 @@
     "sectionFancoil": {
       "title": "Fan Coil Geräte",
       "description": "Design-Ventilkonvektoren für effizientes Heizen und Kühlen."
-    }
+    },
+    "wrongMarket": "Anderer Markt",
+    "wrongMarketHint": "Dieses Partnerkonto ist einem anderen Markt zugeordnet. Für Partnerpreise melden Sie sich auf der richtigen Domain an."
   },
   "contact": {
     "title": "Kontakt",

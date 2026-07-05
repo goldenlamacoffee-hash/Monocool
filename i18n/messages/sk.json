@@ -117,7 +117,9 @@
     "sectionFancoil": {
       "title": "Fan Coil jednotky",
       "description": "Dizajnové ventilkonvektory pre efektívne kúrenie a chladenie."
-    }
+    },
+    "wrongMarket": "Iný trh",
+    "wrongMarketHint": "Tento partnerský účet je priradený k inému trhu. Pre partnerské ceny sa prihláste na správnej doméne."
   },
   "contact": {
     "title": "Kontakt",

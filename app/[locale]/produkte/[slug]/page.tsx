@@ -64,7 +64,7 @@ export default async function ProductDetailPage({ params }: Props) {
   // Fetch site settings for contact info
   const siteSettings = await getSiteSettingsByLocale(locale)
 
-  const viewer = await getPartnerViewer()
+  const viewer = await getPartnerViewer(getDomainFromLocale(locale))
   const priceView = resolveProductPriceView(product.price, viewer)
 
   const specs = [

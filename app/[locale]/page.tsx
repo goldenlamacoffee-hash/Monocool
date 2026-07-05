@@ -14,6 +14,7 @@ import { getProductsByLocale, getHomepageCmsContentByLocale } from '@/app/action
 import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getPartnerViewer } from '@/lib/partner-pricing'
 import { resolveProductPriceView } from '@/lib/pricing'
+import { getDomainFromLocale } from '@/lib/domain-utils'
 import { Snowflake, Volume2, Wrench, Leaf, ArrowRight, Wind, Droplets, ShieldCheck } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 
@@ -36,7 +37,7 @@ export default async function HomePage({ params }: Props) {
     getProductsByLocale(locale),
     getHomepageCmsContentByLocale(locale),
     getSiteSettingsByLocale(locale),
-    getPartnerViewer(),
+    getPartnerViewer(getDomainFromLocale(locale)),
   ])
 
   // Helper to get CMS content with fallback (locale-specific)
