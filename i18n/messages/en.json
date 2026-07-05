@@ -117,7 +117,9 @@
     "sectionFancoil": {
       "title": "Fan Coil Units",
       "description": "Designer ventilconvectors for efficient heating and cooling."
-    }
+    },
+    "wrongMarket": "Different market",
+    "wrongMarketHint": "This partner account belongs to a different market. Please sign in on the correct domain to see partner prices."
   },
   "contact": {
     "title": "Contact",

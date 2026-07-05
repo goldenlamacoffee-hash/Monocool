@@ -80,6 +80,30 @@ export function PartnerPrice({ view, variant = 'card', tone = 'default' }: Partn
     )
   }
 
+  // --- Approved partner, but account belongs to a different market (V1.4E.2) ---
+  // Fail closed: no prices are ever present in `view` for this state.
+  if (view.state === 'wrong_market') {
+    if (variant === 'detail') {
+      return (
+        <div className="flex items-start gap-3">
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-secondary ${c.lockBg}`}>
+            <Lock className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <div className={`font-medium ${c.strong}`}>{t('wrongMarket')}</div>
+            <div className={`mt-0.5 text-sm ${c.muted}`}>{t('wrongMarketHint')}</div>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className={`flex items-center gap-1.5 text-sm ${c.muted}`}>
+        <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+        <span>{t('wrongMarket')}</span>
+      </div>
+    )
+  }
+
   // --- Approved partner (or admin) ---
   // No base price set for this market → show a neutral message, never "0 EUR".
   if (view.finalPrice === null || view.listPrice === null) {

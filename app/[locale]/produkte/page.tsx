@@ -7,6 +7,7 @@ import { SectionHeader } from '@/components/site/section-header'
 import { getProductsByLocale } from '@/app/actions/products'
 import { getPartnerViewer } from '@/lib/partner-pricing'
 import { resolveProductPriceView } from '@/lib/pricing'
+import { getDomainFromLocale } from '@/lib/domain-utils'
 import { type Locale } from '@/i18n/config'
 import { PackageSearch } from 'lucide-react'
 
@@ -21,7 +22,7 @@ export default async function ProductsPage({ params }: Props) {
   const t = await getTranslations('products')
   const [products, viewer] = await Promise.all([
     getProductsByLocale(locale),
-    getPartnerViewer(),
+    getPartnerViewer(getDomainFromLocale(locale)),
   ])
 
   // Group products by category. The two known categories are
