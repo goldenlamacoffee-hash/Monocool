@@ -13,6 +13,7 @@ import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { getPartnerViewer } from '@/lib/partner-pricing'
 import { resolveProductPriceView } from '@/lib/pricing'
 import { PartnerPrice } from '@/components/partner-price'
+import { ProductDocumentsBlock } from '@/components/product-documents-block'
 import { type Locale } from '@/i18n/config'
 import { 
   ArrowLeft, 
@@ -136,6 +137,9 @@ export default async function ProductDetailPage({ params }: Props) {
                   ))}
                 </div>
               )}
+
+              {/* Documents & Downloads */}
+              <ProductDocumentsBlock productId={product.id} locale={locale} />
 
               {/* Description (moved from lower tabs into the right column) */}
               {product.description && (

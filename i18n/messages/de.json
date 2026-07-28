@@ -119,7 +119,9 @@
       "description": "Design-Ventilkonvektoren für effizientes Heizen und Kühlen."
     },
     "wrongMarket": "Anderer Markt",
-    "wrongMarketHint": "Dieses Partnerkonto ist einem anderen Markt zugeordnet. Für Partnerpreise melden Sie sich auf der richtigen Domain an."
+    "wrongMarketHint": "Dieses Partnerkonto ist einem anderen Markt zugeordnet. Für Partnerpreise melden Sie sich auf der richtigen Domain an.",
+    "documentsTitle": "Dokumente & Downloads",
+    "download": "Herunterladen"
   },
   "contact": {
     "title": "Kontakt",
@@ -478,6 +480,45 @@
       "saveError": "Speichern fehlgeschlagen",
       "deleteError": "Löschen fehlgeschlagen",
       "loadError": "Varianten konnten nicht geladen werden"
+    },
+    "documents": {
+      "title": "Dokumente & Downloads",
+      "uploadNew": "Neues Dokument hochladen",
+      "dropzone": "PDF-Datei hierher ziehen oder klicken zum Auswählen",
+      "pdfHint": "Nur PDF-Dateien – max. 25 MB",
+      "docTitle": "Dokumenttitel",
+      "docTitlePlaceholder": "z. B. Bedienungs- und Installationsanleitung",
+      "docType": "Dokumenttyp",
+      "language": "Sprache",
+      "upload": "Hochladen",
+      "uploading": "Wird hochgeladen...",
+      "edit": "Bearbeiten",
+      "preview": "Vorschau",
+      "activate": "Aktivieren",
+      "deactivate": "Deaktivieren",
+      "delete": "Löschen",
+      "empty": "Noch keine Dokumente vorhanden",
+      "pdfOnly": "Es sind nur PDF-Dateien erlaubt.",
+      "fileTooLarge": "Datei ist zu groß. Maximum ist 25 MB.",
+      "noFileSelected": "Bitte wählen Sie eine PDF-Datei aus.",
+      "titleRequired": "Dokumenttitel ist erforderlich.",
+      "uploadError": "Hochladen fehlgeschlagen.",
+      "loadError": "Dokumente konnten nicht geladen werden.",
+      "saveError": "Speichern fehlgeschlagen.",
+      "deleteError": "Löschen fehlgeschlagen.",
+      "toggleError": "Statusänderung fehlgeschlagen.",
+      "type_manual": "Bedienungs- und Installationsanleitung",
+      "type_datasheet": "Technisches Datenblatt",
+      "type_installation_guide": "Installationsanleitung",
+      "type_energy_label": "Energieetikett",
+      "type_declaration_of_conformity": "Konformitätserklärung",
+      "type_brochure": "Broschüre",
+      "type_other": "Sonstiges",
+      "lang_de": "Deutsch",
+      "lang_sk": "Slowakisch",
+      "lang_cs": "Tschechisch",
+      "lang_en": "Englisch",
+      "documentsButton": "Dokumente"
     }
   },
   "legal": {

@@ -13,6 +13,7 @@ import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { getPartnerViewer } from '@/lib/partner-pricing'
 import { resolveProductPriceView } from '@/lib/pricing'
 import { PartnerPrice } from '@/components/partner-price'
+import { ProductDocumentsBlock } from '@/components/product-documents-block'
 import { type Locale } from '@/i18n/config'
 import { 
   ArrowLeft, 
@@ -165,6 +166,9 @@ export default async function FanCoilProductDetailPage({ params }: Props) {
                 <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6">
                   <PartnerPrice view={priceView} variant="detail" tone="onDark" />
                 </div>
+
+                {/* Documents & Downloads */}
+                <ProductDocumentsBlock productId={product.id} locale={locale} tone="onDark" />
 
                 {/* Description (moved from lower tabs into the right column) */}
                 {product.description && (
