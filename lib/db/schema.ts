@@ -187,6 +187,31 @@ export const productVariant = pgTable('product_variant', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
+// --- Product documents / downloads (V1.4F.2) --------------------------------
+// Admin can upload PDF documents (manuals, datasheets, energy labels, etc.)
+// per product. Documents are scoped to a language that maps 1:1 to the market
+// locale (de→monocool.at, sk→monocool.sk, cs→monocool.cz, en→monocool.eu).
+// No domain column — documents inherit market from the parent product.
+// The uploaded file lives in Vercel Blob; fileUrl is the Blob URL (public) or
+// served via API route (private); pathname is the Blob pathname used for `del`.
+export const productDocument = pgTable('product_document', {
+  id: serial('id').primaryKey(),
+  productId: integer('productId')
+    .notNull()
+    .references(() => product.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  type: text('type').notNull(),        // e.g. 'manual', 'datasheet', 'energy_label', ...
+  language: text('language').notNull(), // 'de' | 'sk' | 'cs' | 'en'
+  fileUrl: text('fileUrl').notNull(),   // URL to serve the PDF
+  pathname: text('pathname').notNull(), // Blob pathname for deletion
+  fileName: text('fileName'),           // original upload filename, shown in admin
+  fileSize: integer('fileSize'),        // bytes, shown as "4.2 MB" on frontend
+  isActive: boolean('isActive').notNull().default(true),
+  sortOrder: integer('sortOrder').notNull().default(0),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
 export const cmsContent = pgTable('cms_content', {
   id: serial('id').primaryKey(),
   key: text('key').notNull(),
@@ -229,6 +254,8 @@ export type NewProduct = typeof product.$inferInsert
 export type ProductImage = typeof productImage.$inferSelect
 export type ProductVariant = typeof productVariant.$inferSelect
 export type NewProductVariant = typeof productVariant.$inferInsert
+export type ProductDocument = typeof productDocument.$inferSelect
+export type NewProductDocument = typeof productDocument.$inferInsert
 export type CmsContent = typeof cmsContent.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type Order = typeof order.$inferSelect
