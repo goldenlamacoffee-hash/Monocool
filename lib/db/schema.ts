@@ -162,6 +162,31 @@ export const productImage = pgTable('product_image', {
   createdAt: timestamp('createdAt').notNull().defaultNow(),
 })
 
+// --- Product variants (V1.4F.1) --------------------------------------------
+// A product can have multiple variants / power versions (e.g. "Reverso FS 200",
+// "Reverso FS 400"). The parent product remains the primary entity; variants
+// belong to it and inherit the parent's market/domain (no domain column here).
+// Products without variants keep working exactly as before.
+export const productVariant = pgTable('product_variant', {
+  id: serial('id').primaryKey(),
+  productId: integer('productId')
+    .notNull()
+    .references(() => product.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  sku: text('sku'),
+  // Nullable: when null, the frontend (a later version) falls back to the
+  // parent product's price. Stored as string like product.price.
+  price: decimal('price', { precision: 10, scale: 2 }),
+  coolingOutput: text('coolingOutput'), // e.g. "880 W"
+  heatingOutput: text('heatingOutput'), // e.g. "1100 W"
+  technicalData: text('technicalData'),
+  specs: jsonb('specs'),
+  isActive: boolean('isActive').notNull().default(true),
+  sortOrder: integer('sortOrder').notNull().default(0),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
 export const cmsContent = pgTable('cms_content', {
   id: serial('id').primaryKey(),
   key: text('key').notNull(),
@@ -202,6 +227,8 @@ export type User = typeof user.$inferSelect
 export type Product = typeof product.$inferSelect
 export type NewProduct = typeof product.$inferInsert
 export type ProductImage = typeof productImage.$inferSelect
+export type ProductVariant = typeof productVariant.$inferSelect
+export type NewProductVariant = typeof productVariant.$inferInsert
 export type CmsContent = typeof cmsContent.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type Order = typeof order.$inferSelect

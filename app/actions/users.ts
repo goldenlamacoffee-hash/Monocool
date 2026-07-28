@@ -176,6 +176,141 @@ export async function updatePartnerDiscount(
   return { success: true, discountPercent }
 }
 
+// Create a partner account from the admin panel (admin only).
+//
+// Safety approach:
+//   1. assertAdmin — only admins can call this.
+//   2. Duplicate-email check before we touch auth, so the error is clear.
+//   3. auth.api.signUpEmail — creates the user row + account row + hashes the
+//      password using Better Auth's own bcrypt pipeline. We never store or log
+//      the plain password ourselves.
+//   4. Immediately patch the new user row to set market, status, role (user),
+//      and the optional partner fields.  The role is forced to 'user' on the
+//      update regardless of what signUp might have defaulted to; admins cannot
+//      be created through this path.
+//
+// The partner can log in immediately with the temporary password.
+export async function createPartner(data: {
+  // Required
+  email: string
+  password: string
+  market: string
+  // Optional profile
+  name?: string
+  companyName?: string
+  companyId?: string
+  vatNumber?: string
+  phone?: string
+  address?: string
+  postalCode?: string
+  city?: string
+  country?: string
+  notes?: string
+  // Partner pricing
+  discountPercent?: number
+  discountNote?: string
+  partnerTier?: string
+  // Status (default approved for admin-created accounts)
+  status?: 'pending' | 'approved' | 'rejected'
+}) {
+  await assertAdmin()
+
+  // Validate market — required for partner users, must be a known market.
+  if (!data.market || !isValidMarket(data.market)) {
+    throw new Error('Invalid market')
+  }
+
+  // Validate password length (Better Auth min is 8 chars).
+  if (!data.password || data.password.length < 8) {
+    throw new Error('Password must be at least 8 characters')
+  }
+
+  // Validate email format.
+  if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    throw new Error('Invalid email address')
+  }
+
+  // Duplicate-email check (Better Auth will also reject it, but we give a
+  // clearer message this way).
+  const [existing] = await db
+    .select({ id: user.id })
+    .from(user)
+    .where(eq(user.email, data.email.toLowerCase().trim()))
+    .limit(1)
+  if (existing) {
+    throw new Error('EMAIL_ALREADY_EXISTS')
+  }
+
+  // Validate discount if provided.
+  const rawDiscount = data.discountPercent ?? 0
+  if (!Number.isFinite(rawDiscount) || rawDiscount < MIN_DISCOUNT || rawDiscount > MAX_DISCOUNT) {
+    throw new Error(`Discount must be between ${MIN_DISCOUNT} and ${MAX_DISCOUNT}`)
+  }
+  const discountPercent = Math.round(rawDiscount * 100) / 100
+
+  // Create the account through Better Auth so the password is hashed via its
+  // own bcrypt pipeline. autoSignIn is enabled globally but we don't consume
+  // the returned session cookie here (server action context).
+  let newUserId: string
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email: data.email.trim(),
+        password: data.password,
+        name: data.name?.trim() || data.email.trim(),
+      },
+    })
+    if (!result?.user?.id) {
+      throw new Error('Account creation failed')
+    }
+    newUserId = result.user.id
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    // Better Auth may also throw on duplicate email; surface it consistently.
+    if (msg.toLowerCase().includes('email') && msg.toLowerCase().includes('exist')) {
+      throw new Error('EMAIL_ALREADY_EXISTS')
+    }
+    throw err
+  }
+
+  // Patch the user row: set market, status, role (forced to 'user'), and
+  // optional partner fields.  We never allow 'admin' role through this path.
+  const status = data.status ?? 'approved'
+  await db
+    .update(user)
+    .set({
+      market: data.market,
+      status,
+      role: 'user',
+      companyName: data.companyName?.trim() || null,
+      companyId: data.companyId?.trim() || null,
+      vatNumber: data.vatNumber?.trim() || null,
+      phone: data.phone?.trim() || null,
+      address: data.address?.trim() || null,
+      postalCode: data.postalCode?.trim() || null,
+      city: data.city?.trim() || null,
+      country: data.country?.trim() || null,
+      notes: data.notes?.trim() || null,
+      discountPercent: discountPercent.toString(),
+      discountNote: data.discountNote?.trim() || null,
+      partnerTier: data.partnerTier?.trim() || null,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, newUserId))
+
+  revalidatePath('/admin/benutzer')
+  const locales = ['de', 'en', 'cs', 'sk']
+  locales.forEach((locale) => {
+    revalidatePath(`/${locale}`)
+    revalidatePath(`/${locale}/produkte`)
+    revalidatePath(`/${locale}/fan-coil`)
+  })
+
+  // Return the new user row so the client can optimistically add it to the table.
+  const [created] = await db.select().from(user).where(eq(user.id, newUserId)).limit(1)
+  return { success: true, user: created }
+}
+
 // Delete user (admin only)
 export async function deleteUser(id: string) {
   await assertAdmin()

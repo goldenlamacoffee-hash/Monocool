@@ -46,9 +46,11 @@ import {
   Building2,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  UserPlus,
+  RefreshCw
 } from 'lucide-react'
-import { updateUserStatus, updateUserRole, updateUser, updatePartnerDiscount, deleteUser } from '@/app/actions/users'
+import { updateUserStatus, updateUserRole, updateUser, updatePartnerDiscount, deleteUser, createPartner } from '@/app/actions/users'
 import { normalizeDiscountPercent } from '@/lib/pricing'
 import { type Locale } from '@/i18n/config'
 
@@ -97,6 +99,88 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   const [viewMode, setViewMode] = useState<'view' | 'edit' | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<User | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  // Add partner dialog
+  const [addPartnerOpen, setAddPartnerOpen] = useState(false)
+  const [addPartnerError, setAddPartnerError] = useState<string | null>(null)
+  const [addPartnerSuccess, setAddPartnerSuccess] = useState(false)
+  const defaultAddForm = () => ({
+    email: '',
+    password: '',
+    market: '',
+    status: 'approved' as 'pending' | 'approved' | 'rejected',
+    name: '',
+    companyName: '',
+    companyId: '',
+    vatNumber: '',
+    phone: '',
+    address: '',
+    postalCode: '',
+    city: '',
+    country: '',
+    notes: '',
+    discountPercent: '0',
+    discountNote: '',
+    partnerTier: '',
+  })
+  const [addForm, setAddForm] = useState(defaultAddForm)
+
+  const openAddPartner = () => {
+    setAddForm(defaultAddForm)
+    setAddPartnerError(null)
+    setAddPartnerSuccess(false)
+    setAddPartnerOpen(true)
+  }
+
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#%'
+    let pwd = ''
+    for (let i = 0; i < 12; i++) pwd += chars[Math.floor(Math.random() * chars.length)]
+    setAddForm(f => ({ ...f, password: pwd }))
+  }
+
+  const handleAddPartner = async () => {
+    setAddPartnerError(null)
+    const discountNum = addForm.discountPercent === '' ? 0 : Number(addForm.discountPercent)
+    if (!Number.isFinite(discountNum) || discountNum < 0 || discountNum > 100) {
+      setAddPartnerError(t('discountError'))
+      return
+    }
+    startTransition(async () => {
+      try {
+        const result = await createPartner({
+          email: addForm.email,
+          password: addForm.password,
+          market: addForm.market,
+          status: addForm.status,
+          name: addForm.name || undefined,
+          companyName: addForm.companyName || undefined,
+          companyId: addForm.companyId || undefined,
+          vatNumber: addForm.vatNumber || undefined,
+          phone: addForm.phone || undefined,
+          address: addForm.address || undefined,
+          postalCode: addForm.postalCode || undefined,
+          city: addForm.city || undefined,
+          country: addForm.country || undefined,
+          notes: addForm.notes || undefined,
+          discountPercent: discountNum,
+          discountNote: addForm.discountNote || undefined,
+          partnerTier: addForm.partnerTier || undefined,
+        })
+        if (result.user) {
+          setUsers(prev => [result.user as User, ...prev])
+        }
+        setAddPartnerSuccess(true)
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : ''
+        if (msg === 'EMAIL_ALREADY_EXISTS') {
+          setAddPartnerError(t('emailExists'))
+        } else {
+          setAddPartnerError(msg || t('createError'))
+        }
+      }
+    })
+  }
 
   // Form state for editing
   const [editForm, setEditForm] = useState<Partial<User>>({})
@@ -242,10 +326,16 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <p className="eyebrow">Admin</p>
-        <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t('title')}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{filteredUsers.length} {t('usersCount')}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">Admin</p>
+          <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{filteredUsers.length} {t('usersCount')}</p>
+        </div>
+        <Button onClick={openAddPartner} className="shrink-0 mt-2">
+          <UserPlus className="mr-2 h-4 w-4" />
+          {t('addPartner')}
+        </Button>
       </div>
 
       {/* Filters */}
@@ -661,6 +751,237 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
               {t('saveChanges')}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Partner Dialog */}
+      <Dialog open={addPartnerOpen} onOpenChange={(open) => { if (!open) setAddPartnerOpen(false) }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('addPartnerTitle')}</DialogTitle>
+            <DialogDescription>{t('addPartnerDescription')}</DialogDescription>
+          </DialogHeader>
+
+          {addPartnerSuccess ? (
+            <div className="space-y-4 py-2">
+              <p className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm font-medium text-green-600 dark:text-green-400">
+                {t('createSuccess')}
+              </p>
+              <DialogFooter>
+                <Button onClick={() => { setAddPartnerOpen(false) }}>{tCommon('close')}</Button>
+                <Button variant="outline" onClick={() => { setAddForm(defaultAddForm); setAddPartnerSuccess(false); setAddPartnerError(null) }}>
+                  {t('addPartner')}
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Required: email, password, market */}
+              <div className="space-y-2">
+                <Label htmlFor="ap-email">{t('email')} *</Label>
+                <Input
+                  id="ap-email"
+                  type="email"
+                  value={addForm.email}
+                  onChange={(e) => setAddForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="partner@firma.sk"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-password">{t('tempPassword')} *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="ap-password"
+                    type="text"
+                    value={addForm.password}
+                    onChange={(e) => setAddForm(f => ({ ...f, password: e.target.value }))}
+                    placeholder="min. 8 znakov"
+                    className="font-mono"
+                    required
+                  />
+                  <Button type="button" variant="outline" size="sm" onClick={generatePassword} className="shrink-0">
+                    <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                    {t('generatePassword')}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-market">{t('market')} *</Label>
+                <select
+                  id="ap-market"
+                  value={addForm.market}
+                  onChange={(e) => setAddForm(f => ({ ...f, market: e.target.value }))}
+                  className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  required
+                >
+                  <option value="" disabled>{t('market')}</option>
+                  {DOMAINS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {getLocalizedMarketName(d.id, locale)} ({d.id})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">{t('marketHint')}</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-status">{t('statusLabel')}</Label>
+                <select
+                  id="ap-status"
+                  value={addForm.status}
+                  onChange={(e) => setAddForm(f => ({ ...f, status: e.target.value as 'pending' | 'approved' | 'rejected' }))}
+                  className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  <option value="approved">{t('statusApproved')}</option>
+                  <option value="pending">{t('statusPending')}</option>
+                  <option value="rejected">{t('statusRejected')}</option>
+                </select>
+              </div>
+
+              {/* Optional profile */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="ap-name">{t('name')}</Label>
+                  <Input
+                    id="ap-name"
+                    value={addForm.name}
+                    onChange={(e) => setAddForm(f => ({ ...f, name: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ap-phone">{t('phone')}</Label>
+                  <Input
+                    id="ap-phone"
+                    type="tel"
+                    value={addForm.phone}
+                    onChange={(e) => setAddForm(f => ({ ...f, phone: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-company">{t('company')}</Label>
+                <Input
+                  id="ap-company"
+                  value={addForm.companyName}
+                  onChange={(e) => setAddForm(f => ({ ...f, companyName: e.target.value }))}
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="ap-ico">{t('companyId')}</Label>
+                  <Input
+                    id="ap-ico"
+                    value={addForm.companyId}
+                    onChange={(e) => setAddForm(f => ({ ...f, companyId: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ap-dic">{t('vatNumber')}</Label>
+                  <Input
+                    id="ap-dic"
+                    value={addForm.vatNumber}
+                    onChange={(e) => setAddForm(f => ({ ...f, vatNumber: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-address">{t('address')}</Label>
+                <Input
+                  id="ap-address"
+                  value={addForm.address}
+                  onChange={(e) => setAddForm(f => ({ ...f, address: e.target.value }))}
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="ap-zip">{t('postalCode')}</Label>
+                  <Input
+                    id="ap-zip"
+                    value={addForm.postalCode}
+                    onChange={(e) => setAddForm(f => ({ ...f, postalCode: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ap-city">{t('city')}</Label>
+                  <Input
+                    id="ap-city"
+                    value={addForm.city}
+                    onChange={(e) => setAddForm(f => ({ ...f, city: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ap-country">{t('country')}</Label>
+                  <Input
+                    id="ap-country"
+                    value={addForm.country}
+                    onChange={(e) => setAddForm(f => ({ ...f, country: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ap-notes">{t('notes')}</Label>
+                <Input
+                  id="ap-notes"
+                  value={addForm.notes}
+                  onChange={(e) => setAddForm(f => ({ ...f, notes: e.target.value }))}
+                />
+              </div>
+
+              {/* Partner pricing */}
+              <div className="space-y-3 rounded-lg border border-border p-4">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{t('partnerPricingTitle')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('discountExplanation')}</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="ap-discount">{t('discountPercent')}</Label>
+                    <Input
+                      id="ap-discount"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      inputMode="decimal"
+                      value={addForm.discountPercent}
+                      onChange={(e) => setAddForm(f => ({ ...f, discountPercent: e.target.value }))}
+                    />
+                    <p className="text-xs text-muted-foreground">{t('discountRangeHint')}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ap-tier">{t('partnerTier')}</Label>
+                    <Input
+                      id="ap-tier"
+                      value={addForm.partnerTier}
+                      onChange={(e) => setAddForm(f => ({ ...f, partnerTier: e.target.value }))}
+                      placeholder={t('partnerTierPlaceholder')}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ap-discount-note">{t('discountNote')}</Label>
+                  <Input
+                    id="ap-discount-note"
+                    value={addForm.discountNote}
+                    onChange={(e) => setAddForm(f => ({ ...f, discountNote: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
+                {addPartnerError && (
+                  <p className="mr-auto text-sm font-medium text-destructive" role="alert">{addPartnerError}</p>
+                )}
+                <Button variant="outline" onClick={() => setAddPartnerOpen(false)} disabled={isPending}>
+                  {tCommon('cancel')}
+                </Button>
+                <Button onClick={handleAddPartner} disabled={isPending}>
+                  {t('createPartner')}
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
