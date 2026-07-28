@@ -312,7 +312,22 @@
       "allMarkets": "Všechny trhy",
       "globalMarket": "Globální",
       "marketRequired": "Pro účty, které nejsou administrátory, je trh povinný.",
-      "marketHint": "Určuje, na kterém trhu jsou viditelné partnerské ceny. Nezávislé na zemi (fakturační adresa)."
+      "marketHint": "Určuje, na kterém trhu jsou viditelné partnerské ceny. Nezávislé na zemi (fakturační adresa).",
+      "addPartner": "Přidat partnera",
+      "addPartnerTitle": "Přidat nového partnera",
+      "addPartnerDescription": "Vytvoří partnerský účet. Partner se může okamžitě přihlásit dočasným heslem.",
+      "tempPassword": "Dočasné heslo",
+      "generatePassword": "Vygenerovat",
+      "statusLabel": "Stav účtu",
+      "statusApproved": "Schválený",
+      "statusPending": "Čekající",
+      "statusRejected": "Zamítnutý",
+      "createPartner": "Vytvořit partnera",
+      "createSuccess": "Partnerský účet byl úspěšně vytvořen.",
+      "emailExists": "Účet s tímto e-mailem již existuje.",
+      "createError": "Vytvoření účtu selhalo. Zkuste to znovu.",
+      "passwordHint": "Minimálně 8 znaků. Platí jako dočasné heslo při prvním přihlášení.",
+      "requiredField": "Povinné pole"
     },
     "productManagement": {
       "title": "Správa produktů",

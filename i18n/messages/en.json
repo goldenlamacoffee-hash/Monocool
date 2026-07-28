@@ -312,7 +312,22 @@
       "allMarkets": "All markets",
       "globalMarket": "Global",
       "marketRequired": "A market is required for non-admin accounts.",
-      "marketHint": "Determines on which market partner prices are visible. Independent of Country (billing address)."
+      "marketHint": "Determines on which market partner prices are visible. Independent of Country (billing address).",
+      "addPartner": "Add partner",
+      "addPartnerTitle": "Add new partner",
+      "addPartnerDescription": "Creates a partner account. The partner can log in immediately with the temporary password.",
+      "tempPassword": "Temporary password",
+      "generatePassword": "Generate",
+      "statusLabel": "Account status",
+      "statusApproved": "Approved",
+      "statusPending": "Pending",
+      "statusRejected": "Rejected",
+      "createPartner": "Create partner",
+      "createSuccess": "Partner account was created successfully.",
+      "emailExists": "An account with this email already exists.",
+      "createError": "Account creation failed. Please try again.",
+      "passwordHint": "Minimum 8 characters. Used as a temporary password on first login.",
+      "requiredField": "Required field"
     },
     "productManagement": {
       "title": "Product Management",
