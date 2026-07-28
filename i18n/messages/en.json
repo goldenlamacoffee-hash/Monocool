@@ -119,7 +119,9 @@
       "description": "Designer ventilconvectors for efficient heating and cooling."
     },
     "wrongMarket": "Different market",
-    "wrongMarketHint": "This partner account belongs to a different market. Please sign in on the correct domain to see partner prices."
+    "wrongMarketHint": "This partner account belongs to a different market. Please sign in on the correct domain to see partner prices.",
+    "documentsTitle": "Documents & Downloads",
+    "download": "Download"
   },
   "contact": {
     "title": "Contact",
@@ -478,6 +480,45 @@
       "saveError": "Save failed",
       "deleteError": "Delete failed",
       "loadError": "Failed to load variants"
+    },
+    "documents": {
+      "title": "Documents & Downloads",
+      "uploadNew": "Upload new document",
+      "dropzone": "Drag a PDF file here or click to select",
+      "pdfHint": "PDF files only – max. 25 MB",
+      "docTitle": "Document title",
+      "docTitlePlaceholder": "e.g. User and installation manual",
+      "docType": "Document type",
+      "language": "Language",
+      "upload": "Upload",
+      "uploading": "Uploading...",
+      "edit": "Edit",
+      "preview": "Preview",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete",
+      "empty": "No documents yet",
+      "pdfOnly": "Only PDF files are allowed.",
+      "fileTooLarge": "File is too large. Maximum is 25 MB.",
+      "noFileSelected": "Please select a PDF file.",
+      "titleRequired": "Document title is required.",
+      "uploadError": "Upload failed.",
+      "loadError": "Failed to load documents.",
+      "saveError": "Save failed.",
+      "deleteError": "Delete failed.",
+      "toggleError": "Status change failed.",
+      "type_manual": "User and installation manual",
+      "type_datasheet": "Technical datasheet",
+      "type_installation_guide": "Installation guide",
+      "type_energy_label": "Energy label",
+      "type_declaration_of_conformity": "Declaration of conformity",
+      "type_brochure": "Brochure",
+      "type_other": "Other",
+      "lang_de": "German",
+      "lang_sk": "Slovak",
+      "lang_cs": "Czech",
+      "lang_en": "English",
+      "documentsButton": "Documents"
     }
   },
   "legal": {

@@ -119,7 +119,9 @@
       "description": "Designové ventilkonvektory pro efektivní topení a chlazení."
     },
     "wrongMarket": "Jiný trh",
-    "wrongMarketHint": "Tento partnerský účet je přiřazen k jinému trhu. Pro partnerské ceny se přihlaste na správné doméně."
+    "wrongMarketHint": "Tento partnerský účet je přiřazen k jinému trhu. Pro partnerské ceny se přihlaste na správné doméně.",
+    "documentsTitle": "Dokumenty a stažení",
+    "download": "Stáhnout"
   },
   "contact": {
     "title": "Kontakt",
@@ -478,6 +480,45 @@
       "saveError": "Uložení selhalo",
       "deleteError": "Smazání selhalo",
       "loadError": "Načtení variant selhalo"
+    },
+    "documents": {
+      "title": "Dokumenty a stažení",
+      "uploadNew": "Nahrát nový dokument",
+      "dropzone": "Přetáhněte PDF soubor sem nebo klikněte pro výběr",
+      "pdfHint": "Pouze PDF soubory – max. 25 MB",
+      "docTitle": "Název dokumentu",
+      "docTitlePlaceholder": "např. Návod k obsluze a instalaci",
+      "docType": "Typ dokumentu",
+      "language": "Jazyk",
+      "upload": "Nahrát",
+      "uploading": "Nahrávání...",
+      "edit": "Upravit",
+      "preview": "Náhled",
+      "activate": "Aktivovat",
+      "deactivate": "Deaktivovat",
+      "delete": "Smazat",
+      "empty": "Zatím žádné dokumenty",
+      "pdfOnly": "Povoleny jsou pouze soubory PDF.",
+      "fileTooLarge": "Soubor je příliš velký. Maximum je 25 MB.",
+      "noFileSelected": "Vyberte PDF soubor.",
+      "titleRequired": "Název dokumentu je povinný.",
+      "uploadError": "Nahrávání selhalo.",
+      "loadError": "Načtení dokumentů selhalo.",
+      "saveError": "Uložení selhalo.",
+      "deleteError": "Smazání selhalo.",
+      "toggleError": "Změna stavu selhala.",
+      "type_manual": "Návod k obsluze a instalaci",
+      "type_datasheet": "Technický datasheet",
+      "type_installation_guide": "Instalační návod",
+      "type_energy_label": "Energetický štítek",
+      "type_declaration_of_conformity": "Prohlášení o shodě",
+      "type_brochure": "Brožura",
+      "type_other": "Jiné",
+      "lang_de": "Němčina",
+      "lang_sk": "Slovenština",
+      "lang_cs": "Čeština",
+      "lang_en": "Angličtina",
+      "documentsButton": "Dokumenty"
     }
   },
   "legal": {

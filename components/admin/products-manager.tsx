@@ -36,10 +36,11 @@ import {
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
 import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
-import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers } from 'lucide-react'
+import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers, FileText } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
 import { ProductVariants } from './product-variants'
+import { ProductDocuments } from './product-documents'
 import { MarketBanner } from './market-banner'
 
 interface Product {
@@ -126,6 +127,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const tCommon = useTranslations('common')
   const tCategories = useTranslations('admin.categoryLabels')
   const tVariants = useTranslations('admin.variants')
+  const tDocuments = useTranslations('admin.documents')
 
   // Map raw internal category values (e.g. "klimageraete") to localized labels.
   const categoryLabel = (category: string | null) => {
@@ -150,6 +152,8 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const [galleryImages, setGalleryImages] = useState<ProductImage[]>([])
   const [variantsDialogOpen, setVariantsDialogOpen] = useState(false)
   const [variantsProduct, setVariantsProduct] = useState<Product | null>(null)
+  const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false)
+  const [documentsProduct, setDocumentsProduct] = useState<Product | null>(null)
   // Column visibility state
   const [showFeatures, setShowFeatures] = useState(false)
   const [showTechnicalData, setShowTechnicalData] = useState(false)
@@ -168,6 +172,11 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const openVariantsDialog = (product: Product) => {
     setVariantsProduct(product)
     setVariantsDialogOpen(true)
+  }
+
+  const openDocumentsDialog = (product: Product) => {
+    setDocumentsProduct(product)
+    setDocumentsDialogOpen(true)
   }
 
   const openCreateDialog = () => {
@@ -656,6 +665,14 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                           <Button
                             variant="ghost"
                             size="icon"
+                            onClick={() => openDocumentsDialog(product)}
+                            title={tDocuments('documentsButton')}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => openGalleryDialog(product)}
                             title="Gallery"
                           >
@@ -732,6 +749,26 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
             {variantsProduct && (
               <ProductVariants
                 productId={variantsProduct.id}
+                onUpdate={() => router.refresh()}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Documents Dialog */}
+        <Dialog open={documentsDialogOpen} onOpenChange={setDocumentsDialogOpen}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {documentsProduct?.name} - {tDocuments('title')}
+              </DialogTitle>
+              <DialogDescription>
+                {tDocuments('uploadNew')}
+              </DialogDescription>
+            </DialogHeader>
+            {documentsProduct && (
+              <ProductDocuments
+                productId={documentsProduct.id}
                 onUpdate={() => router.refresh()}
               />
             )}

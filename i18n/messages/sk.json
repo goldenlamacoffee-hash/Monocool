@@ -119,7 +119,9 @@
       "description": "Dizajnové ventilkonvektory pre efektívne kúrenie a chladenie."
     },
     "wrongMarket": "Iný trh",
-    "wrongMarketHint": "Tento partnerský účet je priradený k inému trhu. Pre partnerské ceny sa prihláste na správnej doméne."
+    "wrongMarketHint": "Tento partnerský účet je priradený k inému trhu. Pre partnerské ceny sa prihláste na správnej doméne.",
+    "documentsTitle": "Dokumenty a stiahnutia",
+    "download": "Stiahnuť"
   },
   "contact": {
     "title": "Kontakt",
@@ -478,6 +480,45 @@
       "saveError": "Uloženie zlyhalo",
       "deleteError": "Vymazanie zlyhalo",
       "loadError": "Načítanie variantov zlyhalo"
+    },
+    "documents": {
+      "title": "Dokumenty a stiahnutia",
+      "uploadNew": "Nahrať nový dokument",
+      "dropzone": "Pretiahnite PDF súbor sem alebo kliknite pre výber",
+      "pdfHint": "Iba PDF súbory – max. 25 MB",
+      "docTitle": "Názov dokumentu",
+      "docTitlePlaceholder": "napr. Návod na obsluhu a inštaláciu",
+      "docType": "Typ dokumentu",
+      "language": "Jazyk",
+      "upload": "Nahrať",
+      "uploading": "Nahráva sa...",
+      "edit": "Upraviť",
+      "preview": "Náhľad",
+      "activate": "Aktivovať",
+      "deactivate": "Deaktivovať",
+      "delete": "Vymazať",
+      "empty": "Zatiaľ žiadne dokumenty",
+      "pdfOnly": "Povolené sú iba PDF súbory.",
+      "fileTooLarge": "Súbor je príliš veľký. Maximum je 25 MB.",
+      "noFileSelected": "Vyberte PDF súbor.",
+      "titleRequired": "Názov dokumentu je povinný.",
+      "uploadError": "Nahrávanie zlyhalo.",
+      "loadError": "Načítanie dokumentov zlyhalo.",
+      "saveError": "Uloženie zlyhalo.",
+      "deleteError": "Vymazanie zlyhalo.",
+      "toggleError": "Zmena stavu zlyhala.",
+      "type_manual": "Návod na obsluhu a inštaláciu",
+      "type_datasheet": "Technický datasheet",
+      "type_installation_guide": "Inštalačný návod",
+      "type_energy_label": "Energetický štítok",
+      "type_declaration_of_conformity": "Vyhlásenie o zhode",
+      "type_brochure": "Brožúra",
+      "type_other": "Iné",
+      "lang_de": "Nemčina",
+      "lang_sk": "Slovenčina",
+      "lang_cs": "Čeština",
+      "lang_en": "Angličtina",
+      "documentsButton": "Dokumenty"
     }
   },
   "legal": {
