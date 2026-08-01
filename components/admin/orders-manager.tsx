@@ -132,6 +132,8 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
 
   // Edit state within detail dialog
   const [adminNote, setAdminNote] = useState('')
+  const [statusPending, setStatusPending] = useState(false)
+  const [paymentPending, setPaymentPending] = useState(false)
 
   const [saveError, setSaveError] = useState<string | null>(null)
 
@@ -187,46 +189,53 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
   // ---------------------------------------------------------------------------
 
   const handleStatusChange = useCallback(
-    async (orderId: number, status: string) => {
+    async (orderId: number, newStatus: string) => {
+      if (statusPending) return
+      const current = (detailOrder as Record<string, unknown> | null)?.status
+      if (newStatus === current) return
       setSaveError(null)
+      setStatusPending(true)
       try {
-        await updateOrderStatus(orderId, status as OrderStatus)
-        router.refresh()
-        // Optimistic update
+        await updateOrderStatus(orderId, newStatus as OrderStatus)
         setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, status } : o))
+          prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
         )
-        if (detailOrder && (detailOrder as Record<string, unknown>).id === orderId) {
-          setDetailOrder((prev) =>
-            prev ? { ...prev, status } : prev
-          )
-        }
+        setDetailOrder((prev) =>
+          prev ? { ...prev, status: newStatus } : prev
+        )
+        router.refresh()
       } catch {
         setSaveError(t('saveError'))
+      } finally {
+        setStatusPending(false)
       }
     },
-    [detailOrder, router, t]
+    [detailOrder, statusPending, router, t]
   )
 
   const handlePaymentChange = useCallback(
-    async (orderId: number, paymentStatus: string) => {
+    async (orderId: number, newPaymentStatus: string) => {
+      if (paymentPending) return
+      const current = (detailOrder as Record<string, unknown> | null)?.paymentStatus
+      if (newPaymentStatus === current) return
       setSaveError(null)
+      setPaymentPending(true)
       try {
-        await updatePaymentStatus(orderId, paymentStatus as PaymentStatus)
-        router.refresh()
+        await updatePaymentStatus(orderId, newPaymentStatus as PaymentStatus)
         setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, paymentStatus } : o))
+          prev.map((o) => (o.id === orderId ? { ...o, paymentStatus: newPaymentStatus } : o))
         )
-        if (detailOrder && (detailOrder as Record<string, unknown>).id === orderId) {
-          setDetailOrder((prev) =>
-            prev ? { ...prev, paymentStatus } : prev
-          )
-        }
+        setDetailOrder((prev) =>
+          prev ? { ...prev, paymentStatus: newPaymentStatus } : prev
+        )
+        router.refresh()
       } catch {
         setSaveError(t('saveError'))
+      } finally {
+        setPaymentPending(false)
       }
     },
-    [detailOrder, router, t]
+    [detailOrder, paymentPending, router, t]
   )
 
   // ---------------------------------------------------------------------------
@@ -425,43 +434,37 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
           {!detailLoading && det && (
             <div className="flex flex-col gap-6 pt-2">
 
-              {/* Status + payment controls */}
+              {/* Status + payment controls — native <select> to avoid Base UI portal/Radix focus-trap conflict */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {t('changeStatus')}
                   </label>
-                  <Select
+                  <select
                     value={det.status != null ? String(det.status) : 'submitted'}
-                    onValueChange={(v) => v != null && handleStatusChange(det.id as number, v)}
+                    disabled={statusPending}
+                    onChange={(e) => handleStatusChange(det.id as number, e.target.value)}
+                    className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ORDER_STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>{t(`status_${s}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {ORDER_STATUSES.map((s) => (
+                      <option key={s} value={s}>{t(`status_${s}`)}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {t('changePayment')}
                   </label>
-                  <Select
+                  <select
                     value={det.paymentStatus != null ? String(det.paymentStatus) : 'unpaid'}
-                    onValueChange={(v) => v != null && handlePaymentChange(det.id as number, v)}
+                    disabled={paymentPending}
+                    onChange={(e) => handlePaymentChange(det.id as number, e.target.value)}
+                    className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PAYMENT_STATUSES.map((s) => (
-                        <SelectItem key={s} value={s}>{t(`payment_${s}`)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {PAYMENT_STATUSES.map((s) => (
+                      <option key={s} value={s}>{t(`payment_${s}`)}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
