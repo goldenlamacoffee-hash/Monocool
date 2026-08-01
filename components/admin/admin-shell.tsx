@@ -64,7 +64,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
     { key: 'partners', label: t('partners'), href: `${base}/benutzer`, icon: Users, badge: pendingCount },
     { key: 'cms', label: t('cms'), href: `${base}/cms`, icon: FileText },
     { key: 'contact', label: t('contact'), href: `${base}/kontakt`, icon: Phone },
-    { key: 'orders', label: t('orders'), href: '#', icon: ShoppingCart, soon: true },
+    { key: 'orders', label: t('orders'), href: `${base}/bestellungen`, icon: ShoppingCart },
   ]
 
   const isActive = (item: NavItem) => {

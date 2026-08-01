@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2, Search, Globe, ExternalLink } from 'lucide-react'
+import { Save, Trash2, Plus, Building2, Mail, Phone, MapPin, Scale, Share2, Search, Globe, ExternalLink, CreditCard } from 'lucide-react'
 import { upsertSiteSettings, deleteSiteSettings, type SiteSettings } from '@/app/actions/site-settings'
 import { getDomainFromLocale, getLocaleFromDomain, getLocalizedMarketName, getPreviewUrl } from '@/lib/domain-utils'
 import { useRouter } from 'next/navigation'
@@ -111,6 +111,24 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
       : locale === 'de'
       ? 'Leere Telefon- oder E-Mail-Felder blenden die zugehörigen Buttons auf der öffentlichen Seite aus.'
       : 'Leaving phone or email empty hides the related call-to-action buttons on the public page.',
+    banking: locale === 'sk' ? 'Bankové údaje' : locale === 'cs' ? 'Bankovní údaje' : locale === 'de' ? 'Bankdaten' : 'Banking',
+    bankingHint: locale === 'sk'
+      ? 'Tieto údaje sa zobrazia na proformách a faktúrach. Musia byť vyplnené pred generovaním dokumentov.'
+      : locale === 'cs'
+      ? 'Tyto údaje se zobrazí na proformách a fakturách. Musí být vyplněny před generováním dokumentů.'
+      : locale === 'de'
+      ? 'Diese Angaben erscheinen auf Proformarechnungen und Rechnungen. Vor der Dokumentenerstellung ausfüllen.'
+      : 'These details appear on proformas and invoices. Must be filled in before generating documents.',
+    iban: 'IBAN',
+    bic: 'BIC / SWIFT',
+    bankName: locale === 'sk' ? 'Názov banky' : locale === 'cs' ? 'Název banky' : locale === 'de' ? 'Bankname' : 'Bank name',
+    currency: locale === 'sk' ? 'Mena' : locale === 'cs' ? 'Měna' : locale === 'de' ? 'Währung' : 'Currency',
+    vatRate: locale === 'sk' ? 'Sadzba DPH (%)' : locale === 'cs' ? 'Sazba DPH (%)' : locale === 'de' ? 'MwSt.-Satz (%)' : 'VAT rate (%)',
+    invoicePrefix: locale === 'sk' ? 'Prefix faktúry' : locale === 'cs' ? 'Prefix faktury' : locale === 'de' ? 'Rechnungsprefix' : 'Invoice prefix',
+    proformaPrefix: locale === 'sk' ? 'Prefix proformy' : locale === 'cs' ? 'Prefix proformy' : locale === 'de' ? 'Proformaprefix' : 'Proforma prefix',
+    nextInvoiceNumber: locale === 'sk' ? 'Ďalšie číslo faktúry' : locale === 'cs' ? 'Další číslo faktury' : locale === 'de' ? 'Nächste Rechnungsnr.' : 'Next invoice number',
+    nextProformaNumber: locale === 'sk' ? 'Ďalšie číslo proformy' : locale === 'cs' ? 'Další číslo proformy' : locale === 'de' ? 'Nächste Proformanr.' : 'Next proforma number',
+    paymentDueDays: locale === 'sk' ? 'Splatnosť (dni)' : locale === 'cs' ? 'Splatnost (dny)' : locale === 'de' ? 'Zahlungsfrist (Tage)' : 'Payment due (days)',
   }
 
   const updateField = (domain: string, field: keyof SiteSettings, value: string) => {
@@ -198,7 +216,7 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
       )}
 
       <Tabs defaultValue="contact" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="contact" className="gap-2">
             <Mail className="h-4 w-4" />
             {translations.contact}
@@ -218,6 +236,10 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
           <TabsTrigger value="seo" className="gap-2">
             <Search className="h-4 w-4" />
             {translations.seo}
+          </TabsTrigger>
+          <TabsTrigger value="banking" className="gap-2">
+            <CreditCard className="h-4 w-4" />
+            {translations.banking}
           </TabsTrigger>
         </TabsList>
 
@@ -527,6 +549,144 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   value={currentSettings.ogImage || ''}
                   onChange={(e) => updateField(activeDomain, 'ogImage', e.target.value)}
                   placeholder="https://..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="banking">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                {translations.banking}
+              </CardTitle>
+              <CardDescription>
+                {DOMAINS.find(d => d.domain === activeDomain)?.flag} {activeDomain}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <p className="md:col-span-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                {translations.bankingHint}
+              </p>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="iban">{translations.iban}</Label>
+                <Input
+                  id="iban"
+                  value={(currentSettings as { iban?: string | null }).iban ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'iban' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="AT61 1904 3002 3457 3201"
+                  className="font-mono"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bic">{translations.bic}</Label>
+                <Input
+                  id="bic"
+                  value={(currentSettings as { bic?: string | null }).bic ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'bic' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="RLNWATWW"
+                  className="font-mono"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bankName">{translations.bankName}</Label>
+                <Input
+                  id="bankName"
+                  value={(currentSettings as { bankName?: string | null }).bankName ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'bankName' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="Raiffeisen Bank"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="currency">{translations.currency}</Label>
+                <Input
+                  id="currency"
+                  value={(currentSettings as { currency?: string | null }).currency ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'currency' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="EUR"
+                  maxLength={3}
+                  className="font-mono uppercase"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="vatRate">{translations.vatRate}</Label>
+                <Input
+                  id="vatRate"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step={0.1}
+                  value={(currentSettings as { vatRate?: string | null }).vatRate ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'vatRate' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="paymentDueDays">{translations.paymentDueDays}</Label>
+                <Input
+                  id="paymentDueDays"
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={(currentSettings as { paymentDueDays?: number | null }).paymentDueDays ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'paymentDueDays' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="14"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="invoicePrefix">{translations.invoicePrefix}</Label>
+                <Input
+                  id="invoicePrefix"
+                  value={(currentSettings as { invoicePrefix?: string | null }).invoicePrefix ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'invoicePrefix' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="2025-AT-"
+                  className="font-mono"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="proformaPrefix">{translations.proformaPrefix}</Label>
+                <Input
+                  id="proformaPrefix"
+                  value={(currentSettings as { proformaPrefix?: string | null }).proformaPrefix ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'proformaPrefix' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="PF-AT-"
+                  className="font-mono"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="nextInvoiceNumber">{translations.nextInvoiceNumber}</Label>
+                <Input
+                  id="nextInvoiceNumber"
+                  type="number"
+                  min={1}
+                  value={(currentSettings as { nextInvoiceNumber?: number | null }).nextInvoiceNumber ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'nextInvoiceNumber' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="1"
+                  className="font-mono"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="nextProformaNumber">{translations.nextProformaNumber}</Label>
+                <Input
+                  id="nextProformaNumber"
+                  type="number"
+                  min={1}
+                  value={(currentSettings as { nextProformaNumber?: number | null }).nextProformaNumber ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'nextProformaNumber' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="1"
+                  className="font-mono"
                 />
               </div>
             </CardContent>
