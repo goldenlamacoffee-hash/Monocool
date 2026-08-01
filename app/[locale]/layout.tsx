@@ -7,6 +7,7 @@ import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, getMarketBaseUrl } from '@/lib/domain-utils'
 import { enforceMarketSession } from '@/lib/market-session'
 import { WrongMarketNotice } from '@/components/wrong-market-notice'
+import { BasketProvider } from '@/contexts/basket-context'
 import '../globals.css'
 
 const manrope = Manrope({
@@ -77,8 +78,10 @@ export default async function LocaleLayout({
     <html lang={locale} className={`bg-background ${manrope.variable} ${sora.variable}`}>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          {wrongMarket && <WrongMarketNotice />}
-          {children}
+          <BasketProvider>
+            {wrongMarket && <WrongMarketNotice />}
+            {children}
+          </BasketProvider>
         </NextIntlClientProvider>
       </body>
     </html>

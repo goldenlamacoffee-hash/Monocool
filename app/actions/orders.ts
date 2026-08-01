@@ -1,10 +1,12 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { order, orderItem } from '@/lib/db/schema'
-import { assertAdmin } from '@/lib/auth-utils'
+import { order, orderItem, product, productVariant, user, siteSettings } from '@/lib/db/schema'
+import { assertAdmin, getSessionWithRole } from '@/lib/auth-utils'
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { normalizeDiscountPercent, computePartnerPrice, parseBasePrice } from '@/lib/pricing'
+import { getDomainFromLocale } from '@/lib/domain-utils'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -197,6 +199,293 @@ export async function updateAdminNote(orderId: number, adminNote: string) {
     .set({ adminNote: adminNote.trim() || null, updatedAt: new Date() })
     .where(eq(order.id, orderId))
   revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
+}
+
+// ---------------------------------------------------------------------------
+// Partner-only auth guard
+// ---------------------------------------------------------------------------
+
+/**
+ * Throws unless the current user is an approved partner (or admin) on the
+ * correct market. Returns `{ userId, discountPercent, market }` on success.
+ * Never trusts the client for discount or market — always reads from the DB.
+ */
+export async function assertApprovedPartner(locale: string) {
+  const { session, role, status } = await getSessionWithRole()
+
+  if (!session?.user) throw new Error('Unauthorized')
+
+  const isAdmin = role === 'admin'
+  const isApproved = status === 'approved' || isAdmin
+  if (!isApproved) throw new Error('Account not approved')
+
+  const [row] = await db
+    .select({ discountPercent: user.discountPercent, market: user.market })
+    .from(user)
+    .where(eq(user.id, session.user.id))
+
+  const market = getDomainFromLocale(locale)
+
+  // Non-admins must belong to the current market
+  if (!isAdmin) {
+    if (!row?.market || row.market !== market) {
+      throw new Error('Wrong market')
+    }
+  }
+
+  return {
+    userId: session.user.id,
+    discountPercent: normalizeDiscountPercent(row?.discountPercent),
+    market,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Place order — partner-facing server action (V1.4G.2)
+// ---------------------------------------------------------------------------
+
+export type BasketItemInput = {
+  productId: number
+  variantId?: number
+  quantity: number
+  productName: string
+  variantName?: string
+  sku?: string
+}
+
+export type PlaceOrderInput = {
+  locale: string
+  items: BasketItemInput[]
+  customerPoNumber?: string
+  customerNote?: string
+  shippingAddress?: {
+    address?: string
+    city?: string
+    postalCode?: string
+    country?: string
+  }
+  billingAddress?: {
+    address?: string
+    city?: string
+    postalCode?: string
+    country?: string
+  }
+}
+
+export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber: string }> {
+  if (!input.items || input.items.length === 0) {
+    throw new Error('Basket is empty')
+  }
+
+  // 1. Auth guard — re-derives discount from DB, never from client
+  const { userId, discountPercent, market } = await assertApprovedPartner(input.locale)
+
+  // 2. Fetch VAT rate for this market
+  const [settings] = await db
+    .select({ vatRate: siteSettings.vatRate, currency: siteSettings.currency })
+    .from(siteSettings)
+    .where(eq(siteSettings.domain, market))
+    .limit(1)
+  const vatRate = settings?.vatRate ? parseFloat(String(settings.vatRate)) : 20
+  const currency = settings?.currency ?? 'EUR'
+
+  // 3. Re-derive all prices server-side
+  const resolvedItems = await Promise.all(
+    input.items.map(async (item) => {
+      // Validate quantity
+      const qty = Math.max(1, Math.min(9999, Math.floor(item.quantity)))
+
+      // ── Step A: Always validate the parent product from DB ──────────────
+      // client-provided productName/variantName/sku are never trusted.
+      const [prod] = await db
+        .select({ id: product.id, name: product.name, price: product.price, isActive: product.isActive })
+        .from(product)
+        .where(and(eq(product.id, item.productId), eq(product.isActive, true)))
+        .limit(1)
+
+      if (!prod) {
+        throw new Error(`Product ${item.productId} not found or inactive`)
+      }
+
+      // Derive name and base price from the validated parent product
+      const resolvedProductName = prod.name
+      const productBasePrice = parseBasePrice(prod.price)
+      let basePrice: number | null = productBasePrice
+
+      let resolvedVariantName: string | null = null
+      let resolvedSku: string | null = null
+
+      // ── Step B: When variantId present, validate it belongs to this product ──
+      if (item.variantId != null) {
+        const [variant] = await db
+          .select({
+            id: productVariant.id,
+            name: productVariant.name,
+            sku: productVariant.sku,
+            price: productVariant.price,
+            isActive: productVariant.isActive,
+          })
+          .from(productVariant)
+          .where(
+            and(
+              eq(productVariant.id, item.variantId),
+              eq(productVariant.productId, item.productId), // must belong to this product
+              eq(productVariant.isActive, true)
+            )
+          )
+          .limit(1)
+
+        if (!variant) {
+          throw new Error(
+            `Variant ${item.variantId} not found, inactive, or does not belong to product ${item.productId}`
+          )
+        }
+
+        // Derive variant name and SKU from DB
+        resolvedVariantName = variant.name
+        resolvedSku = variant.sku ?? null
+
+        // Use variant price when present; otherwise fall back to parent product price
+        const variantPrice = parseBasePrice(variant.price)
+        if (variantPrice !== null) {
+          basePrice = variantPrice
+        }
+      }
+
+      if (basePrice === null) {
+        throw new Error(`Price unavailable for product ${item.productId}`)
+      }
+
+      const finalUnitPrice = computePartnerPrice(basePrice, discountPercent)
+      const lineSubtotal = Math.round(finalUnitPrice * qty * 100) / 100
+      const vatAmount = Math.round(lineSubtotal * (vatRate / 100) * 100) / 100
+      const lineTotal = Math.round((lineSubtotal + vatAmount) * 100) / 100
+
+      return {
+        productId: item.productId,
+        variantId: item.variantId,
+        productName: resolvedProductName,
+        variantName: resolvedVariantName,
+        sku: resolvedSku,
+        quantity: qty,
+        baseUnitPrice: String(basePrice),
+        discountPercent: String(discountPercent),
+        finalUnitPrice: String(finalUnitPrice),
+        vatRate: String(vatRate),
+        vatAmount: String(vatAmount),
+        lineSubtotal: String(lineSubtotal),
+        lineTotal: String(lineTotal),
+      }
+    })
+  )
+
+  // 4. Aggregate totals
+  const subtotal = resolvedItems.reduce((s, i) => s + parseFloat(i.lineSubtotal), 0)
+  const totalVat = resolvedItems.reduce((s, i) => s + parseFloat(i.vatAmount), 0)
+  const grandTotal = Math.round((subtotal + totalVat) * 100) / 100
+  const discountTotal =
+    resolvedItems.reduce(
+      (s, i) => s + (parseFloat(i.baseUnitPrice) - parseFloat(i.finalUnitPrice)) * i.quantity,
+      0
+    )
+
+  // 5. Generate order number: MC-{MARKET_2CHAR}-{YYYYMM}-{RANDOM_4HEX}
+  const now = new Date()
+  const marketCode = market.replace('monocool.', '').toUpperCase().slice(0, 2)
+  const yyyymm = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`
+  const rand = Math.floor(Math.random() * 0xffff)
+    .toString(16)
+    .toUpperCase()
+    .padStart(4, '0')
+  const orderNumber = `MC-${marketCode}-${yyyymm}-${rand}`
+
+  // 6. Insert order + order_items in a single transaction
+  await db.transaction(async (tx) => {
+    const [newOrder] = await tx
+      .insert(order)
+      .values({
+        orderNumber,
+        userId,
+        status: 'submitted',
+        market,
+        currency,
+        paymentStatus: 'unpaid',
+        customerPoNumber: input.customerPoNumber?.trim() || null,
+        customerNote: input.customerNote?.trim() || null,
+        shippingAddress: input.shippingAddress ?? null,
+        billingAddress: input.billingAddress ?? null,
+        discountTotal: String(Math.round(discountTotal * 100) / 100),
+        vatTotal: String(Math.round(totalVat * 100) / 100),
+        grandTotal: String(grandTotal),
+        // Legacy columns
+        items: JSON.stringify([]),
+        subtotal: String(Math.round(subtotal * 100) / 100),
+        total: String(grandTotal),
+      })
+      .returning({ id: order.id })
+
+    await tx.insert(orderItem).values(
+      resolvedItems.map((item) => ({
+        orderId: newOrder.id,
+        productId: item.productId,
+        variantId: item.variantId ?? null,
+        productName: item.productName,
+        variantName: item.variantName,
+        sku: item.sku,
+        quantity: item.quantity,
+        baseUnitPrice: item.baseUnitPrice,
+        discountPercent: item.discountPercent,
+        finalUnitPrice: item.finalUnitPrice,
+        vatRate: item.vatRate,
+        vatAmount: item.vatAmount,
+        lineSubtotal: item.lineSubtotal,
+        lineTotal: item.lineTotal,
+      }))
+    )
+  })
+
+  revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
+  return { orderNumber }
+}
+
+// ---------------------------------------------------------------------------
+// Get a single order by orderNumber (owner or admin)
+// ---------------------------------------------------------------------------
+
+export async function getOrderByNumber(orderNumber: string) {
+  const { session, role } = await getSessionWithRole()
+  if (!session?.user) throw new Error('Unauthorized')
+
+  const [row] = (await db.execute(
+    sql.raw(`
+      SELECT
+        o.*,
+        u.name AS "userName",
+        u.email AS "userEmail",
+        u."companyName" AS "userCompanyName"
+      FROM "order" o
+      LEFT JOIN "user" u ON u.id = o."userId"
+      WHERE o."orderNumber" = '${orderNumber.replace(/'/g, "''")}'
+      LIMIT 1
+    `)
+  ) as unknown) as unknown[]
+
+  if (!row) return null
+
+  const r = row as Record<string, unknown>
+
+  // Only the owner or an admin may view
+  if (role !== 'admin' && r.userId !== session.user.id) {
+    throw new Error('Forbidden')
+  }
+
+  const items = await db
+    .select()
+    .from(orderItem)
+    .where(eq(orderItem.orderId, r.id as number))
+    .orderBy(orderItem.id)
+
+  return { ...r, items }
 }
 
 

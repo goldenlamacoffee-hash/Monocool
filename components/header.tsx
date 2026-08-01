@@ -16,6 +16,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Flag } from '@/components/flag'
 import { Menu, User, LogOut, Settings, ChevronDown } from 'lucide-react'
+import { BasketDrawer } from '@/components/basket-drawer'
 import { locales, localeNames, localeDomains, domainLocales, type Locale } from '@/i18n/config'
 
 export function Header() {
@@ -161,6 +162,9 @@ export function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Basket */}
+          {mounted && session?.user && <BasketDrawer />}
 
           {mounted && !isPending && session?.user ? (
             <DropdownMenu>
