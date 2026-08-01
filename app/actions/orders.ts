@@ -185,6 +185,111 @@ export async function updateAdminNote(orderId: number, adminNote: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Atomic admin update — status + paymentStatus + adminNote in one DB write
+// ---------------------------------------------------------------------------
+
+export type UpdateOrderAdminFieldsInput = {
+  orderId: number
+  status: string
+  paymentStatus: string
+  adminNote: string
+}
+
+export type UpdateOrderAdminFieldsResult = {
+  id: number
+  status: string
+  paymentStatus: string
+  adminNote: string | null
+  updatedAt: Date
+}
+
+export async function updateOrderAdminFields(
+  input: UpdateOrderAdminFieldsInput
+): Promise<UpdateOrderAdminFieldsResult> {
+  await assertAdmin()
+
+  // Validate orderId
+  if (!Number.isInteger(input.orderId) || input.orderId < 1) {
+    throw new Error('Invalid orderId')
+  }
+
+  // Validate status
+  if (!VALID_STATUSES.includes(input.status as OrderStatus)) {
+    throw new Error(`Invalid status: ${input.status}`)
+  }
+
+  // Validate paymentStatus
+  if (!VALID_PAYMENT_STATUSES.includes(input.paymentStatus as PaymentStatus)) {
+    throw new Error(`Invalid paymentStatus: ${input.paymentStatus}`)
+  }
+
+  // Confirm order exists and fetch current values to resolve timestamps
+  const existing = await db
+    .select({
+      id: order.id,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      confirmedAt: order.confirmedAt,
+      shippedAt: order.shippedAt,
+      completedAt: order.completedAt,
+      cancelledAt: order.cancelledAt,
+      paidAt: order.paidAt,
+    })
+    .from(order)
+    .where(eq(order.id, input.orderId))
+    .limit(1)
+
+  if (existing.length === 0) {
+    throw new Error(`Order ${input.orderId} not found`)
+  }
+
+  const prev = existing[0]
+  const now = new Date()
+  const newStatus = input.status as OrderStatus
+  const newPayment = input.paymentStatus as PaymentStatus
+
+  // Derive timestamp updates — set on first transition, do not clear on revert
+  const timestampUpdates: Partial<typeof order.$inferInsert> = {}
+  if (newStatus === 'confirmed' && prev.confirmedAt == null) {
+    timestampUpdates.confirmedAt = now
+  }
+  if (newStatus === 'shipped' && prev.shippedAt == null) {
+    timestampUpdates.shippedAt = now
+  }
+  if (newStatus === 'completed' && prev.completedAt == null) {
+    timestampUpdates.completedAt = now
+  }
+  if (newStatus === 'cancelled' && prev.cancelledAt == null) {
+    timestampUpdates.cancelledAt = now
+  }
+  if (newPayment === 'paid' && prev.paidAt == null) {
+    timestampUpdates.paidAt = now
+  }
+
+  // Single atomic update
+  const [updated] = await db
+    .update(order)
+    .set({
+      status: newStatus,
+      paymentStatus: newPayment,
+      adminNote: input.adminNote.trim() || null,
+      updatedAt: now,
+      ...timestampUpdates,
+    })
+    .where(eq(order.id, input.orderId))
+    .returning({
+      id: order.id,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      adminNote: order.adminNote,
+      updatedAt: order.updatedAt,
+    })
+
+  revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
+  return updated
+}
+
+// ---------------------------------------------------------------------------
 // Partner-only auth guard
 // ---------------------------------------------------------------------------
 

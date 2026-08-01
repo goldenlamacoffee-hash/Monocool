@@ -271,7 +271,10 @@
       "changeStatus": "Status ändern",
       "changePayment": "Zahlung ändern",
       "back": "Zurück zu Bestellungen",
-      "orderDetail": "Bestellungsdetail"
+      "orderDetail": "Bestellungsdetail",
+      "saveChanges": "Änderungen speichern",
+      "saveSuccess": "Änderungen wurden gespeichert.",
+      "resetDraft": "Änderungen verwerfen"
     },
     "cms": "CMS Inhalte",
     "productsDesc": "Produkte hinzufügen, bearbeiten oder löschen",
