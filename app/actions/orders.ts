@@ -23,8 +23,6 @@ export type OrderRow = {
   grandTotal: string | null
   total: string | null
   customerPoNumber: string | null
-  proformaNumber: string | null
-  invoiceNumber: string | null
   createdAt: Date
   updatedAt: Date
   // Joined from user table
@@ -76,8 +74,6 @@ export async function listOrders(filters?: {
         o."grandTotal",
         o.total,
         o."customerPoNumber",
-        o."proformaNumber",
-        o."invoiceNumber",
         o."createdAt",
         o."updatedAt",
         u.name AS "userName",
@@ -203,32 +199,4 @@ export async function updateAdminNote(orderId: number, adminNote: string) {
   revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
 }
 
-// ---------------------------------------------------------------------------
-// Assign proforma number (admin only)
-// Sets proformaNumber on the order and does NOT auto-increment the counter —
-// that is reserved for PR C when the PDF generator is added.
-// ---------------------------------------------------------------------------
 
-export async function assignProformaNumber(orderId: number, proformaNumber: string) {
-  await assertAdmin()
-  if (!proformaNumber.trim()) throw new Error('Proforma number is required')
-  await db
-    .update(order)
-    .set({ proformaNumber: proformaNumber.trim(), updatedAt: new Date() })
-    .where(eq(order.id, orderId))
-  revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
-}
-
-// ---------------------------------------------------------------------------
-// Assign invoice number (admin only)
-// ---------------------------------------------------------------------------
-
-export async function assignInvoiceNumber(orderId: number, invoiceNumber: string) {
-  await assertAdmin()
-  if (!invoiceNumber.trim()) throw new Error('Invoice number is required')
-  await db
-    .update(order)
-    .set({ invoiceNumber: invoiceNumber.trim(), updatedAt: new Date() })
-    .where(eq(order.id, orderId))
-  revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
-}

@@ -9,8 +9,7 @@ import {
   updateOrderStatus,
   updatePaymentStatus,
   updateAdminNote,
-  assignProformaNumber,
-  assignInvoiceNumber,
+
   type OrderRow,
   type OrderWithItems,
 } from '@/app/actions/orders'
@@ -42,7 +41,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, RefreshCw, FileText, Receipt } from 'lucide-react'
+import { ArrowLeft, RefreshCw } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -133,8 +132,7 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
 
   // Edit state within detail dialog
   const [adminNote, setAdminNote] = useState('')
-  const [proformaInput, setProformaInput] = useState('')
-  const [invoiceInput, setInvoiceInput] = useState('')
+
   const [saveError, setSaveError] = useState<string | null>(null)
 
   // ---------------------------------------------------------------------------
@@ -179,8 +177,6 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
       setDetailOrder(detail)
       const d = detail as Record<string, unknown> | null
       setAdminNote(typeof d?.adminNote === 'string' ? d.adminNote : '')
-      setProformaInput(typeof d?.proformaNumber === 'string' ? d.proformaNumber : '')
-      setInvoiceInput(typeof d?.invoiceNumber === 'string' ? d.invoiceNumber : '')
     } finally {
       setDetailLoading(false)
     }
@@ -250,32 +246,7 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
   }, [detailOrder, adminNote, t])
 
   // ---------------------------------------------------------------------------
-  // Assign proforma / invoice numbers
-  // ---------------------------------------------------------------------------
 
-  const handleAssignProforma = useCallback(async () => {
-    if (!detailOrder || !proformaInput.trim()) return
-    setSaveError(null)
-    try {
-      const id = (detailOrder as Record<string, unknown>).id as number
-      await assignProformaNumber(id, proformaInput.trim())
-      setDetailOrder((prev) => (prev ? { ...prev, proformaNumber: proformaInput.trim() } : prev))
-    } catch {
-      setSaveError(t('saveError'))
-    }
-  }, [detailOrder, proformaInput, t])
-
-  const handleAssignInvoice = useCallback(async () => {
-    if (!detailOrder || !invoiceInput.trim()) return
-    setSaveError(null)
-    try {
-      const id = (detailOrder as Record<string, unknown>).id as number
-      await assignInvoiceNumber(id, invoiceInput.trim())
-      setDetailOrder((prev) => (prev ? { ...prev, invoiceNumber: invoiceInput.trim() } : prev))
-    } catch {
-      setSaveError(t('saveError'))
-    }
-  }, [detailOrder, invoiceInput, t])
 
   // ---------------------------------------------------------------------------
   // Filtered list (client-side, filters already applied server-side on refresh)
@@ -636,46 +607,6 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
                   })()}
                 </div>
               )}
-
-              <Separator />
-
-              {/* Document numbers */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    <FileText className="h-3.5 w-3.5" />
-                    {t('proformaNumber')}
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={proformaInput}
-                      onChange={(e) => setProformaInput(e.target.value)}
-                      placeholder="PF-AT-2025-001"
-                      className="font-mono text-sm"
-                    />
-                    <Button variant="secondary" size="sm" onClick={handleAssignProforma}>
-                      {t('assign')}
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    <Receipt className="h-3.5 w-3.5" />
-                    {t('invoiceNumber')}
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={invoiceInput}
-                      onChange={(e) => setInvoiceInput(e.target.value)}
-                      placeholder="2025-AT-001"
-                      className="font-mono text-sm"
-                    />
-                    <Button variant="secondary" size="sm" onClick={handleAssignInvoice}>
-                      {t('assign')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
 
               <Separator />
 
