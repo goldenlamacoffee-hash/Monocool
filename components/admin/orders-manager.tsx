@@ -6,17 +6,13 @@ import { useRouter } from 'next/navigation'
 import {
   listOrders,
   getOrderById,
-  updateOrderStatus,
-  updatePaymentStatus,
-  updateAdminNote,
-
+  updateOrderAdminFields,
   type OrderRow,
   type OrderWithItems,
 } from '@/app/actions/orders'
 import { DOMAINS } from '@/lib/domain-utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -41,7 +37,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -79,9 +75,6 @@ const PAYMENT_STATUSES = [
   'refunded',
 ] as const
 
-type OrderStatus = (typeof ORDER_STATUSES)[number]
-type PaymentStatus = (typeof PAYMENT_STATUSES)[number]
-
 function statusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
     case 'confirmed':
@@ -113,7 +106,7 @@ interface OrdersManagerProps {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
+export function OrdersManager({ initialOrders, locale: _locale }: OrdersManagerProps) {
   const t = useTranslations('admin.orders')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -130,12 +123,27 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
   const [detailOrder, setDetailOrder] = useState<OrderWithItems | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
 
-  // Edit state within detail dialog
-  const [adminNote, setAdminNote] = useState('')
-  const [statusPending, setStatusPending] = useState(false)
-  const [paymentPending, setPaymentPending] = useState(false)
+  // Draft fields — initialized from DB on every open, discarded on close
+  const [draftStatus, setDraftStatus] = useState<string>('submitted')
+  const [draftPaymentStatus, setDraftPaymentStatus] = useState<string>('unpaid')
+  const [draftAdminNote, setDraftAdminNote] = useState<string>('')
 
+  // Save state
+  const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
+  // ---------------------------------------------------------------------------
+  // Derived: has anything actually changed?
+  // ---------------------------------------------------------------------------
+
+  const det = detailOrder as Record<string, unknown> | null
+
+  const hasChanges = det != null && (
+    draftStatus !== String(det.status ?? 'submitted') ||
+    draftPaymentStatus !== String(det.paymentStatus ?? 'unpaid') ||
+    draftAdminNote !== (typeof det.adminNote === 'string' ? det.adminNote : '')
+  )
 
   // ---------------------------------------------------------------------------
   // Refresh list
@@ -161,113 +169,105 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
     })
   }, [filterMarket, filterStatus, filterPayment, t])
 
-  // Re-fetch when filters change
   const applyFilters = useCallback(() => {
     refreshList()
   }, [refreshList])
 
   // ---------------------------------------------------------------------------
-  // Open detail dialog
+  // Open detail dialog — always initialize drafts from DB values
   // ---------------------------------------------------------------------------
 
   const openDetail = useCallback(async (row: OrderRow) => {
     setDetailLoading(true)
     setDetailOpen(true)
     setSaveError(null)
+    setSaveSuccess(false)
     try {
       const detail = await getOrderById(row.id)
       setDetailOrder(detail)
       const d = detail as Record<string, unknown> | null
-      setAdminNote(typeof d?.adminNote === 'string' ? d.adminNote : '')
+      setDraftStatus(typeof d?.status === 'string' ? d.status : 'submitted')
+      setDraftPaymentStatus(typeof d?.paymentStatus === 'string' ? d.paymentStatus : 'unpaid')
+      setDraftAdminNote(typeof d?.adminNote === 'string' ? d.adminNote : '')
     } finally {
       setDetailLoading(false)
     }
   }, [])
 
   // ---------------------------------------------------------------------------
-  // Status / payment changes
+  // Reset drafts to persisted values (discard unsaved changes)
   // ---------------------------------------------------------------------------
 
-  const handleStatusChange = useCallback(
-    async (orderId: number, newStatus: string) => {
-      if (statusPending) return
-      const current = (detailOrder as Record<string, unknown> | null)?.status
-      if (newStatus === current) return
-      setSaveError(null)
-      setStatusPending(true)
-      try {
-        await updateOrderStatus(orderId, newStatus as OrderStatus)
-        setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-        )
-        setDetailOrder((prev) =>
-          prev ? { ...prev, status: newStatus } : prev
-        )
-        router.refresh()
-      } catch {
-        setSaveError(t('saveError'))
-      } finally {
-        setStatusPending(false)
-      }
-    },
-    [detailOrder, statusPending, router, t]
-  )
-
-  const handlePaymentChange = useCallback(
-    async (orderId: number, newPaymentStatus: string) => {
-      if (paymentPending) return
-      const current = (detailOrder as Record<string, unknown> | null)?.paymentStatus
-      if (newPaymentStatus === current) return
-      setSaveError(null)
-      setPaymentPending(true)
-      try {
-        await updatePaymentStatus(orderId, newPaymentStatus as PaymentStatus)
-        setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, paymentStatus: newPaymentStatus } : o))
-        )
-        setDetailOrder((prev) =>
-          prev ? { ...prev, paymentStatus: newPaymentStatus } : prev
-        )
-        router.refresh()
-      } catch {
-        setSaveError(t('saveError'))
-      } finally {
-        setPaymentPending(false)
-      }
-    },
-    [detailOrder, paymentPending, router, t]
-  )
-
-  // ---------------------------------------------------------------------------
-  // Save admin note
-  // ---------------------------------------------------------------------------
-
-  const handleSaveNote = useCallback(async () => {
-    if (!detailOrder) return
+  const handleReset = useCallback(() => {
+    if (!det) return
+    setDraftStatus(typeof det.status === 'string' ? det.status : 'submitted')
+    setDraftPaymentStatus(typeof det.paymentStatus === 'string' ? det.paymentStatus : 'unpaid')
+    setDraftAdminNote(typeof det.adminNote === 'string' ? det.adminNote : '')
     setSaveError(null)
+    setSaveSuccess(false)
+  }, [det])
+
+  // ---------------------------------------------------------------------------
+  // Atomic save — one server call, all three fields together
+  // ---------------------------------------------------------------------------
+
+  const handleSaveChanges = useCallback(async () => {
+    if (!det || isSaving || !hasChanges) return
+    const orderId = det.id as number
+
+    setSaveError(null)
+    setSaveSuccess(false)
+    setIsSaving(true)
+
     try {
-      const id = (detailOrder as Record<string, unknown>).id as number
-      await updateAdminNote(id, adminNote)
-      setDetailOrder((prev) => (prev ? { ...prev, adminNote } : prev))
-    } catch {
-      setSaveError(t('saveError'))
+      const result = await updateOrderAdminFields({
+        orderId,
+        status: draftStatus,
+        paymentStatus: draftPaymentStatus,
+        adminNote: draftAdminNote,
+      })
+
+      // Update detail from returned DB values (source of truth)
+      setDetailOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: result.status,
+              paymentStatus: result.paymentStatus,
+              adminNote: result.adminNote ?? null,
+              updatedAt: result.updatedAt,
+            }
+          : prev
+      )
+
+      // Sync draft states with returned DB values
+      setDraftStatus(result.status)
+      setDraftPaymentStatus(result.paymentStatus)
+      setDraftAdminNote(result.adminNote ?? '')
+
+      // Update the row in the orders table
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId
+            ? { ...o, status: result.status, paymentStatus: result.paymentStatus }
+            : o
+        )
+      )
+
+      setSaveSuccess(true)
+      router.refresh()
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : t('saveError'))
+    } finally {
+      setIsSaving(false)
     }
-  }, [detailOrder, adminNote, t])
+  }, [det, isSaving, hasChanges, draftStatus, draftPaymentStatus, draftAdminNote, router, t])
 
   // ---------------------------------------------------------------------------
-
-
-  // ---------------------------------------------------------------------------
-  // Filtered list (client-side, filters already applied server-side on refresh)
+  // Filtered list
   // ---------------------------------------------------------------------------
 
   const displayed = useMemo(() => orders, [orders])
-
-  // ---------------------------------------------------------------------------
-  // Render detail
-  // ---------------------------------------------------------------------------
-
-  const det = detailOrder as Record<string, unknown> | null
 
   // ---------------------------------------------------------------------------
   // JSX
@@ -416,7 +416,17 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
       </div>
 
       {/* Detail Dialog */}
-      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+      <Dialog
+        open={detailOpen}
+        onOpenChange={(open) => {
+          // Discard unsaved drafts on close — no prompt needed per spec
+          setDetailOpen(open)
+          if (!open) {
+            setSaveError(null)
+            setSaveSuccess(false)
+          }
+        }}
+      >
         <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>
@@ -434,16 +444,19 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
           {!detailLoading && det && (
             <div className="flex flex-col gap-6 pt-2">
 
-              {/* Status + payment controls — native <select> to avoid Base UI portal/Radix focus-trap conflict */}
+              {/* Draft status + payment selects — native <select> avoids Base UI portal/focus-trap conflict inside Radix Dialog */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {t('changeStatus')}
                   </label>
                   <select
-                    value={det.status != null ? String(det.status) : 'submitted'}
-                    disabled={statusPending}
-                    onChange={(e) => handleStatusChange(det.id as number, e.target.value)}
+                    value={draftStatus}
+                    disabled={isSaving}
+                    onChange={(e) => {
+                      setDraftStatus(e.target.value)
+                      setSaveSuccess(false)
+                    }}
                     className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {ORDER_STATUSES.map((s) => (
@@ -456,9 +469,12 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
                     {t('changePayment')}
                   </label>
                   <select
-                    value={det.paymentStatus != null ? String(det.paymentStatus) : 'unpaid'}
-                    disabled={paymentPending}
-                    onChange={(e) => handlePaymentChange(det.id as number, e.target.value)}
+                    value={draftPaymentStatus}
+                    disabled={isSaving}
+                    onChange={(e) => {
+                      setDraftPaymentStatus(e.target.value)
+                      setSaveSuccess(false)
+                    }}
                     className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {PAYMENT_STATUSES.map((s) => (
@@ -613,27 +629,58 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
 
               <Separator />
 
-              {/* Admin note */}
+              {/* Admin note draft */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {t('adminNote')}
                 </label>
                 <Textarea
-                  value={adminNote}
-                  onChange={(e) => setAdminNote(e.target.value)}
+                  value={draftAdminNote}
+                  disabled={isSaving}
+                  onChange={(e) => {
+                    setDraftAdminNote(e.target.value)
+                    setSaveSuccess(false)
+                  }}
                   placeholder={t('adminNotePlaceholder')}
                   rows={3}
                 />
-                <div className="flex justify-end">
-                  <Button variant="secondary" size="sm" onClick={handleSaveNote}>
-                    {t('save')}
+              </div>
+
+              {/* Save / Reset row */}
+              <div className="flex items-center justify-between gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  disabled={!hasChanges || isSaving}
+                >
+                  {t('resetDraft')}
+                </Button>
+
+                <div className="flex items-center gap-3">
+                  {saveSuccess && (
+                    <p className="text-sm text-green-600 dark:text-green-400">{t('saveSuccess')}</p>
+                  )}
+                  {saveError && (
+                    <p className="text-sm text-destructive">{saveError}</p>
+                  )}
+                  <Button
+                    size="sm"
+                    onClick={handleSaveChanges}
+                    disabled={!hasChanges || isSaving}
+                  >
+                    {isSaving ? (
+                      <span className="flex items-center gap-2">
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        {'...'}
+                      </span>
+                    ) : (
+                      t('saveChanges')
+                    )}
                   </Button>
                 </div>
               </div>
 
-              {saveError && (
-                <p className="text-sm text-destructive">{saveError}</p>
-              )}
             </div>
           )}
         </DialogContent>

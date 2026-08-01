@@ -271,7 +271,10 @@
       "changeStatus": "Změnit stav",
       "changePayment": "Změnit platbu",
       "back": "Zpět na objednávky",
-      "orderDetail": "Detail objednávky"
+      "orderDetail": "Detail objednávky",
+      "saveChanges": "Uložit změny",
+      "saveSuccess": "Změny byly uloženy.",
+      "resetDraft": "Zahodit změny"
     },
     "cms": "CMS Obsah",
     "productsDesc": "Přidávat, upravovat nebo mazat produkty",

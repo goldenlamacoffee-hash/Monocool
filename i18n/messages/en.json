@@ -271,7 +271,10 @@
       "changeStatus": "Change status",
       "changePayment": "Change payment",
       "back": "Back to orders",
-      "orderDetail": "Order detail"
+      "orderDetail": "Order detail",
+      "saveChanges": "Save changes",
+      "saveSuccess": "Changes saved.",
+      "resetDraft": "Discard changes"
     },
     "cms": "CMS Content",
     "productsDesc": "Add, edit, or delete products",
