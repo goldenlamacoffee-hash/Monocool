@@ -33,6 +33,17 @@ export type SiteSettings = {
   seoTitle: string | null
   seoDescription: string | null
   ogImage: string | null
+  // V1.4G.1 — banking / invoicing fields
+  iban: string | null
+  bic: string | null
+  bankName: string | null
+  currency: string | null
+  vatRate: string | null
+  invoicePrefix: string | null
+  proformaPrefix: string | null
+  nextInvoiceNumber: number
+  nextProformaNumber: number
+  paymentDueDays: number | null
   createdAt: Date
   updatedAt: Date
 }
@@ -67,6 +78,16 @@ const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   seoTitle: null,
   seoDescription: null,
   ogImage: null,
+  iban: null,
+  bic: null,
+  bankName: null,
+  currency: null,
+  vatRate: null,
+  invoicePrefix: null,
+  proformaPrefix: null,
+  nextInvoiceNumber: 1,
+  nextProformaNumber: 1,
+  paymentDueDays: null,
 }
 
 // Map locale to domain
