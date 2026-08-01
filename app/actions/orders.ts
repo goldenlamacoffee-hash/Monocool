@@ -3,7 +3,7 @@
 import { db } from '@/lib/db'
 import { order, orderItem, product, productVariant, user, siteSettings } from '@/lib/db/schema'
 import { assertAdmin, getSessionWithRole } from '@/lib/auth-utils'
-import { eq, desc, and, sql } from 'drizzle-orm'
+import { eq, desc, and, getTableColumns } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { normalizeDiscountPercent, computePartnerPrice, parseBasePrice } from '@/lib/pricing'
 import { getDomainFromLocale } from '@/lib/domain-utils'
@@ -44,51 +44,35 @@ export async function listOrders(filters?: {
 }): Promise<OrderRow[]> {
   await assertAdmin()
 
-  // Build a raw query so we can join user without a Drizzle relation defined
-  const conditions: string[] = []
-  const values: unknown[] = []
+  const conditions = []
+  if (filters?.market) conditions.push(eq(order.market, filters.market))
+  if (filters?.status) conditions.push(eq(order.status, filters.status))
+  if (filters?.paymentStatus) conditions.push(eq(order.paymentStatus, filters.paymentStatus))
 
-  if (filters?.market) {
-    values.push(filters.market)
-    conditions.push(`o.market = $${values.length}`)
-  }
-  if (filters?.status) {
-    values.push(filters.status)
-    conditions.push(`o.status = $${values.length}`)
-  }
-  if (filters?.paymentStatus) {
-    values.push(filters.paymentStatus)
-    conditions.push(`o."paymentStatus" = $${values.length}`)
-  }
+  const rows = await db
+    .select({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      userId: order.userId,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      market: order.market,
+      currency: order.currency,
+      grandTotal: order.grandTotal,
+      total: order.total,
+      customerPoNumber: order.customerPoNumber,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      userName: user.name,
+      userEmail: user.email,
+      userCompanyName: user.companyName,
+    })
+    .from(order)
+    .leftJoin(user, eq(user.id, order.userId))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(order.createdAt))
 
-  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
-
-  const rows = await db.execute(
-    sql.raw(`
-      SELECT
-        o.id,
-        o."orderNumber",
-        o."userId",
-        o.status,
-        o."paymentStatus",
-        o.market,
-        o.currency,
-        o."grandTotal",
-        o.total,
-        o."customerPoNumber",
-        o."createdAt",
-        o."updatedAt",
-        u.name AS "userName",
-        u.email AS "userEmail",
-        u."companyName" AS "userCompanyName"
-      FROM "order" o
-      LEFT JOIN "user" u ON u.id = o."userId"
-      ${where}
-      ORDER BY o."createdAt" DESC
-    `)
-  )
-
-  return rows as unknown as OrderRow[]
+  return rows
 }
 
 // ---------------------------------------------------------------------------
@@ -98,27 +82,26 @@ export async function listOrders(filters?: {
 export async function getOrderById(id: number) {
   await assertAdmin()
 
-  const [row] = (await db.execute(
-    sql.raw(`
-      SELECT
-        o.*,
-        u.name AS "userName",
-        u.email AS "userEmail",
-        u."companyName" AS "userCompanyName",
-        u.phone AS "userPhone",
-        u.address AS "userAddress",
-        u.city AS "userCity",
-        u."postalCode" AS "userPostalCode",
-        u.country AS "userCountry",
-        u."vatNumber" AS "userVatNumber",
-        u."companyId" AS "userCompanyId"
-      FROM "order" o
-      LEFT JOIN "user" u ON u.id = o."userId"
-      WHERE o.id = ${id}
-    `)
-  ) as unknown) as unknown[]
+  const rows = await db
+    .select({
+      ...getTableColumns(order),
+      userName: user.name,
+      userEmail: user.email,
+      userCompanyName: user.companyName,
+      userPhone: user.phone,
+      userAddress: user.address,
+      userCity: user.city,
+      userPostalCode: user.postalCode,
+      userCountry: user.country,
+      userVatNumber: user.vatNumber,
+      userCompanyId: user.companyId,
+    })
+    .from(order)
+    .leftJoin(user, eq(user.id, order.userId))
+    .where(eq(order.id, id))
+    .limit(1)
 
-  if (!row) return null
+  if (rows.length === 0) return null
 
   const items = await db
     .select()
@@ -126,7 +109,7 @@ export async function getOrderById(id: number) {
     .where(eq(orderItem.orderId, id))
     .orderBy(orderItem.id)
 
-  return { ...(row as Record<string, unknown>), items }
+  return { ...rows[0], items }
 }
 
 // ---------------------------------------------------------------------------
@@ -456,36 +439,34 @@ export async function getOrderByNumber(orderNumber: string) {
   const { session, role } = await getSessionWithRole()
   if (!session?.user) throw new Error('Unauthorized')
 
-  const [row] = (await db.execute(
-    sql.raw(`
-      SELECT
-        o.*,
-        u.name AS "userName",
-        u.email AS "userEmail",
-        u."companyName" AS "userCompanyName"
-      FROM "order" o
-      LEFT JOIN "user" u ON u.id = o."userId"
-      WHERE o."orderNumber" = '${orderNumber.replace(/'/g, "''")}'
-      LIMIT 1
-    `)
-  ) as unknown) as unknown[]
+  const rows = await db
+    .select({
+      ...getTableColumns(order),
+      userName: user.name,
+      userEmail: user.email,
+      userCompanyName: user.companyName,
+    })
+    .from(order)
+    .leftJoin(user, eq(user.id, order.userId))
+    .where(eq(order.orderNumber, orderNumber))
+    .limit(1)
 
-  if (!row) return null
+  if (rows.length === 0) return null
 
-  const r = row as Record<string, unknown>
+  const row = rows[0]
 
   // Only the owner or an admin may view
-  if (role !== 'admin' && r.userId !== session.user.id) {
+  if (role !== 'admin' && row.userId !== session.user.id) {
     throw new Error('Forbidden')
   }
 
   const items = await db
     .select()
     .from(orderItem)
-    .where(eq(orderItem.orderId, r.id as number))
+    .where(eq(orderItem.orderId, row.id))
     .orderBy(orderItem.id)
 
-  return { ...r, items }
+  return { ...row, items }
 }
 
 
