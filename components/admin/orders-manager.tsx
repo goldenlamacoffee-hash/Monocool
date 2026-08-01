@@ -577,7 +577,7 @@ export function OrdersManager({ initialOrders, locale }: OrdersManagerProps) {
                           <TableRow key={i}>
                             <TableCell>
                               <p className="text-sm font-medium">{String(item.productName ?? '')}</p>
-                              {item.variantName && (
+                              {item.variantName != null && (
                                 <p className="text-xs text-muted-foreground">{String(item.variantName)}</p>
                               )}
                             </TableCell>
