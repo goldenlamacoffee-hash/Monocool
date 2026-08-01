@@ -295,35 +295,60 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
       // Validate quantity
       const qty = Math.max(1, Math.min(9999, Math.floor(item.quantity)))
 
-      // Fetch live base price from DB
-      let basePrice: number | null = null
-      let resolvedProductName = item.productName
-      let resolvedVariantName = item.variantName
-      let resolvedSku = item.sku
+      // ── Step A: Always validate the parent product from DB ──────────────
+      // client-provided productName/variantName/sku are never trusted.
+      const [prod] = await db
+        .select({ id: product.id, name: product.name, price: product.price, isActive: product.isActive })
+        .from(product)
+        .where(and(eq(product.id, item.productId), eq(product.isActive, true)))
+        .limit(1)
 
-      if (item.variantId != null) {
-        const [variant] = await db
-          .select({ price: productVariant.price, name: productVariant.name, sku: productVariant.sku })
-          .from(productVariant)
-          .where(eq(productVariant.id, item.variantId))
-          .limit(1)
-        if (variant) {
-          basePrice = parseBasePrice(variant.price)
-          resolvedVariantName = variant.name
-          if (!resolvedSku) resolvedSku = variant.sku ?? undefined
-        }
+      if (!prod) {
+        throw new Error(`Product ${item.productId} not found or inactive`)
       }
 
-      // Fall back to product price if variant has no price
-      if (basePrice === null) {
-        const [prod] = await db
-          .select({ price: product.price, name: product.name })
-          .from(product)
-          .where(eq(product.id, item.productId))
+      // Derive name and base price from the validated parent product
+      const resolvedProductName = prod.name
+      const productBasePrice = parseBasePrice(prod.price)
+      let basePrice: number | null = productBasePrice
+
+      let resolvedVariantName: string | null = null
+      let resolvedSku: string | null = null
+
+      // ── Step B: When variantId present, validate it belongs to this product ──
+      if (item.variantId != null) {
+        const [variant] = await db
+          .select({
+            id: productVariant.id,
+            name: productVariant.name,
+            sku: productVariant.sku,
+            price: productVariant.price,
+            isActive: productVariant.isActive,
+          })
+          .from(productVariant)
+          .where(
+            and(
+              eq(productVariant.id, item.variantId),
+              eq(productVariant.productId, item.productId), // must belong to this product
+              eq(productVariant.isActive, true)
+            )
+          )
           .limit(1)
-        if (prod) {
-          basePrice = parseBasePrice(prod.price)
-          resolvedProductName = prod.name
+
+        if (!variant) {
+          throw new Error(
+            `Variant ${item.variantId} not found, inactive, or does not belong to product ${item.productId}`
+          )
+        }
+
+        // Derive variant name and SKU from DB
+        resolvedVariantName = variant.name
+        resolvedSku = variant.sku ?? null
+
+        // Use variant price when present; otherwise fall back to parent product price
+        const variantPrice = parseBasePrice(variant.price)
+        if (variantPrice !== null) {
+          basePrice = variantPrice
         }
       }
 
@@ -340,8 +365,8 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
         productId: item.productId,
         variantId: item.variantId,
         productName: resolvedProductName,
-        variantName: resolvedVariantName ?? null,
-        sku: resolvedSku ?? null,
+        variantName: resolvedVariantName,
+        sku: resolvedSku,
         quantity: qty,
         baseUnitPrice: String(basePrice),
         discountPercent: String(discountPercent),
