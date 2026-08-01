@@ -13,6 +13,8 @@ import { getDomainFromLocale, buildSeoMetadata } from '@/lib/domain-utils'
 import { getPartnerViewer } from '@/lib/partner-pricing'
 import { resolveProductPriceView } from '@/lib/pricing'
 import { PartnerPrice } from '@/components/partner-price'
+import { BasketAddButton } from '@/components/basket-add-button'
+import { makeBasketKey } from '@/lib/basket'
 import { ProductDocumentsBlock } from '@/components/product-documents-block'
 import { type Locale } from '@/i18n/config'
 import { 
@@ -151,10 +153,22 @@ export default async function ProductDetailPage({ params }: Props) {
 
               {/* CTA Buttons */}
               <div className="mt-8 flex flex-wrap gap-3">
+                {priceView.state === 'approved' && (
+                  <BasketAddButton
+                    item={{
+                      productId: product.id,
+                      productName: product.name,
+                      sku: undefined,
+                      baseUnitPrice: priceView.listPrice ?? 0,
+                      discountPercent: priceView.discountPercent,
+                      finalUnitPrice: priceView.finalPrice ?? 0,
+                    }}
+                  />
+                )}
                 {siteSettings.email?.trim() && (
                   <a 
                     href={`mailto:${siteSettings.email.trim()}?subject=Anfrage: ${product.name}`}
-                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-mono-deep"
+                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-background px-6 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
                   >
                     {t('requestQuote')}
                   </a>
