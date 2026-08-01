@@ -73,6 +73,18 @@ export const siteSettings = pgTable('site_settings', {
   seoTitle: text('seoTitle'),
   seoDescription: text('seoDescription'),
   ogImage: text('ogImage'),
+  // --- B2B invoicing & banking (V1.4G.1) -----------------------------------
+  // All nullable — must be configured by operator before any document is generated.
+  iban: text('iban'),
+  bic: text('bic'),
+  bankName: text('bankName'),
+  currency: text('currency'),
+  vatRate: decimal('vatRate', { precision: 5, scale: 2 }),
+  invoicePrefix: text('invoicePrefix'),
+  proformaPrefix: text('proformaPrefix'),
+  nextInvoiceNumber: integer('nextInvoiceNumber').notNull().default(1),
+  nextProformaNumber: integer('nextProformaNumber').notNull().default(1),
+  paymentDueDays: integer('paymentDueDays'),
   // Metadata
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
@@ -230,21 +242,68 @@ export const cmsContent = pgTable('cms_content', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
-// --- Orders table ----------------------------------------------------------
+// --- Orders table (V1.4G.1) ------------------------------------------------
+// Legacy columns (items, subtotal, tax, total, notes) are preserved for
+// backward compatibility. New columns are additive and all nullable/defaulted.
+//
+// Allowed order statuses:   submitted | confirmed | processing | shipped | completed | cancelled
+// Allowed payment statuses: unpaid | payment_request_sent | paid | refunded
 export const order = pgTable('order', {
   id: serial('id').primaryKey(),
   orderNumber: text('orderNumber').notNull().unique(),
   userId: text('userId').notNull(),
-  status: text('status').notNull().default('pending'), // pending, confirmed, shipped, delivered, cancelled
-  items: jsonb('items').notNull(),
-  subtotal: decimal('subtotal', { precision: 10, scale: 2 }).notNull(),
+  status: text('status').notNull().default('submitted'),
+  // Legacy columns — kept for backward compatibility, do not drop
+  items: jsonb('items').notNull().default('[]'),
+  subtotal: decimal('subtotal', { precision: 10, scale: 2 }).notNull().default('0'),
   tax: decimal('tax', { precision: 10, scale: 2 }).default('0'),
-  total: decimal('total', { precision: 10, scale: 2 }).notNull(),
+  total: decimal('total', { precision: 10, scale: 2 }).notNull().default('0'),
   shippingAddress: jsonb('shippingAddress'),
   billingAddress: jsonb('billingAddress'),
   notes: text('notes'),
+  // --- V1.4G.1 additions ---
+  market: text('market'),
+  currency: text('currency'),
+  paymentStatus: text('paymentStatus').notNull().default('unpaid'),
+  customerPoNumber: text('customerPoNumber'),
+  customerNote: text('customerNote'),
+  adminNote: text('adminNote'),
+  discountTotal: decimal('discountTotal', { precision: 12, scale: 2 }).notNull().default('0'),
+  vatTotal: decimal('vatTotal', { precision: 12, scale: 2 }).notNull().default('0'),
+  grandTotal: decimal('grandTotal', { precision: 12, scale: 2 }),
+  proformaNumber: text('proformaNumber'),
+  invoiceNumber: text('invoiceNumber'),
+  confirmedAt: timestamp('confirmedAt'),
+  paidAt: timestamp('paidAt'),
+  shippedAt: timestamp('shippedAt'),
+  completedAt: timestamp('completedAt'),
+  cancelledAt: timestamp('cancelledAt'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+// --- Order items (V1.4G.1) -------------------------------------------------
+// Immutable price + product name snapshots. productId / variantId are nullable
+// so historical rows stay valid if a product is later deleted.
+export const orderItem = pgTable('order_item', {
+  id: serial('id').primaryKey(),
+  orderId: integer('orderId')
+    .notNull()
+    .references(() => order.id, { onDelete: 'cascade' }),
+  productId: integer('productId').references(() => product.id, { onDelete: 'set null' }),
+  variantId: integer('variantId').references(() => productVariant.id, { onDelete: 'set null' }),
+  productName: text('productName').notNull(),
+  variantName: text('variantName'),
+  sku: text('sku'),
+  quantity: integer('quantity').notNull(),
+  baseUnitPrice: decimal('baseUnitPrice', { precision: 12, scale: 2 }).notNull(),
+  discountPercent: decimal('discountPercent', { precision: 5, scale: 2 }).notNull(),
+  finalUnitPrice: decimal('finalUnitPrice', { precision: 12, scale: 2 }).notNull(),
+  vatRate: decimal('vatRate', { precision: 5, scale: 2 }).notNull(),
+  vatAmount: decimal('vatAmount', { precision: 12, scale: 2 }).notNull(),
+  lineSubtotal: decimal('lineSubtotal', { precision: 12, scale: 2 }).notNull(),
+  lineTotal: decimal('lineTotal', { precision: 12, scale: 2 }).notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
 })
 
 // --- Inferred types --------------------------------------------------------
@@ -259,3 +318,5 @@ export type NewProductDocument = typeof productDocument.$inferInsert
 export type CmsContent = typeof cmsContent.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type Order = typeof order.$inferSelect
+export type OrderItem = typeof orderItem.$inferSelect
+export type NewOrderItem = typeof orderItem.$inferInsert
