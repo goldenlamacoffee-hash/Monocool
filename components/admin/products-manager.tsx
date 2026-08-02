@@ -36,7 +36,7 @@ import {
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
 import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
-import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers, FileText } from 'lucide-react'
+import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers, FileText, ChevronDown } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
 import { ProductVariants } from './product-variants'
@@ -154,6 +154,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const [variantsProduct, setVariantsProduct] = useState<Product | null>(null)
   const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false)
   const [documentsProduct, setDocumentsProduct] = useState<Product | null>(null)
+  const [docsOpen, setDocsOpen] = useState(false)
   // Column visibility state
   const [showFeatures, setShowFeatures] = useState(false)
   const [showTechnicalData, setShowTechnicalData] = useState(false)
@@ -183,12 +184,14 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
     setEditingProduct(null)
     setFormData(emptyForm)
     setSaveError(null)
+    setDocsOpen(false)
     setIsDialogOpen(true)
   }
 
   const openEditDialog = (product: Product) => {
     setEditingProduct(product)
     setSaveError(null)
+    setDocsOpen(false)
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -388,6 +391,32 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
                   />
+                </div>
+
+                {/* Collapsible documents section */}
+                <div className="rounded-lg border border-border">
+                  <button
+                    type="button"
+                    onClick={() => setDocsOpen((v) => !v)}
+                    className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium hover:bg-muted/40 transition-colors rounded-lg"
+                    aria-expanded={docsOpen}
+                  >
+                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <span className="flex-1">{tDocuments('documentsSection')}</span>
+                    <ChevronDown
+                      className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200"
+                      style={{ transform: docsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    />
+                  </button>
+                  {docsOpen && (
+                    <div className="border-t border-border px-4 pb-4 pt-3">
+                      {editingProduct ? (
+                        <ProductDocuments productId={editingProduct.id} />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">{tDocuments('saveFirst')}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
