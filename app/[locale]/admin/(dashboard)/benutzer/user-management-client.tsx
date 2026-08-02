@@ -55,7 +55,7 @@ import {
 } from 'lucide-react'
 import { updateUserStatus, updateUserRole, updateUser, updatePartnerDiscount, deleteUser, createPartner } from '@/app/actions/users'
 import { normalizeDiscountPercent } from '@/lib/pricing'
-import { getLocaleFromDomain, getLocalizedMarketName, getMarketBaseUrl } from '@/lib/domain-utils'
+import { getLocaleFromDomain, getLocalizedMarketName, getMarketBaseUrl, isValidMarket } from '@/lib/domain-utils'
 import { authClient } from '@/lib/auth-client'
 import { type Locale } from '@/i18n/config'
 
@@ -111,6 +111,8 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
   const [impersonateTarget, setImpersonateTarget] = useState<User | null>(null)
   const [impersonatePending, setImpersonatePending] = useState(false)
   const [impersonateError, setImpersonateError] = useState<string | null>(null)
+  // Separate URL for cross-market error link — keeps the error message clean
+  const [crossMarketUrl, setCrossMarketUrl] = useState<string | null>(null)
 
   // Add partner dialog
   const [addPartnerOpen, setAddPartnerOpen] = useState(false)
@@ -291,20 +293,30 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
   const handleImpersonate = async () => {
     if (!impersonateTarget || impersonatePending) return
     setImpersonateError(null)
+    setCrossMarketUrl(null)
 
-    // Market safety: determine current production hostname and compare with
-    // the target partner's market. Same-market only in V1.4H.1.
-    const currentHostname =
-      typeof window !== 'undefined' ? window.location.hostname : ''
     const partnerMarket = impersonateTarget.market ?? ''
 
-    if (currentHostname !== partnerMarket) {
-      const partnerLocale = getLocaleFromDomain(partnerMarket)
-      const adminUrl = `${getMarketBaseUrl(partnerMarket)}/${partnerLocale}/admin/benutzer`
+    // Step 3a — validate the market value before doing anything
+    if (!isValidMarket(partnerMarket)) {
+      setImpersonateError(t('impersonateError'))
+      return
+    }
+
+    // Step 3b — normalize current hostname (lowercase, strip leading www.)
+    const rawHostname =
+      typeof window !== 'undefined' ? window.location.hostname : ''
+    const normalizedHostname = rawHostname.toLowerCase().replace(/^www\./, '')
+    const normalizedMarket = partnerMarket.toLowerCase().replace(/^www\./, '')
+
+    // Step 3c / Step 4 — same-market guard with real clickable link
+    if (normalizedHostname !== normalizedMarket) {
+      const partnerLocale = getLocaleFromDomain(normalizedMarket)
+      const adminUrl = `https://${normalizedMarket}/${partnerLocale}/admin/benutzer`
+      setCrossMarketUrl(adminUrl)
       setImpersonateError(
         t('wrongMarketError', {
-          market: getLocalizedMarketName(partnerMarket, locale),
-          url: adminUrl,
+          market: getLocalizedMarketName(normalizedMarket, locale),
         })
       )
       return
@@ -312,8 +324,22 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
 
     setImpersonatePending(true)
     try {
-      await authClient.admin.impersonateUser({ userId: impersonateTarget.id })
-      const partnerLocale = getLocaleFromDomain(partnerMarket)
+      // Step 2 — check BA response object, do NOT rely solely on try/catch
+      const result = await authClient.admin.impersonateUser({ userId: impersonateTarget.id })
+
+      if (result.error) {
+        setImpersonateError(result.error.message || t('impersonateError'))
+        setImpersonatePending(false)
+        return
+      }
+
+      if (!result.data) {
+        setImpersonateError(t('impersonateError'))
+        setImpersonatePending(false)
+        return
+      }
+
+      const partnerLocale = getLocaleFromDomain(normalizedMarket)
       // Full document navigation — clean load of partner session
       window.location.assign(`/${partnerLocale}`)
     } catch (err) {
@@ -325,6 +351,7 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
   const openImpersonateDialog = (user: User) => {
     setImpersonateTarget(user)
     setImpersonateError(null)
+    setCrossMarketUrl(null)
   }
 
   const openView = (user: User) => {
@@ -1074,6 +1101,7 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
           if (!open && !impersonatePending) {
             setImpersonateTarget(null)
             setImpersonateError(null)
+            setCrossMarketUrl(null)
           }
         }}
       >
@@ -1130,9 +1158,20 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
 
               {/* Cross-market or other error */}
               {impersonateError && (
-                <p className="text-sm font-medium text-destructive" role="alert">
-                  {impersonateError}
-                </p>
+                <div role="alert" className="space-y-1.5">
+                  <p className="text-sm font-medium text-destructive">
+                    {impersonateError}
+                  </p>
+                  {/* Step 4 — real clickable link to the correct market admin */}
+                  {crossMarketUrl && (
+                    <a
+                      href={crossMarketUrl}
+                      className="inline-flex items-center gap-1 text-sm font-medium text-primary underline underline-offset-4 hover:no-underline"
+                    >
+                      {t('wrongMarketLink')}
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -1140,7 +1179,7 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => { setImpersonateTarget(null); setImpersonateError(null) }}
+              onClick={() => { setImpersonateTarget(null); setImpersonateError(null); setCrossMarketUrl(null) }}
               disabled={impersonatePending}
             >
               {t('impersonateCancel')}

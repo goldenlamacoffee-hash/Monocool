@@ -391,7 +391,8 @@
       "impersonateCancel": "Abbrechen",
       "impersonateConfirm": "Als Partner fortfahren",
       "impersonateError": "Anmeldung als Partner fehlgeschlagen. Bitte versuchen Sie es erneut.",
-      "wrongMarketError": "Dieser Partner gehört zum Markt {market}. Bitte öffnen Sie zuerst die Administration dieses Markts."
+      "wrongMarketError": "Dieser Partner gehört zum Markt {market}. Bitte öffnen Sie zuerst die Administration dieses Markts.",
+      "wrongMarketLink": "Richtige Administration öffnen"
     },
     "productManagement": {
       "title": "Produktverwaltung",

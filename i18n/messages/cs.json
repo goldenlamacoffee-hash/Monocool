@@ -391,7 +391,8 @@
       "impersonateCancel": "Zrušit",
       "impersonateConfirm": "Pokračovat jako partner",
       "impersonateError": "Přihlášení jako partner selhalo. Zkuste to znovu.",
-      "wrongMarketError": "Tento partner patří na trh {market}. Nejprve otevřete administraci daného trhu."
+      "wrongMarketError": "Tento partner patří na trh {market}. Nejprve otevřete administraci daného trhu.",
+      "wrongMarketLink": "Otevřít správnou administraci"
     },
     "productManagement": {
       "title": "Správa produktů",
