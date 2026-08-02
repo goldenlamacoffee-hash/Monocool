@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins/admin'
 import { pool } from '@/lib/db'
 
 // Production domains
@@ -26,13 +27,19 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
+  plugins: [
+    admin({
+      // Impersonation sessions expire after 30 minutes regardless of the
+      // normal session expiry.
+      impersonationSessionDuration: 30 * 60,
+    }),
+  ],
   user: {
     additionalFields: {
-      role: {
-        type: 'string',
-        defaultValue: 'user',
-        input: false,
-      },
+      // NOTE: `role` is intentionally omitted here — the Admin plugin
+      // registers it internally (along with banned/banReason/banExpires).
+      // Registering it twice in additionalFields causes a duplicate-field
+      // error in Better Auth 1.6.14.
       status: {
         type: 'string',
         defaultValue: 'pending',

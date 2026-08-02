@@ -384,7 +384,14 @@
       "emailExists": "Účet s týmto e-mailom už existuje.",
       "createError": "Vytvorenie účtu zlyhalo. Skúste to znova.",
       "passwordHint": "Minimálne 8 znakov. Platí ako dočasné heslo pri prvom prihlásení.",
-      "requiredField": "Povinné pole"
+      "requiredField": "Povinné pole",
+      "loginAsPartner": "Prihlásiť sa ako partner",
+      "impersonateDescription": "Prihlásenie ako partner vám umožní vidieť stránku jeho očami.",
+      "impersonateWarning": "Dočasne opustíte administráciu a na tejto doméne budete prihlásený ako tento partner. Všetky otvorené karty na tejto doméne budú používať partnerskú reláciu.",
+      "impersonateCancel": "Zrušiť",
+      "impersonateConfirm": "Pokračovať ako partner",
+      "impersonateError": "Prihlásenie ako partner zlyhalo. Skúste to znova.",
+      "wrongMarketError": "Tento partner patrí na trh {market}. Najprv otvorte administráciu daného trhu."
     },
     "productManagement": {
       "title": "Správa produktov",
@@ -802,5 +809,11 @@
     "noteLabel": "Poznámka",
     "whatHappensNext": "Potvrdenie obdržíte e-mailom. Náš tím Vás kontaktuje s proforma faktúrou a podrobnosťami o dodaní.",
     "continueShoppingCta": "Pokračovať v nákupe"
+  },
+  "impersonation": {
+    "bannerLabel": "Režim partnera: Ste prihlásený ako {name} – {company}.",
+    "bannerLabelNoCompany": "Režim partnera: Ste prihlásený ako {name}.",
+    "stopButton": "Vrátiť sa do administrácie",
+    "stopError": "Ukončenie relácie partnera zlyhalo. Skúste to znova."
   }
 }
