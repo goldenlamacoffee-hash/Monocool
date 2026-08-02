@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -81,7 +80,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
   }
 
   const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <nav className="flex flex-1 flex-col gap-1 px-3" aria-label={t('dashboard')}>
+    <nav className="flex flex-1 flex-col gap-1 px-3" aria-label={t('adminPanel')}>
       {navItems.map((item) => {
         const Icon = item.icon
         const active = isActive(item)
@@ -103,7 +102,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
           )
         }
         return (
-          <Link
+          <a
             key={item.key}
             href={item.href}
             onClick={onNavigate}
@@ -125,7 +124,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
             ) : (
               active && <ChevronRight className="h-4 w-4 text-white/60" />
             )}
-          </Link>
+          </a>
         )
       })}
     </nav>

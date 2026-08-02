@@ -1,7 +1,6 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
-import { useTransition } from 'react'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Globe } from 'lucide-react'
 import { DOMAINS, getDomainFromLocale, getLocalizedMarketName } from '@/lib/domain-utils'
@@ -30,26 +29,23 @@ interface AdminMarketSelectorProps {
  */
 export function AdminMarketSelector({ locale, variant = 'card' }: AdminMarketSelectorProps) {
   const t = useTranslations('admin.market')
-  const router = useRouter()
   const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
 
   const currentDomain = getDomainFromLocale(locale)
 
   const handleChange = (nextLocale: Locale | null) => {
     if (!nextLocale || nextLocale === locale) return
-    // Replace the leading locale segment in the current path
+    // Replace the leading locale segment in the current path and perform a
+    // full document navigation so stale App Router bundles are never used.
     const segments = pathname.split('/')
     segments[1] = nextLocale
     const nextPath = segments.join('/')
-    startTransition(() => {
-      router.push(nextPath)
-    })
+    window.location.assign(nextPath)
   }
 
   if (variant === 'compact') {
     return (
-      <Select value={locale} onValueChange={handleChange} disabled={isPending}>
+      <Select value={locale} onValueChange={handleChange}>
         <SelectTrigger
           aria-label={t('selectMarket')}
           className="h-9 w-full gap-2 border-white/15 bg-white/5 text-white hover:bg-white/10 focus-visible:ring-white/30 data-[placeholder]:text-white/70 sm:w-[210px] [&_svg]:text-white/70"
@@ -82,7 +78,7 @@ export function AdminMarketSelector({ locale, variant = 'card' }: AdminMarketSel
         </span>
         <span className="text-sm font-semibold text-foreground">{currentDomain}</span>
       </div>
-      <Select value={locale} onValueChange={handleChange} disabled={isPending}>
+      <Select value={locale} onValueChange={handleChange}>
         <SelectTrigger className="w-[200px]" aria-label={t('selectMarket')}>
           <SelectValue />
         </SelectTrigger>
