@@ -80,7 +80,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
   }
 
   const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <nav className="flex flex-1 flex-col gap-1 px-3" aria-label={t('dashboard')}>
+    <nav className="flex flex-1 flex-col gap-1 px-3" aria-label={t('adminPanel')}>
       {navItems.map((item) => {
         const Icon = item.icon
         const active = isActive(item)
