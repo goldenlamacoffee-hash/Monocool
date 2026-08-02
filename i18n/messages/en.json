@@ -391,7 +391,8 @@
       "impersonateCancel": "Cancel",
       "impersonateConfirm": "Continue as partner",
       "impersonateError": "Login as partner failed. Please try again.",
-      "wrongMarketError": "This partner belongs to market {market}. Please open the administration for that market first."
+      "wrongMarketError": "This partner belongs to market {market}. Please open the administration for that market first.",
+      "wrongMarketLink": "Open the correct administration"
     },
     "productManagement": {
       "title": "Product Management",

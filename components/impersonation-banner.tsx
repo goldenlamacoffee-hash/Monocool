@@ -24,7 +24,15 @@ export function ImpersonationBanner({ partnerName, partnerCompany, locale }: Imp
     setStopping(true)
     setStopError(null)
     try {
-      await authClient.admin.stopImpersonating()
+      const result = await authClient.admin.stopImpersonating()
+
+      // Check the Better Auth response object — do NOT rely solely on try/catch
+      if (result.error) {
+        setStopError(result.error.message || t('stopError'))
+        setStopping(false)
+        return
+      }
+
       // Full document navigation so the restored admin session is loaded cleanly
       window.location.assign(`/${locale}/admin/benutzer`)
     } catch (err) {
