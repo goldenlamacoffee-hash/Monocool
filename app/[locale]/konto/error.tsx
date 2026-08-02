@@ -5,45 +5,17 @@
 // unhandled exception. This component is a Next.js App Router error boundary:
 // it MUST be a Client Component ('use client') and receive (error, reset) props.
 //
-// It matches the light partner-zone design. It does NOT expose stack traces or
-// database errors to the partner. It DOES log the digest to the console for
-// support (no sensitive data).
+// It matches the light partner-zone design. It does NOT expose stack traces,
+// database details, or the error digest to the partner. The digest is logged
+// to the browser console only (for support purposes — no sensitive data).
+//
+// Translations live in the partnerPortal.error i18n namespace.
 
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { AlertTriangle, RefreshCw, LayoutDashboard } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { type Locale } from '@/i18n/config'
-
-// §4 — translations inline so error.tsx does not depend on next-intl server context
-const TRANSLATIONS: Record<string, { title: string; description: string; retry: string; dashboard: string }> = {
-  sk: {
-    title: 'Túto časť sa nepodarilo načítať',
-    description: 'Skúste stránku načítať znova alebo sa vráťte na prehľad partnerskej zóny.',
-    retry: 'Skúsiť znova',
-    dashboard: 'Späť na prehľad',
-  },
-  de: {
-    title: 'Dieser Bereich konnte nicht geladen werden',
-    description: 'Versuchen Sie, die Seite neu zu laden, oder kehren Sie zur Übersicht des Partnerbereichs zurück.',
-    retry: 'Erneut versuchen',
-    dashboard: 'Zurück zur Übersicht',
-  },
-  en: {
-    title: 'This section could not be loaded',
-    description: 'Try reloading the page or return to the partner zone overview.',
-    retry: 'Try again',
-    dashboard: 'Back to overview',
-  },
-  cs: {
-    title: 'Tuto sekci se nepodařilo načíst',
-    description: 'Zkuste stránku načíst znovu nebo se vraťte na přehled partnerské zóny.',
-    retry: 'Zkusit znovu',
-    dashboard: 'Zpět na přehled',
-  },
-}
-
-const FALLBACK = TRANSLATIONS.en
 
 interface KontoErrorProps {
   error: Error & { digest?: string }
@@ -52,10 +24,12 @@ interface KontoErrorProps {
 
 export default function KontoError({ error, reset }: KontoErrorProps) {
   const locale = (useLocale() as Locale) ?? 'en'
-  const T = TRANSLATIONS[locale] ?? FALLBACK
+  // useTranslations works in client error boundaries — next-intl provides the
+  // locale context from the nearest IntlProvider which is set by the root layout.
+  const t = useTranslations('partnerPortal.error')
 
   useEffect(() => {
-    // §4 — log digest without sensitive data; never log error.message to avoid leaking DB details
+    // Log digest to console only — never display to partner; never log error.message
     if (error.digest) {
       console.error(`[partner-portal] error boundary triggered — digest: ${error.digest}`)
     } else {
@@ -70,30 +44,26 @@ export default function KontoError({ error, reset }: KontoErrorProps) {
           <AlertTriangle className="h-7 w-7 text-amber-500" aria-hidden="true" />
         </div>
         <h2 className="font-heading text-xl font-semibold text-[color:var(--mono-navy)]">
-          {T.title}
+          {t('title')}
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-[color:var(--mono-muted)]">
-          {T.description}
+          {t('description')}
         </p>
-        {error.digest && (
-          <p className="mt-3 font-mono text-xs text-[color:var(--mono-muted)] opacity-60" aria-hidden="true">
-            {error.digest}
-          </p>
-        )}
+        {/* digest intentionally NOT shown to the partner — console only */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={reset}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-[color:var(--mono-steel)] bg-white px-5 py-2.5 text-sm font-semibold text-[color:var(--mono-navy)] shadow-sm transition-colors hover:bg-[color:var(--mono-ice)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--mono-steel)]"
           >
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            {T.retry}
+            {t('retry')}
           </button>
           <Link
             href={`/${locale}/konto`}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[color:var(--mono-navy)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[color:var(--mono-steel)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--mono-navy)]"
           >
             <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
-            {T.dashboard}
+            {t('dashboard')}
           </Link>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { type Locale } from '@/i18n/config'
-import { requireApprovedContext } from '@/lib/partner-portal'
+import { resolveApprovedContext } from '@/lib/partner-portal'
 import { getLocalizedMarketName } from '@/lib/domain-utils'
 import { ProfileClient } from '@/components/partner/profile-client'
 
@@ -13,11 +13,12 @@ export default async function ProfilePage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  // §5 — pending/rejected users are redirected to /konto by requireApprovedContext
+  // Pending/rejected: return null — layout renders the status card; no data query runs.
   const [ctx, t] = await Promise.all([
-    requireApprovedContext(locale),
+    resolveApprovedContext(locale),
     getTranslations('partnerPortal'),
   ])
+  if (!ctx) return null
 
   const marketName = getLocalizedMarketName(ctx.market, locale)
 

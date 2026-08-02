@@ -938,7 +938,10 @@
       "noPriceConfigured": "Preis nicht konfiguriert",
       "emptyTitle": "Keine Produkte verfügbar",
       "emptyDescription": "Für Ihren Markt sind noch keine Produkte konfiguriert.",
-      "noResults": "Keine Produkte gefunden."
+      "noResults": "Keine Produkte gefunden.",
+      "discountBandNoVat": "Ihr Rabatt: {discount} % · MwSt.: nicht konfiguriert · Währung: {currency}",
+      "subtitleNoVat": "Ihre Partnerpreise — {discount} % Rabatt — {currency} · MwSt. nicht konfiguriert",
+      "variantsNotAvailable": "Produktvarianten sind vorübergehend nicht verfügbar — es werden nur Basisproduktpreise angezeigt."
     },
     "downloads": {
       "subtitle": "Technische Dokumente und Handbücher für Ihre Produkte",
@@ -990,6 +993,12 @@
       "statusApproved": "Aktiv",
       "statusPending": "In Prüfung",
       "statusRejected": "Abgelehnt"
+    },
+    "error": {
+      "title": "Dieser Bereich konnte nicht geladen werden",
+      "description": "Versuchen Sie, die Seite neu zu laden, oder kehren Sie zur Übersicht des Partnerbereichs zurück.",
+      "retry": "Erneut versuchen",
+      "dashboard": "Zurück zur Übersicht"
     }
   }
 }

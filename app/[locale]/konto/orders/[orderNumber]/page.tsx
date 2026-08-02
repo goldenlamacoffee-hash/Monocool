@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { type Locale } from '@/i18n/config'
-import { resolvePartnerContext } from '@/lib/partner-portal'
+import { resolveApprovedContext } from '@/lib/partner-portal'
 import { getMyOrderByNumber } from '@/app/actions/partner-portal'
 import { ArrowLeft, CheckCircle2, Circle, Clock, Package, Truck, XCircle, CreditCard } from 'lucide-react'
 
@@ -15,7 +15,9 @@ export default async function OrderDetailPage({ params }: Props) {
   const { locale, orderNumber } = await params
   setRequestLocale(locale)
 
-  await resolvePartnerContext(locale)
+  // Pending/rejected: return null — layout renders the status card; no data query runs.
+  const ctx = await resolveApprovedContext(locale)
+  if (!ctx) return null
 
   const [orderData, t] = await Promise.all([
     getMyOrderByNumber(locale, orderNumber),

@@ -11,7 +11,8 @@ interface PriceListClientProps {
   products: PriceListProduct[]
   discountPercent: number
   currency: string
-  vatRate: number
+  vatRate: number           // NaN when site_settings.vatRate is not configured
+  variantsAvailable: boolean
   locale: string
 }
 
@@ -20,9 +21,20 @@ export function PriceListClient({
   discountPercent,
   currency,
   vatRate,
+  variantsAvailable,
   locale,
 }: PriceListClientProps) {
   const t = useTranslations('partnerPortal')
+  const vatConfigured = Number.isFinite(vatRate)
+
+  // §3 — localized "VAT not configured" labels
+  const VAT_NOT_CONFIGURED: Record<string, string> = {
+    sk: 'DPH nie je nastavená',
+    de: 'Mehrwertsteuer ist nicht konfiguriert',
+    en: 'VAT is not configured',
+    cs: 'DPH není nastavena',
+  }
+  const vatNotConfiguredLabel = VAT_NOT_CONFIGURED[locale] ?? VAT_NOT_CONFIGURED.en
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set())
@@ -135,9 +147,27 @@ export function PriceListClient({
       <div className="flex items-center gap-3 rounded-xl border border-[color:var(--mono-steel)]/20 bg-[color:var(--mono-ice)] px-4 py-3">
         <Tag className="h-4 w-4 text-[color:var(--mono-steel)] shrink-0" aria-hidden="true" />
         <p className="text-sm text-[color:var(--mono-navy)]">
-          {t('prices.discountBand', { discount: discountPercent, vat: vatRate, currency })}
+          {vatConfigured
+            ? t('prices.discountBand', { discount: discountPercent, vat: vatRate, currency })
+            : t('prices.discountBandNoVat', { discount: discountPercent, currency })}
         </p>
       </div>
+
+      {/* VAT not configured warning */}
+      {!vatConfigured && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3" role="alert">
+          <span className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true">!</span>
+          <p className="text-sm text-amber-800">{vatNotConfiguredLabel}</p>
+        </div>
+      )}
+
+      {/* Variants not available info */}
+      {!variantsAvailable && (
+        <div className="flex items-start gap-3 rounded-xl border border-[color:var(--mono-line)] bg-[color:var(--mono-bg)] px-4 py-3">
+          <span className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--mono-muted)]" aria-hidden="true">i</span>
+          <p className="text-sm text-[color:var(--mono-muted)]">{t('prices.variantsNotAvailable')}</p>
+        </div>
+      )}
 
       {/* Products */}
       {filtered.length === 0 ? (
@@ -201,7 +231,9 @@ export function PriceListClient({
                               {fmtCurrency(product.partnerPrice)}
                             </p>
                             <p className="text-xs text-[color:var(--mono-muted)]">
-                              {t('prices.grossLabel')} {fmtCurrency(product.grossPrice)}
+                              {product.grossPrice !== null
+                                ? `${t('prices.grossLabel')} ${fmtCurrency(product.grossPrice)}`
+                                : vatNotConfiguredLabel}
                             </p>
                             <p className="text-xs font-medium text-emerald-600 mt-0.5">
                               -{discountPercent} %

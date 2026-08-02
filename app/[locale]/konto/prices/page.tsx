@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { type Locale } from '@/i18n/config'
-import { requireApprovedContext } from '@/lib/partner-portal'
+import { resolveApprovedContext } from '@/lib/partner-portal'
 import { getMyPriceList } from '@/app/actions/partner-portal'
 import { PriceListClient } from '@/components/partner/price-list-client'
 
@@ -13,8 +13,9 @@ export default async function PricesPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  // §5 — pending/rejected users are redirected to /konto by requireApprovedContext
-  await requireApprovedContext(locale)
+  // Pending/rejected: return null — layout renders the status card; no data query runs.
+  const ctx = await resolveApprovedContext(locale)
+  if (!ctx) return null
 
   const [priceList, t] = await Promise.all([
     getMyPriceList(locale),
@@ -28,7 +29,9 @@ export default async function PricesPage({ params }: Props) {
           {t('nav.prices')}
         </h1>
         <p className="mt-1 text-sm text-[color:var(--mono-muted)]">
-          {t('prices.subtitle', { discount: priceList.discountPercent, currency: priceList.currency })}
+          {Number.isFinite(priceList.vatRate)
+            ? t('prices.subtitle', { discount: priceList.discountPercent, currency: priceList.currency })
+            : t('prices.subtitleNoVat', { discount: priceList.discountPercent, currency: priceList.currency })}
         </p>
       </div>
       <PriceListClient
@@ -36,6 +39,7 @@ export default async function PricesPage({ params }: Props) {
         discountPercent={priceList.discountPercent}
         currency={priceList.currency}
         vatRate={priceList.vatRate}
+        variantsAvailable={priceList.variantsAvailable}
         locale={locale}
       />
     </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,6 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
@@ -51,9 +50,8 @@ export function AuthForm({ mode }: AuthFormProps) {
         if (error) throw new Error(error.message)
       }
       if (mode === 'sign-up') {
-        // New registrations land on homepage (account status: pending)
-        router.push(`/${locale}`)
-        router.refresh()
+        // New registrations land on homepage (pending status shown by layout)
+        window.location.assign(`/${locale}`)
         return
       }
 
@@ -64,21 +62,34 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       if (role === 'admin') {
         // Admins go to the admin panel
-        router.push(`/${locale}/admin`)
-        router.refresh()
+        window.location.assign(`/${locale}/admin`)
         return
       }
 
-      // Safe callbackUrl: must be a relative path starting with /[locale]/konto
+      // §D — safe callbackUrl: must be relative, no double-slash, must start with
+      // exactly /[locale]/ (the current locale only — reject cross-locale paths
+      // and external destinations). Allowed sub-paths: /konto/*, /checkout/*.
+      const ALLOWED_LOCALES = ['de', 'cs', 'sk', 'en'] as const
       const rawCallback = searchParams.get('callbackUrl')
-      const isSafeCallback = rawCallback &&
-        rawCallback.startsWith('/') &&
-        !rawCallback.startsWith('//') &&
-        rawCallback.includes(`/${locale}/konto`)
+      const isSafeCallback = (() => {
+        if (!rawCallback) return false
+        if (!rawCallback.startsWith('/')) return false
+        if (rawCallback.startsWith('//')) return false
+        // Must not contain a protocol
+        if (/^[a-z][a-z0-9+.-]*:/i.test(rawCallback)) return false
+        // Must start with /<locale>/
+        const prefixOk = ALLOWED_LOCALES.some(l => rawCallback.startsWith(`/${l}/`))
+        if (!prefixOk) return false
+        // Must be the CURRENT locale
+        if (!rawCallback.startsWith(`/${locale}/`)) return false
+        return true
+      })()
 
-      const target = isSafeCallback ? rawCallback : `/${locale}/konto`
-      router.push(target)
-      router.refresh()
+      // rawCallback is guaranteed to be a non-null string when isSafeCallback is true
+      const target: string = isSafeCallback ? (rawCallback as string) : `/${locale}/konto`
+      // Use window.location.assign for a hard navigation that guarantees a fresh
+      // server session check and clears any stale client-side route cache.
+      window.location.assign(target)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('error'))
     } finally {

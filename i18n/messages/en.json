@@ -938,7 +938,10 @@
       "noPriceConfigured": "Price not configured",
       "emptyTitle": "No products available",
       "emptyDescription": "No products have been configured for your market yet.",
-      "noResults": "No products found."
+      "noResults": "No products found.",
+      "discountBandNoVat": "Your discount: {discount}% · VAT: not configured · Currency: {currency}",
+      "subtitleNoVat": "Your partner prices — {discount}% discount — {currency} · VAT not configured",
+      "variantsNotAvailable": "Product variants are temporarily unavailable — showing base product prices only."
     },
     "downloads": {
       "subtitle": "Technical documents and manuals for your products",
@@ -990,6 +993,12 @@
       "statusApproved": "Active",
       "statusPending": "Pending approval",
       "statusRejected": "Rejected"
+    },
+    "error": {
+      "title": "This section could not be loaded",
+      "description": "Try reloading the page or return to the partner zone overview.",
+      "retry": "Try again",
+      "dashboard": "Back to overview"
     }
   }
 }

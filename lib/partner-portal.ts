@@ -147,17 +147,24 @@ export async function resolvePartnerContext(locale: string): Promise<PartnerCont
 }
 
 /**
- * Like resolvePartnerContext, but additionally redirects pending and rejected
- * users to the konto root (where the layout shows the status page).
+ * Like resolvePartnerContext, but returns null for pending/rejected partners
+ * instead of redirecting them.
  *
- * Use this in every data-fetching sub-page inside /konto so that DB queries
- * are never executed for non-approved users — even when Next.js renders the
- * page segment in parallel with the layout.
+ * Use this in every data-fetching sub-page inside /konto. When null is
+ * returned, the page must render nothing (return null) — the konto layout
+ * will concurrently render PartnerAccountStatus for those users.
+ *
+ * This avoids a redirect loop: requireApprovedContext previously redirected
+ * pending/rejected users back to /konto, which itself calls this guard,
+ * creating an infinite redirect chain.
+ *
+ * No DB data query (orders, prices, documents, profile) must execute when
+ * this function returns null.
  */
-export async function requireApprovedContext(locale: string): Promise<PartnerContext> {
+export async function resolveApprovedContext(locale: string): Promise<PartnerContext | null> {
   const ctx = await resolvePartnerContext(locale)
   if (ctx.status === 'pending' || ctx.status === 'rejected') {
-    redirect(`/${locale}/konto`)
+    return null
   }
   return ctx
 }

@@ -62,7 +62,8 @@ export type PartnerDashboardData = {
   totalOrders: number
   openOrders: number
   completedOrders: number
-  historicalTotal: string   // persisted grandTotal sum
+  // §6 — totals grouped by persisted order currency; never mixed across currencies
+  historicalTotals: { currency: string; total: string }[]
   availableDocuments: number
   recentOrders: PartnerOrderRow[]
   marketSettings: {
@@ -105,9 +106,10 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
       .where(and(eq(order.userId, userId), eq(order.market, market)))
       .orderBy(desc(order.createdAt)),
 
-    // Available documents (active, language = locale, active parent product in this market)
+    // Available documents — fetch productId, type, language for locale+English dedup
+    // (same logic as getMyDocuments; one SK manual + its EN fallback = one document)
     db
-      .select({ id: productDocument.id })
+      .select({ productId: productDocument.productId, type: productDocument.type, language: productDocument.language })
       .from(productDocument)
       .innerJoin(product, eq(productDocument.productId, product.id))
       .where(
@@ -134,40 +136,59 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
   const openOrders = ordersData.filter(o => OPEN_STATUSES.includes(o.status)).length
   const completedOrders = ordersData.filter(o => o.status === 'completed').length
 
-  // Sum persisted grandTotal — do not recalculate
-  const historicalTotal = ordersData
-    .reduce((s, o) => {
-      const v = parseFloat(String(o.grandTotal ?? o.total ?? '0'))
-      return s + (Number.isFinite(v) ? v : 0)
-    }, 0)
-    .toFixed(2)
+  // §6 — group persisted totals by order.currency; never mix different currencies.
+  // Use market currency as fallback only when the persisted order currency is null.
+  const rawCurrencyFallback = (() => {
+    const raw = settingsData[0]?.currency
+    if (raw != null && raw.trim().length === 3) return raw.trim().toUpperCase()
+    const MARKET_CURRENCY: Record<string, string> = {
+      'monocool.sk': 'EUR', 'monocool.at': 'EUR', 'monocool.cz': 'CZK', 'monocool.eu': 'EUR',
+    }
+    return MARKET_CURRENCY[market] ?? 'EUR'
+  })()
 
-  // Deduplicate English fallback documents:
-  // If a product already has a document for the current locale + same type,
-  // don't count the English one.
-  const localeDocIds = new Set(
+  const totalsByCurrency = new Map<string, number>()
+  for (const o of ordersData) {
+    const cur = (o.currency && o.currency.trim().length === 3)
+      ? o.currency.trim().toUpperCase()
+      : rawCurrencyFallback
+    const v = parseFloat(String(o.grandTotal ?? o.total ?? '0'))
+    if (Number.isFinite(v)) {
+      totalsByCurrency.set(cur, (totalsByCurrency.get(cur) ?? 0) + v)
+    }
+  }
+  const historicalTotals = Array.from(totalsByCurrency.entries()).map(([currency, total]) => ({
+    currency,
+    total: total.toFixed(2),
+  }))
+
+  // §4 — deduplicate English fallback documents using the same locale+type logic
+  // as getMyDocuments. One locale doc + its English fallback = one available doc.
+  const localeKeys = new Set(
     docsData
-      .filter((d: { id: number }) => {
-        // We don't have language here — count all for simplicity; detail dedup is on the downloads page
-        return true
-      })
-      .map((d: { id: number }) => d.id)
+      .filter(d => d.language === locale)
+      .map(d => `${d.productId}__${d.type}`)
   )
+  const dedupedDocs = docsData.filter(d => {
+    if (d.language === locale) return true
+    return !localeKeys.has(`${d.productId}__${d.type}`)
+  })
 
   // §3 — safe fallbacks for null currency/vatRate in site_settings
   const rawCurrency = settingsData[0]?.currency
   const safeCurrency = (rawCurrency != null && rawCurrency.trim().length === 3)
     ? rawCurrency.trim().toUpperCase()
     : 'EUR'
+  // §3 — pass the raw value through; never invent 20% if unconfigured
   const rawVat = settingsData[0]?.vatRate
-  const safeVat = (rawVat != null && String(rawVat).trim() !== '') ? String(rawVat) : '20'
+  const safeVat = (rawVat != null && String(rawVat).trim() !== '') ? String(rawVat) : ''
 
   return {
     totalOrders,
     openOrders,
     completedOrders,
-    historicalTotal,
-    availableDocuments: localeDocIds.size,
+    historicalTotals,
+    availableDocuments: dedupedDocs.length,
     recentOrders: ordersData.slice(0, 5),
     marketSettings: {
       currency: safeCurrency,
@@ -182,7 +203,9 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
 
 export type MyOrdersResult = {
   orders: PartnerOrderRow[]
-  currency: string
+  // §5 — each order carries its own persisted currency; marketCurrency is the
+  // fallback used only when order.currency is null
+  marketCurrency: string
 }
 
 export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
@@ -213,15 +236,18 @@ export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
-  // §3 — null currency must not become the string "null"
+  // §5 — market currency used only as fallback when an individual order has null currency
   const rawCur = settings?.currency
-  const currency = (rawCur != null && rawCur.trim().length === 3)
+  const MARKET_CURRENCY: Record<string, string> = {
+    'monocool.sk': 'EUR', 'monocool.at': 'EUR', 'monocool.cz': 'CZK', 'monocool.eu': 'EUR',
+  }
+  const marketCurrency = (rawCur != null && rawCur.trim().length === 3)
     ? rawCur.trim().toUpperCase()
-    : 'EUR'
+    : (MARKET_CURRENCY[market] ?? 'EUR')
 
   return {
     orders: rows,
-    currency,
+    marketCurrency,
   }
 }
 
@@ -353,8 +379,10 @@ export type PriceListProduct = {
   imageUrl: string | null
   basePrice: number | null
   partnerPrice: number | null
+  // grossPrice is null when vatRate is not configured for this market
   grossPrice: number | null
   discountPercent: number
+  // vatRate is NaN when site_settings.vatRate is null for this market
   vatRate: number
   currency: string
   variants: {
@@ -367,11 +395,24 @@ export type PriceListProduct = {
   }[]
 }
 
+// PG error code 42P01 = undefined_table (relation does not exist).
+// This code is exposed by postgres, @neondatabase/serverless, and node-postgres
+// as err.code on the root error or its cause.
+function isPgUndefinedTable(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false
+  const e = err as Record<string, unknown>
+  if (e.code === '42P01') return true
+  // Drizzle may wrap the driver error; check the cause chain
+  if (e.cause && isPgUndefinedTable(e.cause)) return true
+  return false
+}
+
 export async function getMyPriceList(locale: string): Promise<{
   products: PriceListProduct[]
   discountPercent: number
   currency: string
   vatRate: number
+  variantsAvailable: boolean
 }> {
   noStore()
   const { discountPercent, market } = await requireApprovedPartner(locale)
@@ -382,9 +423,11 @@ export async function getMyPriceList(locale: string): Promise<{
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
-  // §3 — safe VAT/currency fallbacks even when site_settings rows have null values
+  // §3 — VAT: do NOT fall back to any assumed value when site_settings.vatRate
+  // is null. Pass NaN through to callers so the UI can show a localized
+  // "VAT not configured" message rather than silently calculating with a wrong rate.
   const vatRateRaw = parseFloat(String(settings?.vatRate ?? ''))
-  const vatRate = Number.isFinite(vatRateRaw) ? vatRateRaw : 20
+  const vatRate = Number.isFinite(vatRateRaw) ? vatRateRaw : NaN
 
   // currency: null from DB must NOT become the string "null" — always use a real fallback
   const currencyRaw = settings?.currency
@@ -424,12 +467,16 @@ export async function getMyPriceList(locale: string): Promise<{
     .orderBy(product.sortOrder, product.name)
 
   if (products.length === 0) {
-    return { products: [], discountPercent, currency: safeCurrency, vatRate }
+    return { products: [], discountPercent, currency: safeCurrency, vatRate, variantsAvailable: true }
   }
 
-  // §3 — product_variant table may not exist yet (pending migration).
-  // Wrap the variant query so its absence never crashes the price list.
+  // product_variant table may not exist yet (migration 0004 not yet applied).
+  // Only suppress the error when PG reports 42P01 (undefined_table).
+  // All other errors — connection failures, permission errors, malformed
+  // queries — are rethrown so they surface as real failures instead of
+  // silently returning an empty variant list.
   let variantsByProduct = new Map<number, { id: number; productId: number; name: string; sku: string | null; price: string | null }[]>()
+  let variantsAvailable = true
   try {
     const productIds = products.map(p => p.id)
     const variants = await db
@@ -454,9 +501,13 @@ export async function getMyPriceList(locale: string): Promise<{
       variantsByProduct.get(v.productId)!.push(v)
     }
   } catch (variantErr) {
-    // Table doesn't exist yet or query failed — continue with no variants
-    const msg = variantErr instanceof Error ? variantErr.message : String(variantErr)
-    console.error(`[partner-portal] variant query failed (will render without variants): ${msg}`)
+    if (!isPgUndefinedTable(variantErr)) {
+      // Not a missing-table error — rethrow connection, permission, and all other DB failures
+      throw variantErr
+    }
+    // Table does not exist yet (migration 0004 pending) — price list renders without variants
+    variantsAvailable = false
+    console.warn('[partner-portal] product_variant table not found (migration 0004 not applied) — rendering price list without variants')
   }
 
   // §3 — one malformed product must not crash the rest; map with per-product error catch
@@ -510,7 +561,7 @@ export async function getMyPriceList(locale: string): Promise<{
     }
   }
 
-  return { products: result, discountPercent, currency: safeCurrency, vatRate }
+  return { products: result, discountPercent, currency: safeCurrency, vatRate, variantsAvailable }
 }
 
 // ---------------------------------------------------------------------------

@@ -938,7 +938,10 @@
       "noPriceConfigured": "Cena není nastavena",
       "emptyTitle": "Žádné produkty",
       "emptyDescription": "Pro váš trh zatím nejsou nakonfigurovány žádné produkty.",
-      "noResults": "Žádné produkty nenalezeny."
+      "noResults": "Žádné produkty nenalezeny.",
+      "discountBandNoVat": "Vaše sleva: {discount} % · DPH: není nastavena · Měna: {currency}",
+      "subtitleNoVat": "Vaše partnerské ceny — {discount} % sleva — {currency} · DPH: není nastavena",
+      "variantsNotAvailable": "Varianty produktů jsou dočasně nedostupné — zobrazují se pouze základní ceny produktů."
     },
     "downloads": {
       "subtitle": "Technické dokumenty a příručky k vašim produktům",
@@ -990,6 +993,12 @@
       "statusApproved": "Aktivní",
       "statusPending": "Čeká na schválení",
       "statusRejected": "Zamítnut"
+    },
+    "error": {
+      "title": "Tuto sekci se nepodařilo načíst",
+      "description": "Zkuste stránku načíst znovu nebo se vraťte na přehled partnerské zóny.",
+      "retry": "Zkusit znovu",
+      "dashboard": "Zpět na přehled"
     }
   }
 }
