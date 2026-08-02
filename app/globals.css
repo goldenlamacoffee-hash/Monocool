@@ -170,3 +170,13 @@
 @utility bg-soft-navy {
   background-image: linear-gradient(160deg, var(--mono-navy) 0%, var(--mono-deep) 100%);
 }
+
+/* Partner portal form input */
+@utility field-input {
+  @apply h-9 w-full rounded-lg border border-[color:var(--mono-line)] bg-[color:var(--mono-bg)] px-3 text-sm text-[color:var(--mono-navy)] placeholder:text-[color:var(--mono-muted)];
+  &:focus {
+    outline: none;
+    border-color: var(--mono-steel);
+    box-shadow: 0 0 0 1px var(--mono-steel);
+  }
+}

@@ -173,12 +173,15 @@ export function Header() {
                 <span className="hidden sm:inline">{session.user.name || t('login')}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>
-                  <Link href={`/${locale}/konto`} className="flex w-full items-center gap-2">
-                    <User className="h-4 w-4" />
-                    {t('home')}
-                  </Link>
-                </DropdownMenuItem>
+                {/* Partner Zone — visible to non-admin approved partners */}
+                {session.user.role !== 'admin' && (
+                  <DropdownMenuItem>
+                    <Link href={`/${locale}/konto`} className="flex w-full items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {t('partnerZone')}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 {session.user.role === 'admin' && (
                   <DropdownMenuItem>
                     <Link href={`/${locale}/admin`} className="flex w-full items-center gap-2">

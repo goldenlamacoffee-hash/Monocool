@@ -340,8 +340,8 @@ export function UserManagementClient({ initialUsers, locale, currentUserId }: Pr
       }
 
       const partnerLocale = getLocaleFromDomain(normalizedMarket)
-      // Full document navigation — clean load of partner session
-      window.location.assign(`/${partnerLocale}`)
+      // Full document navigation — land directly on the partner portal
+      window.location.assign(`/${partnerLocale}/konto`)
     } catch (err) {
       setImpersonateError(err instanceof Error ? err.message : t('impersonateError'))
       setImpersonatePending(false)
