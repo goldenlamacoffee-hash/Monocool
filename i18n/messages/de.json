@@ -384,7 +384,14 @@
       "emailExists": "Ein Konto mit dieser E-Mail existiert bereits.",
       "createError": "Kontoerstellung fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "passwordHint": "Mindestens 8 Zeichen. Gilt als temporäres Passwort bei der ersten Anmeldung.",
-      "requiredField": "Pflichtfeld"
+      "requiredField": "Pflichtfeld",
+      "loginAsPartner": "Als Partner anmelden",
+      "impersonateDescription": "Als Partner anmelden ermöglicht es Ihnen, die Seite aus der Perspektive dieses Partners zu sehen.",
+      "impersonateWarning": "Sie verlassen vorübergehend die Administration und sind auf dieser Domain als dieser Partner angemeldet. Alle geöffneten Tabs auf dieser Domain nutzen die Partner-Sitzung.",
+      "impersonateCancel": "Abbrechen",
+      "impersonateConfirm": "Als Partner fortfahren",
+      "impersonateError": "Anmeldung als Partner fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "wrongMarketError": "Dieser Partner gehört zum Markt {market}. Bitte öffnen Sie zuerst die Administration dieses Markts."
     },
     "productManagement": {
       "title": "Produktverwaltung",
@@ -802,5 +809,11 @@
     "noteLabel": "Anmerkung",
     "whatHappensNext": "Sie erhalten eine Bestätigung per E-Mail. Unser Team wird sich mit einer Proforma-Rechnung und Lieferdetails bei Ihnen melden.",
     "continueShoppingCta": "Weiter einkaufen"
+  },
+  "impersonation": {
+    "bannerLabel": "Partnermodus: Sie sind angemeldet als {name} – {company}.",
+    "bannerLabelNoCompany": "Partnermodus: Sie sind angemeldet als {name}.",
+    "stopButton": "Zurück zur Administration",
+    "stopError": "Beenden der Partner-Sitzung fehlgeschlagen. Bitte versuchen Sie es erneut."
   }
 }

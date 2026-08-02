@@ -101,6 +101,8 @@ export const session = pgTable('session', {
   userId: text('userId')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
+  // Better Auth Admin plugin — set when this session is an impersonation
+  impersonatedBy: text('impersonatedBy'),
 })
 
 export const account = pgTable('account', {

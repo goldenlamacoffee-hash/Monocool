@@ -384,7 +384,14 @@
       "emailExists": "An account with this email already exists.",
       "createError": "Account creation failed. Please try again.",
       "passwordHint": "Minimum 8 characters. Used as a temporary password on first login.",
-      "requiredField": "Required field"
+      "requiredField": "Required field",
+      "loginAsPartner": "Log in as partner",
+      "impersonateDescription": "Logging in as this partner lets you see the site exactly as they do.",
+      "impersonateWarning": "You will temporarily leave the admin area and this domain will act as the partner. All open tabs on this domain will use the partner session.",
+      "impersonateCancel": "Cancel",
+      "impersonateConfirm": "Continue as partner",
+      "impersonateError": "Login as partner failed. Please try again.",
+      "wrongMarketError": "This partner belongs to market {market}. Please open the administration for that market first."
     },
     "productManagement": {
       "title": "Product Management",
@@ -802,5 +809,11 @@
     "noteLabel": "Note",
     "whatHappensNext": "You will receive a confirmation by email. Our team will contact you with a proforma invoice and delivery details.",
     "continueShoppingCta": "Continue shopping"
+  },
+  "impersonation": {
+    "bannerLabel": "Partner mode: You are logged in as {name} – {company}.",
+    "bannerLabelNoCompany": "Partner mode: You are logged in as {name}.",
+    "stopButton": "Return to administration",
+    "stopError": "Stopping partner session failed. Please try again."
   }
 }

@@ -32,7 +32,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DOMAINS, getLocalizedMarketName } from '@/lib/domain-utils'
+import { DOMAINS } from '@/lib/domain-utils'
 import { 
   Search, 
   MoreHorizontal, 
@@ -48,10 +48,15 @@ import {
   Phone,
   MapPin,
   UserPlus,
-  RefreshCw
+  RefreshCw,
+  LogIn,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react'
 import { updateUserStatus, updateUserRole, updateUser, updatePartnerDiscount, deleteUser, createPartner } from '@/app/actions/users'
 import { normalizeDiscountPercent } from '@/lib/pricing'
+import { getLocaleFromDomain, getLocalizedMarketName, getMarketBaseUrl } from '@/lib/domain-utils'
+import { authClient } from '@/lib/auth-client'
 import { type Locale } from '@/i18n/config'
 
 interface User {
@@ -79,9 +84,11 @@ interface User {
 interface Props {
   initialUsers: User[]
   locale: Locale
+  /** ID of the currently authenticated admin (used to hide "Login as partner" on self) */
+  currentUserId: string
 }
 
-export function UserManagementClient({ initialUsers, locale }: Props) {
+export function UserManagementClient({ initialUsers, locale, currentUserId }: Props) {
   const t = useTranslations('admin.userManagement')
   const tCommon = useTranslations('common')
   const [users, setUsers] = useState(initialUsers)
@@ -99,6 +106,11 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
   const [viewMode, setViewMode] = useState<'view' | 'edit' | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<User | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  // Impersonation state
+  const [impersonateTarget, setImpersonateTarget] = useState<User | null>(null)
+  const [impersonatePending, setImpersonatePending] = useState(false)
+  const [impersonateError, setImpersonateError] = useState<string | null>(null)
 
   // Add partner dialog
   const [addPartnerOpen, setAddPartnerOpen] = useState(false)
@@ -274,6 +286,45 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
       setUsers(users.filter(u => u.id !== deleteConfirm.id))
       setDeleteConfirm(null)
     })
+  }
+
+  const handleImpersonate = async () => {
+    if (!impersonateTarget || impersonatePending) return
+    setImpersonateError(null)
+
+    // Market safety: determine current production hostname and compare with
+    // the target partner's market. Same-market only in V1.4H.1.
+    const currentHostname =
+      typeof window !== 'undefined' ? window.location.hostname : ''
+    const partnerMarket = impersonateTarget.market ?? ''
+
+    if (currentHostname !== partnerMarket) {
+      const partnerLocale = getLocaleFromDomain(partnerMarket)
+      const adminUrl = `${getMarketBaseUrl(partnerMarket)}/${partnerLocale}/admin/benutzer`
+      setImpersonateError(
+        t('wrongMarketError', {
+          market: getLocalizedMarketName(partnerMarket, locale),
+          url: adminUrl,
+        })
+      )
+      return
+    }
+
+    setImpersonatePending(true)
+    try {
+      await authClient.admin.impersonateUser({ userId: impersonateTarget.id })
+      const partnerLocale = getLocaleFromDomain(partnerMarket)
+      // Full document navigation — clean load of partner session
+      window.location.assign(`/${partnerLocale}`)
+    } catch (err) {
+      setImpersonateError(err instanceof Error ? err.message : t('impersonateError'))
+      setImpersonatePending(false)
+    }
+  }
+
+  const openImpersonateDialog = (user: User) => {
+    setImpersonateTarget(user)
+    setImpersonateError(null)
   }
 
   const openView = (user: User) => {
@@ -467,6 +518,19 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
                               {t('removeAdmin')}
                             </DropdownMenuItem>
                           )}
+                          {/* Login as partner — only for non-admin, approved, market-assigned, non-self users */}
+                          {user.role !== 'admin' &&
+                            user.status === 'approved' &&
+                            !!user.market &&
+                            user.id !== currentUserId && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => openImpersonateDialog(user)}>
+                                  <LogIn className="mr-2 h-4 w-4" />
+                                  {t('loginAsPartner')}
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => setDeleteConfirm(user)}
@@ -998,6 +1062,95 @@ export function UserManagementClient({ initialUsers, locale }: Props) {
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
               {tCommon('delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Impersonation Confirmation Dialog */}
+      <Dialog
+        open={!!impersonateTarget}
+        onOpenChange={(open) => {
+          if (!open && !impersonatePending) {
+            setImpersonateTarget(null)
+            setImpersonateError(null)
+          }
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <LogIn className="h-5 w-5" aria-hidden="true" />
+              {t('loginAsPartner')}
+            </DialogTitle>
+            <DialogDescription>{t('impersonateDescription')}</DialogDescription>
+          </DialogHeader>
+
+          {impersonateTarget && (
+            <div className="space-y-3">
+              {/* Partner summary */}
+              <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">{t('name')}</span>
+                  <span className="text-sm font-medium">{impersonateTarget.name}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">{t('email')}</span>
+                  <span className="text-sm">{impersonateTarget.email}</span>
+                </div>
+                {impersonateTarget.companyName && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground">{t('company')}</span>
+                    <span className="text-sm">{impersonateTarget.companyName}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">{t('market')}</span>
+                  <span className="text-sm">
+                    {impersonateTarget.market
+                      ? getLocalizedMarketName(impersonateTarget.market, locale)
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-muted-foreground">{t('discountPercent')}</span>
+                  <span className="text-sm font-semibold text-primary">
+                    {normalizeDiscountPercent(impersonateTarget.discountPercent)}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Warning */}
+              <div className="flex gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  {t('impersonateWarning')}
+                </p>
+              </div>
+
+              {/* Cross-market or other error */}
+              {impersonateError && (
+                <p className="text-sm font-medium text-destructive" role="alert">
+                  {impersonateError}
+                </p>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setImpersonateTarget(null); setImpersonateError(null) }}
+              disabled={impersonatePending}
+            >
+              {t('impersonateCancel')}
+            </Button>
+            <Button
+              onClick={handleImpersonate}
+              disabled={impersonatePending}
+            >
+              {impersonatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t('impersonateConfirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

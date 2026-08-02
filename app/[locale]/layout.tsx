@@ -7,6 +7,7 @@ import { getSiteSettingsByLocale } from '@/app/actions/site-settings'
 import { getDomainFromLocale, getMarketBaseUrl } from '@/lib/domain-utils'
 import { enforceMarketSession } from '@/lib/market-session'
 import { WrongMarketNotice } from '@/components/wrong-market-notice'
+import { ImpersonationBannerWrapper } from '@/components/impersonation-banner-wrapper'
 import { BasketProvider } from '@/contexts/basket-context'
 import '../globals.css'
 
@@ -78,6 +79,7 @@ export default async function LocaleLayout({
     <html lang={locale} className={`bg-background ${manrope.variable} ${sora.variable}`}>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
+          <ImpersonationBannerWrapper locale={locale} />
           <BasketProvider>
             {wrongMarket && <WrongMarketNotice />}
             {children}

@@ -1,7 +1,9 @@
 import { setRequestLocale } from 'next-intl/server'
+import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
 import { desc } from 'drizzle-orm'
+import { auth } from '@/lib/auth'
 import { type Locale } from '@/i18n/config'
 import { UserManagementClient } from './user-management-client'
 
@@ -17,7 +19,12 @@ export default async function UsersPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const users = await getUsers()
+  const [users, session] = await Promise.all([
+    getUsers(),
+    auth.api.getSession({ headers: await headers() }),
+  ])
 
-  return <UserManagementClient initialUsers={users} locale={locale} />
+  const currentUserId = session?.user?.id ?? ''
+
+  return <UserManagementClient initialUsers={users} locale={locale} currentUserId={currentUserId} />
 }
