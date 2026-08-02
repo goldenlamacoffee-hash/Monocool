@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,7 @@ interface AuthFormProps {
 
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const locale = useLocale() as Locale
@@ -49,9 +50,33 @@ export function AuthForm({ mode }: AuthFormProps) {
         })
         if (error) throw new Error(error.message)
       }
-      // Redirect approved partners to the partner portal; admins and others
-      // land on the homepage and are redirected from there.
-      const target = mode === 'sign-in' ? `/${locale}/konto` : `/${locale}`
+      if (mode === 'sign-up') {
+        // New registrations land on homepage (account status: pending)
+        router.push(`/${locale}`)
+        router.refresh()
+        return
+      }
+
+      // sign-in: check role and honour callbackUrl
+      // Re-fetch session to get the freshly-set role
+      const sessionResult = await authClient.getSession()
+      const role = sessionResult?.data?.user?.role
+
+      if (role === 'admin') {
+        // Admins go to the admin panel
+        router.push(`/${locale}/admin`)
+        router.refresh()
+        return
+      }
+
+      // Safe callbackUrl: must be a relative path starting with /[locale]/konto
+      const rawCallback = searchParams.get('callbackUrl')
+      const isSafeCallback = rawCallback &&
+        rawCallback.startsWith('/') &&
+        !rawCallback.startsWith('//') &&
+        rawCallback.includes(`/${locale}/konto`)
+
+      const target = isSafeCallback ? rawCallback : `/${locale}/konto`
       router.push(target)
       router.refresh()
     } catch (err) {

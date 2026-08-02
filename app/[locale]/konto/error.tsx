@@ -1,0 +1,102 @@
+'use client'
+
+// app/[locale]/konto/error.tsx
+// Partner-portal error boundary — shown when any konto/* route throws an
+// unhandled exception. This component is a Next.js App Router error boundary:
+// it MUST be a Client Component ('use client') and receive (error, reset) props.
+//
+// It matches the light partner-zone design. It does NOT expose stack traces or
+// database errors to the partner. It DOES log the digest to the console for
+// support (no sensitive data).
+
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { AlertTriangle, RefreshCw, LayoutDashboard } from 'lucide-react'
+import { useLocale } from 'next-intl'
+import { type Locale } from '@/i18n/config'
+
+// §4 — translations inline so error.tsx does not depend on next-intl server context
+const TRANSLATIONS: Record<string, { title: string; description: string; retry: string; dashboard: string }> = {
+  sk: {
+    title: 'Túto časť sa nepodarilo načítať',
+    description: 'Skúste stránku načítať znova alebo sa vráťte na prehľad partnerskej zóny.',
+    retry: 'Skúsiť znova',
+    dashboard: 'Späť na prehľad',
+  },
+  de: {
+    title: 'Dieser Bereich konnte nicht geladen werden',
+    description: 'Versuchen Sie, die Seite neu zu laden, oder kehren Sie zur Übersicht des Partnerbereichs zurück.',
+    retry: 'Erneut versuchen',
+    dashboard: 'Zurück zur Übersicht',
+  },
+  en: {
+    title: 'This section could not be loaded',
+    description: 'Try reloading the page or return to the partner zone overview.',
+    retry: 'Try again',
+    dashboard: 'Back to overview',
+  },
+  cs: {
+    title: 'Tuto sekci se nepodařilo načíst',
+    description: 'Zkuste stránku načíst znovu nebo se vraťte na přehled partnerské zóny.',
+    retry: 'Zkusit znovu',
+    dashboard: 'Zpět na přehled',
+  },
+}
+
+const FALLBACK = TRANSLATIONS.en
+
+interface KontoErrorProps {
+  error: Error & { digest?: string }
+  reset: () => void
+}
+
+export default function KontoError({ error, reset }: KontoErrorProps) {
+  const locale = (useLocale() as Locale) ?? 'en'
+  const T = TRANSLATIONS[locale] ?? FALLBACK
+
+  useEffect(() => {
+    // §4 — log digest without sensitive data; never log error.message to avoid leaking DB details
+    if (error.digest) {
+      console.error(`[partner-portal] error boundary triggered — digest: ${error.digest}`)
+    } else {
+      console.error('[partner-portal] error boundary triggered — no digest')
+    }
+  }, [error])
+
+  return (
+    <div className="flex min-h-[40vh] flex-col items-center justify-center px-4 py-16 text-center">
+      <div className="mx-auto max-w-md">
+        <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-[color:var(--mono-line)] bg-amber-50">
+          <AlertTriangle className="h-7 w-7 text-amber-500" aria-hidden="true" />
+        </div>
+        <h2 className="font-heading text-xl font-semibold text-[color:var(--mono-navy)]">
+          {T.title}
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-[color:var(--mono-muted)]">
+          {T.description}
+        </p>
+        {error.digest && (
+          <p className="mt-3 font-mono text-xs text-[color:var(--mono-muted)] opacity-60" aria-hidden="true">
+            {error.digest}
+          </p>
+        )}
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={reset}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[color:var(--mono-steel)] bg-white px-5 py-2.5 text-sm font-semibold text-[color:var(--mono-navy)] shadow-sm transition-colors hover:bg-[color:var(--mono-ice)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--mono-steel)]"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            {T.retry}
+          </button>
+          <Link
+            href={`/${locale}/konto`}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[color:var(--mono-navy)] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[color:var(--mono-steel)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--mono-navy)]"
+          >
+            <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+            {T.dashboard}
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}

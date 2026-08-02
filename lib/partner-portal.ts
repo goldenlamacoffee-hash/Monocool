@@ -54,6 +54,10 @@ export type PartnerContext = {
  * Redirects when access is denied. Always returns a PartnerContext when it
  * does return — status='pending'|'rejected' means the page should show a
  * status notice instead of the portal content.
+ *
+ * Use this ONLY in the konto layout (which renders the status page for
+ * pending/rejected users). Data pages must call requireApprovedContext()
+ * instead so they do NOT execute DB queries for non-approved users.
  */
 export async function resolvePartnerContext(locale: string): Promise<PartnerContext> {
   const currentMarket = getDomainFromLocale(locale)
@@ -140,4 +144,20 @@ export async function resolvePartnerContext(locale: string): Promise<PartnerCont
     partnerTier: partnerStatus === 'approved' ? (row.partnerTier ?? null) : null,
     createdAt: row.createdAt,
   }
+}
+
+/**
+ * Like resolvePartnerContext, but additionally redirects pending and rejected
+ * users to the konto root (where the layout shows the status page).
+ *
+ * Use this in every data-fetching sub-page inside /konto so that DB queries
+ * are never executed for non-approved users — even when Next.js renders the
+ * page segment in parallel with the layout.
+ */
+export async function requireApprovedContext(locale: string): Promise<PartnerContext> {
+  const ctx = await resolvePartnerContext(locale)
+  if (ctx.status === 'pending' || ctx.status === 'rejected') {
+    redirect(`/${locale}/konto`)
+  }
+  return ctx
 }

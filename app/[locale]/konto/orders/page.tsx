@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { type Locale } from '@/i18n/config'
-import { resolvePartnerContext } from '@/lib/partner-portal'
+import { requireApprovedContext } from '@/lib/partner-portal'
 import { getMyOrders } from '@/app/actions/partner-portal'
 import { OrdersClient } from '@/components/partner/orders-client'
 
@@ -13,8 +13,8 @@ export default async function OrdersPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Guard (redirects if not approved partner)
-  await resolvePartnerContext(locale)
+  // §5 — pending/rejected users are redirected to /konto by requireApprovedContext
+  await requireApprovedContext(locale)
 
   const [{ orders, currency }, t] = await Promise.all([
     getMyOrders(locale),

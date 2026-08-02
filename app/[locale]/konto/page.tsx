@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { type Locale } from '@/i18n/config'
-import { resolvePartnerContext } from '@/lib/partner-portal'
+import { requireApprovedContext } from '@/lib/partner-portal'
 import { getPartnerDashboard } from '@/app/actions/partner-portal'
 import { getLocalizedMarketName } from '@/lib/domain-utils'
 import {
@@ -26,8 +26,9 @@ export default async function KontoDashboardPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
+  // §5 — pending/rejected users are redirected to /konto by requireApprovedContext
   const [ctx, t] = await Promise.all([
-    resolvePartnerContext(locale),
+    requireApprovedContext(locale),
     getTranslations('partnerPortal'),
   ])
 

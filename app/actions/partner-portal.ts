@@ -154,6 +154,14 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
       .map((d: { id: number }) => d.id)
   )
 
+  // §3 — safe fallbacks for null currency/vatRate in site_settings
+  const rawCurrency = settingsData[0]?.currency
+  const safeCurrency = (rawCurrency != null && rawCurrency.trim().length === 3)
+    ? rawCurrency.trim().toUpperCase()
+    : 'EUR'
+  const rawVat = settingsData[0]?.vatRate
+  const safeVat = (rawVat != null && String(rawVat).trim() !== '') ? String(rawVat) : '20'
+
   return {
     totalOrders,
     openOrders,
@@ -162,8 +170,8 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
     availableDocuments: localeDocIds.size,
     recentOrders: ordersData.slice(0, 5),
     marketSettings: {
-      currency: settingsData[0]?.currency ?? 'EUR',
-      vatRate: settingsData[0]?.vatRate ?? '20',
+      currency: safeCurrency,
+      vatRate: safeVat,
     },
   }
 }
@@ -205,9 +213,15 @@ export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
+  // §3 — null currency must not become the string "null"
+  const rawCur = settings?.currency
+  const currency = (rawCur != null && rawCur.trim().length === 3)
+    ? rawCur.trim().toUpperCase()
+    : 'EUR'
+
   return {
     orders: rows,
-    currency: settings?.currency ?? 'EUR',
+    currency,
   }
 }
 
@@ -368,10 +382,33 @@ export async function getMyPriceList(locale: string): Promise<{
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
-  const vatRate = parseFloat(String(settings?.vatRate ?? '20'))
-  const currency = settings?.currency ?? 'EUR'
+  // §3 — safe VAT/currency fallbacks even when site_settings rows have null values
+  const vatRateRaw = parseFloat(String(settings?.vatRate ?? ''))
+  const vatRate = Number.isFinite(vatRateRaw) ? vatRateRaw : 20
 
-  // Fetch active products for this market with their active variants
+  // currency: null from DB must NOT become the string "null" — always use a real fallback
+  const currencyRaw = settings?.currency
+  const MARKET_CURRENCY: Record<string, string> = {
+    'monocool.sk': 'EUR',
+    'monocool.at': 'EUR',
+    'monocool.cz': 'CZK',
+    'monocool.eu': 'EUR',
+  }
+  const currency = (currencyRaw != null && currencyRaw.trim().length === 3)
+    ? currencyRaw.trim().toUpperCase()
+    : (MARKET_CURRENCY[market] ?? 'EUR')
+
+  // §3 — validate currency is safe for Intl.NumberFormat before using it
+  let safeCurrency: string
+  try {
+    new Intl.NumberFormat('de', { style: 'currency', currency }).format(0)
+    safeCurrency = currency
+  } catch {
+    console.error(`[partner-portal] Invalid currency "${currency}" for market ${market}, falling back to EUR`)
+    safeCurrency = 'EUR'
+  }
+
+  // Fetch active products for this market
   const products = await db
     .select({
       id: product.id,
@@ -387,71 +424,93 @@ export async function getMyPriceList(locale: string): Promise<{
     .orderBy(product.sortOrder, product.name)
 
   if (products.length === 0) {
-    return { products: [], discountPercent, currency, vatRate }
+    return { products: [], discountPercent, currency: safeCurrency, vatRate }
   }
 
-  const productIds = products.map(p => p.id)
-  const variants = await db
-    .select({
-      id: productVariant.id,
-      productId: productVariant.productId,
-      name: productVariant.name,
-      sku: productVariant.sku,
-      price: productVariant.price,
-    })
-    .from(productVariant)
-    .where(
-      and(
-        inArray(productVariant.productId, productIds),
-        eq(productVariant.isActive, true)
+  // §3 — product_variant table may not exist yet (pending migration).
+  // Wrap the variant query so its absence never crashes the price list.
+  let variantsByProduct = new Map<number, { id: number; productId: number; name: string; sku: string | null; price: string | null }[]>()
+  try {
+    const productIds = products.map(p => p.id)
+    const variants = await db
+      .select({
+        id: productVariant.id,
+        productId: productVariant.productId,
+        name: productVariant.name,
+        sku: productVariant.sku,
+        price: productVariant.price,
+      })
+      .from(productVariant)
+      .where(
+        and(
+          inArray(productVariant.productId, productIds),
+          eq(productVariant.isActive, true)
+        )
       )
-    )
-    .orderBy(productVariant.sortOrder, productVariant.name)
+      .orderBy(productVariant.sortOrder, productVariant.name)
 
-  const variantsByProduct = new Map<number, typeof variants>()
-  for (const v of variants) {
-    if (!variantsByProduct.has(v.productId)) variantsByProduct.set(v.productId, [])
-    variantsByProduct.get(v.productId)!.push(v)
+    for (const v of variants) {
+      if (!variantsByProduct.has(v.productId)) variantsByProduct.set(v.productId, [])
+      variantsByProduct.get(v.productId)!.push(v)
+    }
+  } catch (variantErr) {
+    // Table doesn't exist yet or query failed — continue with no variants
+    const msg = variantErr instanceof Error ? variantErr.message : String(variantErr)
+    console.error(`[partner-portal] variant query failed (will render without variants): ${msg}`)
   }
 
-  const result: PriceListProduct[] = products.map(p => {
-    const basePrice = parseBasePrice(p.price)
-    const partnerPrice = basePrice === null ? null : computePartnerPrice(basePrice, discountPercent)
-    const grossPrice = partnerPrice === null ? null : Math.round(partnerPrice * (1 + vatRate / 100) * 100) / 100
+  // §3 — one malformed product must not crash the rest; map with per-product error catch
+  const result: PriceListProduct[] = []
+  for (const p of products) {
+    try {
+      const basePrice = parseBasePrice(p.price)
+      const partnerPrice = basePrice === null ? null : computePartnerPrice(basePrice, discountPercent)
+      // §3 — NaN guard on grossPrice
+      const grossPrice = (partnerPrice !== null && Number.isFinite(vatRate))
+        ? Math.round(partnerPrice * (1 + vatRate / 100) * 100) / 100
+        : null
 
-    const productVariants = (variantsByProduct.get(p.id) ?? []).map(v => {
-      // Variant price when set; otherwise fall back to parent
-      const vBase = parseBasePrice(v.price) ?? basePrice
-      const vPartner = vBase === null ? null : computePartnerPrice(vBase, discountPercent)
-      const vGross = vPartner === null ? null : Math.round(vPartner * (1 + vatRate / 100) * 100) / 100
-      return {
-        id: v.id,
-        name: v.name,
-        sku: v.sku,
-        basePrice: vBase,
-        partnerPrice: vPartner,
-        grossPrice: vGross,
-      }
-    })
+      const productVariants = (variantsByProduct.get(p.id) ?? []).map(v => {
+        // §3 — variant price: fall back to parent when null/missing
+        const vBase = parseBasePrice(v.price) ?? basePrice
+        const vPartner = vBase === null ? null : computePartnerPrice(vBase, discountPercent)
+        const vGross = (vPartner !== null && Number.isFinite(vatRate))
+          ? Math.round(vPartner * (1 + vatRate / 100) * 100) / 100
+          : null
+        return {
+          id: v.id,
+          name: v.name,
+          sku: v.sku,
+          basePrice: vBase,
+          partnerPrice: vPartner,
+          grossPrice: vGross,
+        }
+      })
 
-    return {
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      category: p.category,
-      technicalData: p.technicalData,
-      imageUrl: p.imageUrl,
-      basePrice,
-      partnerPrice,
-      grossPrice,
-      discountPercent,
-      vatRate,
-      currency,
-      variants: productVariants,
+      result.push({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        category: p.category,
+        technicalData: p.technicalData,
+        // §3 — null imageUrl is fine; client renders without image
+        imageUrl: p.imageUrl ?? null,
+        basePrice,
+        partnerPrice,
+        grossPrice,
+        discountPercent,
+        vatRate,
+        currency: safeCurrency,
+        variants: productVariants,
+      })
+    } catch (productErr) {
+      // §3 — one invalid product row must not remove all others
+      const msg = productErr instanceof Error ? productErr.message : String(productErr)
+      console.error(`[partner-portal] skipping product id=${p.id} due to error: ${msg}`)
     }
-  })
+  }
 
-  return { products: result, discountPercent, currency, vatRate }
+  return { products: result, discountPercent, currency: safeCurrency, vatRate }
 }
 
 // ---------------------------------------------------------------------------

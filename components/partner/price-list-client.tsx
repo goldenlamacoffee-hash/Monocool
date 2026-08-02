@@ -28,8 +28,13 @@ export function PriceListClient({
   const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set())
 
   const fmtCurrency = (val: number | null) => {
-    if (val === null) return null
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val)
+    if (val === null || !Number.isFinite(val)) return null
+    try {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val)
+    } catch {
+      // Last-resort fallback if currency is somehow invalid on the client
+      return `${val.toFixed(2)} ${currency}`
+    }
   }
 
   const categories = useMemo(() => {
@@ -168,7 +173,11 @@ export function PriceListClient({
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0">
                         <Link
-                          href={`/${locale}/produkte/${product.slug}`}
+                          href={
+                            product.category === 'fancoil'
+                              ? `/${locale}/fan-coil/${product.slug}`
+                              : `/${locale}/produkte/${product.slug}`
+                          }
                           className="font-heading text-base font-semibold text-[color:var(--mono-navy)] hover:text-[color:var(--mono-steel)] transition-colors"
                         >
                           {product.name}
