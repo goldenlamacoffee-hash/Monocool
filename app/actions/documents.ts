@@ -7,14 +7,6 @@ import { revalidatePath } from 'next/cache'
 import { del } from '@vercel/blob'
 import { assertAdmin } from '@/lib/auth-utils'
 
-// Must match the resolution in app/api/upload-document/route.ts.
-function getPublicBlobToken(): string | undefined {
-  return (
-    process.env.MONOCOOL_PUBLIC_BLOB_READ_WRITE_TOKEN ??
-    process.env.BLOB_READ_WRITE_TOKEN
-  )
-}
-
 // Allowed language codes (1:1 map with market locales).
 const ALLOWED_LANGUAGES = ['de', 'sk', 'cs', 'en'] as const
 type DocLanguage = (typeof ALLOWED_LANGUAGES)[number]
@@ -175,19 +167,10 @@ export async function deleteProductDocument(id: number) {
   if (!doc) return
 
   // Delete the file from Vercel Blob first.
-  // Use the same public store token used during upload so del() targets the
-  // correct store and not accidentally the private one.
   try {
-    if (doc.pathname) {
-      const token = getPublicBlobToken()
-      await del(doc.pathname, token ? { token } : undefined)
-    }
+    if (doc.pathname) await del(doc.pathname)
   } catch (err) {
-    console.error('[documents] Failed to delete document blob:', {
-      id: doc.id,
-      pathname: doc.pathname,
-      error: err instanceof Error ? err.message : String(err),
-    })
+    console.error('[v0] Failed to delete document blob:', err)
     // Continue — remove the DB record even if the Blob delete fails.
   }
 

@@ -402,7 +402,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                     aria-expanded={docsOpen}
                   >
                     <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    <span className="flex-1">{t('documentsSection')}</span>
+                    <span className="flex-1">{tDocuments('documentsSection')}</span>
                     <ChevronDown
                       className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200"
                       style={{ transform: docsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
@@ -413,7 +413,7 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                       {editingProduct ? (
                         <ProductDocuments productId={editingProduct.id} />
                       ) : (
-                        <p className="text-sm text-muted-foreground">{t('saveFirst')}</p>
+                        <p className="text-sm text-muted-foreground">{tDocuments('saveFirst')}</p>
                       )}
                     </div>
                   )}
