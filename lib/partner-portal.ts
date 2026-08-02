@@ -54,6 +54,10 @@ export type PartnerContext = {
  * Redirects when access is denied. Always returns a PartnerContext when it
  * does return — status='pending'|'rejected' means the page should show a
  * status notice instead of the portal content.
+ *
+ * Use this ONLY in the konto layout (which renders the status page for
+ * pending/rejected users). Data pages must call requireApprovedContext()
+ * instead so they do NOT execute DB queries for non-approved users.
  */
 export async function resolvePartnerContext(locale: string): Promise<PartnerContext> {
   const currentMarket = getDomainFromLocale(locale)
@@ -140,4 +144,27 @@ export async function resolvePartnerContext(locale: string): Promise<PartnerCont
     partnerTier: partnerStatus === 'approved' ? (row.partnerTier ?? null) : null,
     createdAt: row.createdAt,
   }
+}
+
+/**
+ * Like resolvePartnerContext, but returns null for pending/rejected partners
+ * instead of redirecting them.
+ *
+ * Use this in every data-fetching sub-page inside /konto. When null is
+ * returned, the page must render nothing (return null) — the konto layout
+ * will concurrently render PartnerAccountStatus for those users.
+ *
+ * This avoids a redirect loop: requireApprovedContext previously redirected
+ * pending/rejected users back to /konto, which itself calls this guard,
+ * creating an infinite redirect chain.
+ *
+ * No DB data query (orders, prices, documents, profile) must execute when
+ * this function returns null.
+ */
+export async function resolveApprovedContext(locale: string): Promise<PartnerContext | null> {
+  const ctx = await resolvePartnerContext(locale)
+  if (ctx.status === 'pending' || ctx.status === 'rejected') {
+    return null
+  }
+  return ctx
 }

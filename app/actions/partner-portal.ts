@@ -50,6 +50,24 @@ async function requireApprovedPartner(locale: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Market currency helper
+// Returns the persisted site_settings.currency when valid (3-char, non-null),
+// otherwise falls back to the known market default. Single source of truth —
+// used by getPartnerDashboard, getMyOrders, and getMyPriceList.
+// ---------------------------------------------------------------------------
+const MARKET_CURRENCY_DEFAULTS: Record<string, string> = {
+  'monocool.sk': 'EUR',
+  'monocool.at': 'EUR',
+  'monocool.cz': 'CZK',
+  'monocool.eu': 'EUR',
+}
+
+function resolveMarketCurrency(rawCurrency: string | null | undefined, market: string): string {
+  if (rawCurrency != null && rawCurrency.trim().length === 3) return rawCurrency.trim().toUpperCase()
+  return MARKET_CURRENCY_DEFAULTS[market] ?? 'EUR'
+}
+
+// ---------------------------------------------------------------------------
 // Open order statuses (spec §3)
 // ---------------------------------------------------------------------------
 const OPEN_STATUSES = ['submitted', 'confirmed', 'processing', 'shipped']
@@ -62,7 +80,8 @@ export type PartnerDashboardData = {
   totalOrders: number
   openOrders: number
   completedOrders: number
-  historicalTotal: string   // persisted grandTotal sum
+  // §6 — totals grouped by persisted order currency; never mixed across currencies
+  historicalTotals: { currency: string; total: string }[]
   availableDocuments: number
   recentOrders: PartnerOrderRow[]
   marketSettings: {
@@ -105,9 +124,10 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
       .where(and(eq(order.userId, userId), eq(order.market, market)))
       .orderBy(desc(order.createdAt)),
 
-    // Available documents (active, language = locale, active parent product in this market)
+    // Available documents — fetch productId, type, language for locale+English dedup
+    // (same logic as getMyDocuments; one SK manual + its EN fallback = one document)
     db
-      .select({ id: productDocument.id })
+      .select({ productId: productDocument.productId, type: productDocument.type, language: productDocument.language })
       .from(productDocument)
       .innerJoin(product, eq(productDocument.productId, product.id))
       .where(
@@ -134,36 +154,54 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
   const openOrders = ordersData.filter(o => OPEN_STATUSES.includes(o.status)).length
   const completedOrders = ordersData.filter(o => o.status === 'completed').length
 
-  // Sum persisted grandTotal — do not recalculate
-  const historicalTotal = ordersData
-    .reduce((s, o) => {
-      const v = parseFloat(String(o.grandTotal ?? o.total ?? '0'))
-      return s + (Number.isFinite(v) ? v : 0)
-    }, 0)
-    .toFixed(2)
+  // §6 — group persisted totals by order.currency; never mix different currencies.
+  // resolveMarketCurrency is also used for marketSettings.currency below —
+  // one shared resolved value for both uses.
+  const resolvedCurrency = resolveMarketCurrency(settingsData[0]?.currency, market)
 
-  // Deduplicate English fallback documents:
-  // If a product already has a document for the current locale + same type,
-  // don't count the English one.
-  const localeDocIds = new Set(
+  const totalsByCurrency = new Map<string, number>()
+  for (const o of ordersData) {
+    const cur = (o.currency && o.currency.trim().length === 3)
+      ? o.currency.trim().toUpperCase()
+      : resolvedCurrency
+    const v = parseFloat(String(o.grandTotal ?? o.total ?? '0'))
+    if (Number.isFinite(v)) {
+      totalsByCurrency.set(cur, (totalsByCurrency.get(cur) ?? 0) + v)
+    }
+  }
+  const historicalTotals = Array.from(totalsByCurrency.entries()).map(([currency, total]) => ({
+    currency,
+    total: total.toFixed(2),
+  }))
+
+  // §4 — deduplicate English fallback documents using the same locale+type logic
+  // as getMyDocuments. One locale doc + its English fallback = one available doc.
+  const localeKeys = new Set(
     docsData
-      .filter((d: { id: number }) => {
-        // We don't have language here — count all for simplicity; detail dedup is on the downloads page
-        return true
-      })
-      .map((d: { id: number }) => d.id)
+      .filter(d => d.language === locale)
+      .map(d => `${d.productId}__${d.type}`)
   )
+  const dedupedDocs = docsData.filter(d => {
+    if (d.language === locale) return true
+    return !localeKeys.has(`${d.productId}__${d.type}`)
+  })
+
+  // §3 — pass the raw vatRate through; never invent 20% if unconfigured.
+  // resolvedCurrency (computed above for order grouping) is also the canonical
+  // market currency for display — one value used for both purposes.
+  const rawVat = settingsData[0]?.vatRate
+  const safeVat = (rawVat != null && String(rawVat).trim() !== '') ? String(rawVat) : ''
 
   return {
     totalOrders,
     openOrders,
     completedOrders,
-    historicalTotal,
-    availableDocuments: localeDocIds.size,
+    historicalTotals,
+    availableDocuments: dedupedDocs.length,
     recentOrders: ordersData.slice(0, 5),
     marketSettings: {
-      currency: settingsData[0]?.currency ?? 'EUR',
-      vatRate: settingsData[0]?.vatRate ?? '20',
+      currency: resolvedCurrency,
+      vatRate: safeVat,
     },
   }
 }
@@ -174,7 +212,9 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
 
 export type MyOrdersResult = {
   orders: PartnerOrderRow[]
-  currency: string
+  // §5 — each order carries its own persisted currency; marketCurrency is the
+  // fallback used only when order.currency is null
+  marketCurrency: string
 }
 
 export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
@@ -205,9 +245,12 @@ export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
+  // §5 — market currency used only as fallback when an individual order has null currency
+  const marketCurrency = resolveMarketCurrency(settings?.currency, market)
+
   return {
     orders: rows,
-    currency: settings?.currency ?? 'EUR',
+    marketCurrency,
   }
 }
 
@@ -339,8 +382,10 @@ export type PriceListProduct = {
   imageUrl: string | null
   basePrice: number | null
   partnerPrice: number | null
+  // grossPrice is null when vatRate is not configured for this market
   grossPrice: number | null
   discountPercent: number
+  // vatRate is NaN when site_settings.vatRate is null for this market
   vatRate: number
   currency: string
   variants: {
@@ -353,11 +398,24 @@ export type PriceListProduct = {
   }[]
 }
 
+// PG error code 42P01 = undefined_table (relation does not exist).
+// This code is exposed by postgres, @neondatabase/serverless, and node-postgres
+// as err.code on the root error or its cause.
+function isPgUndefinedTable(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false
+  const e = err as Record<string, unknown>
+  if (e.code === '42P01') return true
+  // Drizzle may wrap the driver error; check the cause chain
+  if (e.cause && isPgUndefinedTable(e.cause)) return true
+  return false
+}
+
 export async function getMyPriceList(locale: string): Promise<{
   products: PriceListProduct[]
   discountPercent: number
   currency: string
   vatRate: number
+  variantsAvailable: boolean
 }> {
   noStore()
   const { discountPercent, market } = await requireApprovedPartner(locale)
@@ -368,10 +426,35 @@ export async function getMyPriceList(locale: string): Promise<{
     .where(eq(siteSettings.domain, market))
     .limit(1)
 
-  const vatRate = parseFloat(String(settings?.vatRate ?? '20'))
-  const currency = settings?.currency ?? 'EUR'
+  // §3 — VAT: do NOT fall back to any assumed value when site_settings.vatRate
+  // is null. Pass NaN through to callers so the UI can show a localized
+  // "VAT not configured" message rather than silently calculating with a wrong rate.
+  const vatRateRaw = parseFloat(String(settings?.vatRate ?? ''))
+  const vatRate = Number.isFinite(vatRateRaw) ? vatRateRaw : NaN
 
-  // Fetch active products for this market with their active variants
+  // currency: null from DB must NOT become the string "null" — always use a real fallback
+  const currencyRaw = settings?.currency
+  const MARKET_CURRENCY: Record<string, string> = {
+    'monocool.sk': 'EUR',
+    'monocool.at': 'EUR',
+    'monocool.cz': 'CZK',
+    'monocool.eu': 'EUR',
+  }
+  const currency = (currencyRaw != null && currencyRaw.trim().length === 3)
+    ? currencyRaw.trim().toUpperCase()
+    : (MARKET_CURRENCY[market] ?? 'EUR')
+
+  // §3 — validate currency is safe for Intl.NumberFormat before using it
+  let safeCurrency: string
+  try {
+    new Intl.NumberFormat('de', { style: 'currency', currency }).format(0)
+    safeCurrency = currency
+  } catch {
+    console.error(`[partner-portal] Invalid currency "${currency}" for market ${market}, falling back to EUR`)
+    safeCurrency = 'EUR'
+  }
+
+  // Fetch active products for this market
   const products = await db
     .select({
       id: product.id,
@@ -387,71 +470,101 @@ export async function getMyPriceList(locale: string): Promise<{
     .orderBy(product.sortOrder, product.name)
 
   if (products.length === 0) {
-    return { products: [], discountPercent, currency, vatRate }
+    return { products: [], discountPercent, currency: safeCurrency, vatRate, variantsAvailable: true }
   }
 
-  const productIds = products.map(p => p.id)
-  const variants = await db
-    .select({
-      id: productVariant.id,
-      productId: productVariant.productId,
-      name: productVariant.name,
-      sku: productVariant.sku,
-      price: productVariant.price,
-    })
-    .from(productVariant)
-    .where(
-      and(
-        inArray(productVariant.productId, productIds),
-        eq(productVariant.isActive, true)
+  // product_variant table may not exist yet (migration 0004 not yet applied).
+  // Only suppress the error when PG reports 42P01 (undefined_table).
+  // All other errors — connection failures, permission errors, malformed
+  // queries — are rethrown so they surface as real failures instead of
+  // silently returning an empty variant list.
+  let variantsByProduct = new Map<number, { id: number; productId: number; name: string; sku: string | null; price: string | null }[]>()
+  let variantsAvailable = true
+  try {
+    const productIds = products.map(p => p.id)
+    const variants = await db
+      .select({
+        id: productVariant.id,
+        productId: productVariant.productId,
+        name: productVariant.name,
+        sku: productVariant.sku,
+        price: productVariant.price,
+      })
+      .from(productVariant)
+      .where(
+        and(
+          inArray(productVariant.productId, productIds),
+          eq(productVariant.isActive, true)
+        )
       )
-    )
-    .orderBy(productVariant.sortOrder, productVariant.name)
+      .orderBy(productVariant.sortOrder, productVariant.name)
 
-  const variantsByProduct = new Map<number, typeof variants>()
-  for (const v of variants) {
-    if (!variantsByProduct.has(v.productId)) variantsByProduct.set(v.productId, [])
-    variantsByProduct.get(v.productId)!.push(v)
+    for (const v of variants) {
+      if (!variantsByProduct.has(v.productId)) variantsByProduct.set(v.productId, [])
+      variantsByProduct.get(v.productId)!.push(v)
+    }
+  } catch (variantErr) {
+    if (!isPgUndefinedTable(variantErr)) {
+      // Not a missing-table error — rethrow connection, permission, and all other DB failures
+      throw variantErr
+    }
+    // Table does not exist yet (migration 0004 pending) — price list renders without variants
+    variantsAvailable = false
+    console.warn('[partner-portal] product_variant table not found (migration 0004 not applied) — rendering price list without variants')
   }
 
-  const result: PriceListProduct[] = products.map(p => {
-    const basePrice = parseBasePrice(p.price)
-    const partnerPrice = basePrice === null ? null : computePartnerPrice(basePrice, discountPercent)
-    const grossPrice = partnerPrice === null ? null : Math.round(partnerPrice * (1 + vatRate / 100) * 100) / 100
+  // §3 — one malformed product must not crash the rest; map with per-product error catch
+  const result: PriceListProduct[] = []
+  for (const p of products) {
+    try {
+      const basePrice = parseBasePrice(p.price)
+      const partnerPrice = basePrice === null ? null : computePartnerPrice(basePrice, discountPercent)
+      // §3 — NaN guard on grossPrice
+      const grossPrice = (partnerPrice !== null && Number.isFinite(vatRate))
+        ? Math.round(partnerPrice * (1 + vatRate / 100) * 100) / 100
+        : null
 
-    const productVariants = (variantsByProduct.get(p.id) ?? []).map(v => {
-      // Variant price when set; otherwise fall back to parent
-      const vBase = parseBasePrice(v.price) ?? basePrice
-      const vPartner = vBase === null ? null : computePartnerPrice(vBase, discountPercent)
-      const vGross = vPartner === null ? null : Math.round(vPartner * (1 + vatRate / 100) * 100) / 100
-      return {
-        id: v.id,
-        name: v.name,
-        sku: v.sku,
-        basePrice: vBase,
-        partnerPrice: vPartner,
-        grossPrice: vGross,
-      }
-    })
+      const productVariants = (variantsByProduct.get(p.id) ?? []).map(v => {
+        // §3 — variant price: fall back to parent when null/missing
+        const vBase = parseBasePrice(v.price) ?? basePrice
+        const vPartner = vBase === null ? null : computePartnerPrice(vBase, discountPercent)
+        const vGross = (vPartner !== null && Number.isFinite(vatRate))
+          ? Math.round(vPartner * (1 + vatRate / 100) * 100) / 100
+          : null
+        return {
+          id: v.id,
+          name: v.name,
+          sku: v.sku,
+          basePrice: vBase,
+          partnerPrice: vPartner,
+          grossPrice: vGross,
+        }
+      })
 
-    return {
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      category: p.category,
-      technicalData: p.technicalData,
-      imageUrl: p.imageUrl,
-      basePrice,
-      partnerPrice,
-      grossPrice,
-      discountPercent,
-      vatRate,
-      currency,
-      variants: productVariants,
+      result.push({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        category: p.category,
+        technicalData: p.technicalData,
+        // §3 — null imageUrl is fine; client renders without image
+        imageUrl: p.imageUrl ?? null,
+        basePrice,
+        partnerPrice,
+        grossPrice,
+        discountPercent,
+        vatRate,
+        currency: safeCurrency,
+        variants: productVariants,
+      })
+    } catch (productErr) {
+      // §3 — one invalid product row must not remove all others
+      const msg = productErr instanceof Error ? productErr.message : String(productErr)
+      console.error(`[partner-portal] skipping product id=${p.id} due to error: ${msg}`)
     }
-  })
+  }
 
-  return { products: result, discountPercent, currency, vatRate }
+  return { products: result, discountPercent, currency: safeCurrency, vatRate, variantsAvailable }
 }
 
 // ---------------------------------------------------------------------------

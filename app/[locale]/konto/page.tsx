@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { type Locale } from '@/i18n/config'
-import { resolvePartnerContext } from '@/lib/partner-portal'
+import { resolveApprovedContext } from '@/lib/partner-portal'
 import { getPartnerDashboard } from '@/app/actions/partner-portal'
 import { getLocalizedMarketName } from '@/lib/domain-utils'
 import {
@@ -26,20 +26,36 @@ export default async function KontoDashboardPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
+  // Pending/rejected users: return null — the konto layout renders PartnerAccountStatus.
+  // Do NOT call any data action before this guard returns a non-null context.
   const [ctx, t] = await Promise.all([
-    resolvePartnerContext(locale),
+    resolveApprovedContext(locale),
     getTranslations('partnerPortal'),
   ])
+  if (!ctx) return null
 
   const dashboard = await getPartnerDashboard(locale)
 
   const currency = dashboard.marketSettings.currency || 'EUR'
   const marketName = getLocalizedMarketName(ctx.market, locale)
 
-  const fmtCurrency = (val: string) => {
+  // §5 — format a value using the order's own currency
+  const fmtCurrency = (val: string, cur: string = currency) => {
     const n = parseFloat(val)
-    if (!Number.isFinite(n)) return `— ${currency}`
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(n)
+    if (!Number.isFinite(n)) return `— ${cur}`
+    try {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency: cur }).format(n)
+    } catch {
+      return `${n.toFixed(2)} ${cur}`
+    }
+  }
+
+  // §6 — format per-currency totals; never merge different currencies
+  const fmtHistoricalTotals = () => {
+    if (dashboard.historicalTotals.length === 0) return `— ${currency}`
+    return dashboard.historicalTotals
+      .map(({ currency: cur, total }) => fmtCurrency(total, cur))
+      .join(' / ')
   }
 
   const fmtDate = (d: Date) =>
@@ -69,7 +85,7 @@ export default async function KontoDashboardPage({ params }: Props) {
     },
     {
       label: t('dashboard.historicalTotal'),
-      value: fmtCurrency(dashboard.historicalTotal),
+      value: fmtHistoricalTotals(),
       icon: Banknote,
       color: 'text-[color:var(--mono-navy)]',
       bg: 'bg-[color:var(--mono-ice)]',
@@ -218,7 +234,7 @@ export default async function KontoDashboardPage({ params }: Props) {
                           </span>
                         </td>
                         <td className="px-3 py-3 text-right font-medium text-[color:var(--mono-navy)]">
-                          {fmtCurrency(String(o.grandTotal ?? o.total ?? '0'))}
+                          {fmtCurrency(String(o.grandTotal ?? o.total ?? '0'), o.currency ?? currency)}
                         </td>
                         <td className="px-5 py-3 text-right">
                           <Link

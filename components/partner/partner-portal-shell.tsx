@@ -40,6 +40,32 @@ export function PartnerPortalShell({
   const locale = useLocale() as Locale
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [signOutError, setSignOutError] = useState<string | null>(null)
+
+  const handleSignOut = async () => {
+    // Prevent duplicate requests while a sign-out is in flight
+    if (signingOut) return
+    setSigningOut(true)
+    setSignOutError(null)
+
+    const result = await signOut({
+      fetchOptions: { onError: () => {} },
+    })
+
+    // Better Auth returns { error } on failure; treat any truthy error as a failure
+    if (result?.error) {
+      setSigningOut(false)
+      setSignOutError(t('nav.signOutError'))
+      return
+    }
+
+    // Confirmed success — close mobile drawer (if open) and hard-navigate
+    // window.location.assign ensures the session cookie is gone before the
+    // next page loads (no stale client-side route cache)
+    setMobileOpen(false)
+    window.location.assign(`/${locale}`)
+  }
 
   const navItems = [
     { label: t('nav.overview'), href: `/${locale}/konto`, icon: LayoutDashboard },
@@ -121,12 +147,17 @@ export function PartnerPortalShell({
               <NavLinks onNavigate={() => setMobileOpen(false)} />
               <div className="mt-auto pt-4 border-t border-[color:var(--mono-line)]">
                 <button
-                  onClick={() => signOut()}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  aria-busy={signingOut}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
                   <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-                  {t('nav.signOut')}
+                  {signingOut ? t('nav.signingOut') : t('nav.signOut')}
                 </button>
+                {signOutError && (
+                  <p className="text-xs text-red-600 px-1 mt-1.5" role="alert">{signOutError}</p>
+                )}
               </div>
             </div>
           </div>
@@ -161,13 +192,20 @@ export function PartnerPortalShell({
           </div>
 
           {/* Sign out */}
-          <button
-            onClick={() => signOut()}
-            className="flex items-center gap-3 rounded-xl border border-[color:var(--mono-line)] bg-white px-4 py-3 text-sm font-medium text-red-600 shadow-sm hover:bg-red-50 hover:border-red-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-          >
-            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {t('nav.signOut')}
-          </button>
+          <div className="flex flex-col gap-1.5">
+            <button
+              onClick={handleSignOut}
+              disabled={signingOut}
+              aria-busy={signingOut}
+              className="flex items-center gap-3 rounded-xl border border-[color:var(--mono-line)] bg-white px-4 py-3 text-sm font-medium text-red-600 shadow-sm hover:bg-red-50 hover:border-red-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+            >
+              <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {signingOut ? t('nav.signingOut') : t('nav.signOut')}
+            </button>
+            {signOutError && (
+              <p className="text-xs text-red-600 px-1" role="alert">{signOutError}</p>
+            )}
+          </div>
         </aside>
 
         {/* Main content */}

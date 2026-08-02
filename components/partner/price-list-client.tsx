@@ -11,7 +11,8 @@ interface PriceListClientProps {
   products: PriceListProduct[]
   discountPercent: number
   currency: string
-  vatRate: number
+  vatRate: number           // NaN when site_settings.vatRate is not configured
+  variantsAvailable: boolean
   locale: string
 }
 
@@ -20,16 +21,24 @@ export function PriceListClient({
   discountPercent,
   currency,
   vatRate,
+  variantsAvailable,
   locale,
 }: PriceListClientProps) {
   const t = useTranslations('partnerPortal')
+  const vatConfigured = Number.isFinite(vatRate)
+  const vatNotConfiguredLabel = t('prices.vatNotConfigured')
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set())
 
   const fmtCurrency = (val: number | null) => {
-    if (val === null) return null
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val)
+    if (val === null || !Number.isFinite(val)) return null
+    try {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(val)
+    } catch {
+      // Last-resort fallback if currency is somehow invalid on the client
+      return `${val.toFixed(2)} ${currency}`
+    }
   }
 
   const categories = useMemo(() => {
@@ -130,9 +139,27 @@ export function PriceListClient({
       <div className="flex items-center gap-3 rounded-xl border border-[color:var(--mono-steel)]/20 bg-[color:var(--mono-ice)] px-4 py-3">
         <Tag className="h-4 w-4 text-[color:var(--mono-steel)] shrink-0" aria-hidden="true" />
         <p className="text-sm text-[color:var(--mono-navy)]">
-          {t('prices.discountBand', { discount: discountPercent, vat: vatRate, currency })}
+          {vatConfigured
+            ? t('prices.discountBand', { discount: discountPercent, vat: vatRate, currency })
+            : t('prices.discountBandNoVat', { discount: discountPercent, currency })}
         </p>
       </div>
+
+      {/* VAT not configured warning */}
+      {!vatConfigured && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3" role="alert">
+          <span className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true">!</span>
+          <p className="text-sm text-amber-800">{vatNotConfiguredLabel}</p>
+        </div>
+      )}
+
+      {/* Variants not available info */}
+      {!variantsAvailable && (
+        <div className="flex items-start gap-3 rounded-xl border border-[color:var(--mono-line)] bg-[color:var(--mono-bg)] px-4 py-3">
+          <span className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--mono-muted)]" aria-hidden="true">i</span>
+          <p className="text-sm text-[color:var(--mono-muted)]">{t('prices.variantsNotAvailable')}</p>
+        </div>
+      )}
 
       {/* Products */}
       {filtered.length === 0 ? (
@@ -168,7 +195,11 @@ export function PriceListClient({
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0">
                         <Link
-                          href={`/${locale}/produkte/${product.slug}`}
+                          href={
+                            product.category === 'fancoil'
+                              ? `/${locale}/fan-coil/${product.slug}`
+                              : `/${locale}/produkte/${product.slug}`
+                          }
                           className="font-heading text-base font-semibold text-[color:var(--mono-navy)] hover:text-[color:var(--mono-steel)] transition-colors"
                         >
                           {product.name}
@@ -192,7 +223,9 @@ export function PriceListClient({
                               {fmtCurrency(product.partnerPrice)}
                             </p>
                             <p className="text-xs text-[color:var(--mono-muted)]">
-                              {t('prices.grossLabel')} {fmtCurrency(product.grossPrice)}
+                              {product.grossPrice !== null
+                                ? `${t('prices.grossLabel')} ${fmtCurrency(product.grossPrice)}`
+                                : vatNotConfiguredLabel}
                             </p>
                             <p className="text-xs font-medium text-emerald-600 mt-0.5">
                               -{discountPercent} %

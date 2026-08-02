@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { type Locale } from '@/i18n/config'
-import { resolvePartnerContext } from '@/lib/partner-portal'
+import { resolveApprovedContext } from '@/lib/partner-portal'
 import { getMyDocuments } from '@/app/actions/partner-portal'
 import { DownloadsClient } from '@/components/partner/downloads-client'
 
@@ -13,7 +13,9 @@ export default async function DownloadsPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  await resolvePartnerContext(locale)
+  // Pending/rejected: return null — layout renders the status card; no data query runs.
+  const ctx = await resolveApprovedContext(locale)
+  if (!ctx) return null
 
   const [groups, t] = await Promise.all([
     getMyDocuments(locale),

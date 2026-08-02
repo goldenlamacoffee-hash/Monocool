@@ -8,7 +8,8 @@ import { type PartnerOrderRow } from '@/app/actions/partner-portal'
 
 interface OrdersClientProps {
   orders: (PartnerOrderRow & { discountTotal?: string | null; vatTotal?: string | null })[]
-  currency: string
+  // §5 — fallback used only when order.currency is null
+  marketCurrency: string
   locale: string
 }
 
@@ -19,15 +20,23 @@ const STATUS_FILTER_GROUPS: Record<string, string[]> = {
   cancelled: ['cancelled'],
 }
 
-export function OrdersClient({ orders, currency, locale }: OrdersClientProps) {
+export function OrdersClient({ orders, marketCurrency, locale }: OrdersClientProps) {
   const t = useTranslations('partnerPortal')
   const [filter, setFilter] = useState<'all' | 'open' | 'completed' | 'cancelled'>('all')
   const [search, setSearch] = useState('')
 
-  const fmtCurrency = (val: string | null | undefined) => {
+  // §5 — each order is formatted using its own persisted currency; marketCurrency is the fallback
+  const fmtOrderCurrency = (val: string | null | undefined, orderCurrency: string | null | undefined) => {
+    const cur = (orderCurrency && orderCurrency.trim().length === 3)
+      ? orderCurrency.trim().toUpperCase()
+      : marketCurrency
     const n = parseFloat(String(val ?? '0'))
-    if (!Number.isFinite(n)) return `— ${currency}`
-    return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(n)
+    if (!Number.isFinite(n)) return `— ${cur}`
+    try {
+      return new Intl.NumberFormat(locale, { style: 'currency', currency: cur }).format(n)
+    } catch {
+      return `${n.toFixed(2)} ${cur}`
+    }
   }
 
   const fmtDate = (d: Date) =>
@@ -192,7 +201,7 @@ export function OrdersClient({ orders, currency, locale }: OrdersClientProps) {
                         {o.customerPoNumber ?? '—'}
                       </td>
                       <td className="px-3 py-3.5 text-right font-semibold text-[color:var(--mono-navy)]">
-                        {fmtCurrency(String(o.grandTotal ?? o.total ?? '0'))}
+                        {fmtOrderCurrency(String(o.grandTotal ?? o.total ?? '0'), o.currency)}
                       </td>
                       <td className="px-5 py-3.5 text-right">
                         <Link
@@ -227,7 +236,7 @@ export function OrdersClient({ orders, currency, locale }: OrdersClientProps) {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[color:var(--mono-muted)]">{fmtDate(o.createdAt)}</span>
                     <span className="font-semibold text-[color:var(--mono-navy)]">
-                      {fmtCurrency(String(o.grandTotal ?? o.total ?? '0'))}
+                      {fmtOrderCurrency(String(o.grandTotal ?? o.total ?? '0'), o.currency)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

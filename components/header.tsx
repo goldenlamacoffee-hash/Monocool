@@ -42,10 +42,17 @@ export function Header() {
     { name: t('categoryFancoil'), href: `/${locale}/fan-coil` },
   ]
 
+  // §spec — authenticated non-admin users go directly to their portal;
+  // unauthenticated visitors and admins go to the sign-in page.
+  const partnersHref =
+    mounted && session?.user && session.user.role !== 'admin'
+      ? `/${locale}/konto`
+      : `/${locale}/anmelden`
+
   const navigation = [
     { name: t('home'), href: `/${locale}` },
     { name: t('benefits'), href: `/${locale}#vorteile` },
-    { name: t('partners'), href: `/${locale}/anmelden` },
+    { name: t('partners'), href: partnersHref },
     { name: t('contact'), href: `/${locale}#kontakt` },
   ]
 
@@ -192,7 +199,16 @@ export function Header() {
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => signOut()}
+                  onClick={() =>
+                    signOut({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          // Hard navigate so the old session is fully cleared
+                          window.location.assign(`/${locale}`)
+                        },
+                      },
+                    })
+                  }
                   className="flex items-center gap-2 text-destructive"
                 >
                   <LogOut className="h-4 w-4" />
