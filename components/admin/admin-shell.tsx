@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -103,7 +102,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
           )
         }
         return (
-          <Link
+          <a
             key={item.key}
             href={item.href}
             onClick={onNavigate}
@@ -125,7 +124,7 @@ export function AdminShell({ locale, userName, userEmail, pendingCount, children
             ) : (
               active && <ChevronRight className="h-4 w-4 text-white/60" />
             )}
-          </Link>
+          </a>
         )
       })}
     </nav>
