@@ -573,7 +573,9 @@
       "lang_sk": "Slovenčina",
       "lang_cs": "Čeština",
       "lang_en": "Angličtina",
-      "documentsButton": "Dokumenty"
+      "documentsButton": "Dokumenty",
+      "documentsSection": "Dokumenty a súbory",
+      "saveFirst": "Najprv uložte produkt. Dokumenty bude možné nahrať po jeho vytvorení."
     }
   },
   "legal": {

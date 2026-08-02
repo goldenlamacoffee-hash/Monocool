@@ -573,7 +573,9 @@
       "lang_sk": "Slovak",
       "lang_cs": "Czech",
       "lang_en": "English",
-      "documentsButton": "Documents"
+      "documentsButton": "Documents",
+      "documentsSection": "Documents & Downloads",
+      "saveFirst": "Save the product first. Documents can be uploaded after it has been created."
     }
   },
   "legal": {
