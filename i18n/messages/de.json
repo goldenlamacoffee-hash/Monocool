@@ -31,7 +31,8 @@
     "logout": "Abmelden",
     "register": "Registrieren",
     "admin": "Admin",
-    "language": "Sprache"
+    "language": "Sprache",
+    "partnerZone": "Partnerbereich"
   },
   "hero": {
     "title": "Klimaanlagen ohne Außengerät",

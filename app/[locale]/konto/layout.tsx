@@ -8,11 +8,12 @@ import { PartnerAccountStatus } from '@/components/partner/partner-account-statu
 
 interface KontoLayoutProps {
   children: React.ReactNode
-  params: Promise<{ locale: Locale }>
+  params: Promise<{ locale: string }>
 }
 
 export default async function KontoLayout({ children, params }: KontoLayoutProps) {
-  const { locale } = await params
+  const { locale: _locale } = await params
+  const locale = _locale as Locale
   setRequestLocale(locale)
 
   // resolvePartnerContext redirects for: no session, admin, wrong market.

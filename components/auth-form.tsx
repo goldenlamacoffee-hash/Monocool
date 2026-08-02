@@ -49,7 +49,10 @@ export function AuthForm({ mode }: AuthFormProps) {
         })
         if (error) throw new Error(error.message)
       }
-      router.push(`/${locale}`)
+      // Redirect approved partners to the partner portal; admins and others
+      // land on the homepage and are redirected from there.
+      const target = mode === 'sign-in' ? `/${locale}/konto` : `/${locale}`
+      router.push(target)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : t('error'))
