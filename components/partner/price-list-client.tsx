@@ -26,15 +26,7 @@ export function PriceListClient({
 }: PriceListClientProps) {
   const t = useTranslations('partnerPortal')
   const vatConfigured = Number.isFinite(vatRate)
-
-  // §3 — localized "VAT not configured" labels
-  const VAT_NOT_CONFIGURED: Record<string, string> = {
-    sk: 'DPH nie je nastavená',
-    de: 'Mehrwertsteuer ist nicht konfiguriert',
-    en: 'VAT is not configured',
-    cs: 'DPH není nastavena',
-  }
-  const vatNotConfiguredLabel = VAT_NOT_CONFIGURED[locale] ?? VAT_NOT_CONFIGURED.en
+  const vatNotConfiguredLabel = t('prices.vatNotConfigured')
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set())

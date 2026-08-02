@@ -829,7 +829,9 @@
       "profile": "Company profile",
       "signOut": "Sign out",
       "openMenu": "Open menu",
-      "closeMenu": "Close menu"
+      "closeMenu": "Close menu",
+      "signOutError": "Sign-out failed. Please try again.",
+      "signingOut": "Signing out…"
     },
     "status": {
       "pendingTitle": "Account pending approval",
@@ -941,7 +943,8 @@
       "noResults": "No products found.",
       "discountBandNoVat": "Your discount: {discount}% · VAT: not configured · Currency: {currency}",
       "subtitleNoVat": "Your partner prices — {discount}% discount — {currency} · VAT not configured",
-      "variantsNotAvailable": "Product variants are temporarily unavailable — showing base product prices only."
+      "variantsNotAvailable": "Product variants are temporarily unavailable — showing base product prices only.",
+      "vatNotConfigured": "VAT is not configured"
     },
     "downloads": {
       "subtitle": "Technical documents and manuals for your products",

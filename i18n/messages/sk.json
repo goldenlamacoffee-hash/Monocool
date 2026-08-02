@@ -829,7 +829,9 @@
       "profile": "Profil firmy",
       "signOut": "Odhlásiť sa",
       "openMenu": "Otvoriť menu",
-      "closeMenu": "Zatvoriť menu"
+      "closeMenu": "Zatvoriť menu",
+      "signOutError": "Odhlásenie sa nepodarilo. Skúste to znova.",
+      "signingOut": "Odhlasovanie…"
     },
     "status": {
       "pendingTitle": "Konto čaká na schválenie",
@@ -941,7 +943,8 @@
       "noResults": "Žiadne produkty nenájdené.",
       "discountBandNoVat": "Vaša zľava: {discount} % · DPH: nie je nastavená · Mena: {currency}",
       "subtitleNoVat": "Vaše partnerské ceny — {discount} % zľava — {currency} · DPH: nie je nastavená",
-      "variantsNotAvailable": "Varianty produktov sú dočasne nedostupné — zobrazujú sa iba základné ceny produktov."
+      "variantsNotAvailable": "Varianty produktov sú dočasne nedostupné — zobrazujú sa iba základné ceny produktov.",
+      "vatNotConfigured": "DPH nie je nastavená"
     },
     "downloads": {
       "subtitle": "Technické dokumenty a príručky k vašim produktom",

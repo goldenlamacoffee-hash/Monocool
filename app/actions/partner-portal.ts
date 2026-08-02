@@ -50,6 +50,24 @@ async function requireApprovedPartner(locale: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Market currency helper
+// Returns the persisted site_settings.currency when valid (3-char, non-null),
+// otherwise falls back to the known market default. Single source of truth —
+// used by getPartnerDashboard, getMyOrders, and getMyPriceList.
+// ---------------------------------------------------------------------------
+const MARKET_CURRENCY_DEFAULTS: Record<string, string> = {
+  'monocool.sk': 'EUR',
+  'monocool.at': 'EUR',
+  'monocool.cz': 'CZK',
+  'monocool.eu': 'EUR',
+}
+
+function resolveMarketCurrency(rawCurrency: string | null | undefined, market: string): string {
+  if (rawCurrency != null && rawCurrency.trim().length === 3) return rawCurrency.trim().toUpperCase()
+  return MARKET_CURRENCY_DEFAULTS[market] ?? 'EUR'
+}
+
+// ---------------------------------------------------------------------------
 // Open order statuses (spec §3)
 // ---------------------------------------------------------------------------
 const OPEN_STATUSES = ['submitted', 'confirmed', 'processing', 'shipped']
@@ -137,21 +155,15 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
   const completedOrders = ordersData.filter(o => o.status === 'completed').length
 
   // §6 — group persisted totals by order.currency; never mix different currencies.
-  // Use market currency as fallback only when the persisted order currency is null.
-  const rawCurrencyFallback = (() => {
-    const raw = settingsData[0]?.currency
-    if (raw != null && raw.trim().length === 3) return raw.trim().toUpperCase()
-    const MARKET_CURRENCY: Record<string, string> = {
-      'monocool.sk': 'EUR', 'monocool.at': 'EUR', 'monocool.cz': 'CZK', 'monocool.eu': 'EUR',
-    }
-    return MARKET_CURRENCY[market] ?? 'EUR'
-  })()
+  // resolveMarketCurrency is also used for marketSettings.currency below —
+  // one shared resolved value for both uses.
+  const resolvedCurrency = resolveMarketCurrency(settingsData[0]?.currency, market)
 
   const totalsByCurrency = new Map<string, number>()
   for (const o of ordersData) {
     const cur = (o.currency && o.currency.trim().length === 3)
       ? o.currency.trim().toUpperCase()
-      : rawCurrencyFallback
+      : resolvedCurrency
     const v = parseFloat(String(o.grandTotal ?? o.total ?? '0'))
     if (Number.isFinite(v)) {
       totalsByCurrency.set(cur, (totalsByCurrency.get(cur) ?? 0) + v)
@@ -174,12 +186,9 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
     return !localeKeys.has(`${d.productId}__${d.type}`)
   })
 
-  // §3 — safe fallbacks for null currency/vatRate in site_settings
-  const rawCurrency = settingsData[0]?.currency
-  const safeCurrency = (rawCurrency != null && rawCurrency.trim().length === 3)
-    ? rawCurrency.trim().toUpperCase()
-    : 'EUR'
-  // §3 — pass the raw value through; never invent 20% if unconfigured
+  // §3 — pass the raw vatRate through; never invent 20% if unconfigured.
+  // resolvedCurrency (computed above for order grouping) is also the canonical
+  // market currency for display — one value used for both purposes.
   const rawVat = settingsData[0]?.vatRate
   const safeVat = (rawVat != null && String(rawVat).trim() !== '') ? String(rawVat) : ''
 
@@ -191,7 +200,7 @@ export async function getPartnerDashboard(locale: string): Promise<PartnerDashbo
     availableDocuments: dedupedDocs.length,
     recentOrders: ordersData.slice(0, 5),
     marketSettings: {
-      currency: safeCurrency,
+      currency: resolvedCurrency,
       vatRate: safeVat,
     },
   }
@@ -237,13 +246,7 @@ export async function getMyOrders(locale: string): Promise<MyOrdersResult> {
     .limit(1)
 
   // §5 — market currency used only as fallback when an individual order has null currency
-  const rawCur = settings?.currency
-  const MARKET_CURRENCY: Record<string, string> = {
-    'monocool.sk': 'EUR', 'monocool.at': 'EUR', 'monocool.cz': 'CZK', 'monocool.eu': 'EUR',
-  }
-  const marketCurrency = (rawCur != null && rawCur.trim().length === 3)
-    ? rawCur.trim().toUpperCase()
-    : (MARKET_CURRENCY[market] ?? 'EUR')
+  const marketCurrency = resolveMarketCurrency(settings?.currency, market)
 
   return {
     orders: rows,

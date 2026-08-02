@@ -829,7 +829,9 @@
       "profile": "Firmenprofil",
       "signOut": "Abmelden",
       "openMenu": "Menü öffnen",
-      "closeMenu": "Menü schließen"
+      "closeMenu": "Menü schließen",
+      "signOutError": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "signingOut": "Abmelden…"
     },
     "status": {
       "pendingTitle": "Konto in Prüfung",
@@ -941,7 +943,8 @@
       "noResults": "Keine Produkte gefunden.",
       "discountBandNoVat": "Ihr Rabatt: {discount} % · MwSt.: nicht konfiguriert · Währung: {currency}",
       "subtitleNoVat": "Ihre Partnerpreise — {discount} % Rabatt — {currency} · MwSt. nicht konfiguriert",
-      "variantsNotAvailable": "Produktvarianten sind vorübergehend nicht verfügbar — es werden nur Basisproduktpreise angezeigt."
+      "variantsNotAvailable": "Produktvarianten sind vorübergehend nicht verfügbar — es werden nur Basisproduktpreise angezeigt.",
+      "vatNotConfigured": "Mehrwertsteuer ist nicht konfiguriert"
     },
     "downloads": {
       "subtitle": "Technische Dokumente und Handbücher für Ihre Produkte",
