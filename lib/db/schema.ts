@@ -201,6 +201,40 @@ export const productVariant = pgTable('product_variant', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
+// --- Internal product purchase costs (V1.4I.1) ------------------------------
+// OWNER-ONLY. Confidential Zymbo/supplier purchase costs, kept in a table
+// fully separate from "product" and "product_variant" so it can NEVER appear
+// in a `select().from(product)` / `select().from(productVariant)` result or
+// leak through public/partner/checkout/order queries. Every read and write of
+// this table MUST go through app/actions/internal-costs.ts, whose exported
+// functions all begin with `await assertOwnerAdmin()` (see lib/owner-auth.ts).
+//
+// One row per cost target:
+//   variantId IS NULL  -> the base product's purchase cost
+//   variantId = <id>   -> that specific variant's purchase cost
+// Partial unique indexes (see the migration file) enforce at most one row per
+// target. variantId intentionally has NO foreign key to "product_variant" —
+// see the migration file for why; referential integrity for variantId is
+// enforced in application code instead.
+export const internalProductCost = pgTable('internal_product_cost', {
+  id: serial('id').primaryKey(),
+  productId: integer('productId')
+    .notNull()
+    .references(() => product.id, { onDelete: 'cascade' }),
+  // Nullable: NULL means this row is the base product's cost, not a variant's.
+  // No DB-level FK to product_variant (see migration file comment).
+  variantId: integer('variantId'),
+  supplier: text('supplier').notNull().default('Zymbo'),
+  purchasePrice: decimal('purchasePrice', { precision: 12, scale: 2 }).notNull(),
+  currency: text('currency').notNull().default('EUR'),
+  note: text('note'),
+  // Owner user id who last wrote this row. Audit trail only — never surfaced
+  // to non-owner admins or any client payload outside the owner-only UI.
+  updatedBy: text('updatedBy'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
 // --- Product documents / downloads (V1.4F.2) --------------------------------
 // Admin can upload PDF documents (manuals, datasheets, energy labels, etc.)
 // per product. Documents are scoped to a language that maps 1:1 to the market
@@ -317,6 +351,8 @@ export type ProductVariant = typeof productVariant.$inferSelect
 export type NewProductVariant = typeof productVariant.$inferInsert
 export type ProductDocument = typeof productDocument.$inferSelect
 export type NewProductDocument = typeof productDocument.$inferInsert
+export type InternalProductCost = typeof internalProductCost.$inferSelect
+export type NewInternalProductCost = typeof internalProductCost.$inferInsert
 export type CmsContent = typeof cmsContent.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type Order = typeof order.$inferSelect
