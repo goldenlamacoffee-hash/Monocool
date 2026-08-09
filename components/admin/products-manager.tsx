@@ -36,12 +36,13 @@ import {
 import { createProduct, updateProduct, deleteProduct, toggleProductActive } from '@/app/actions/products'
 import { getDomainFromLocale, getPreviewUrl } from '@/lib/domain-utils'
 import { getProductImages } from '@/app/actions/gallery'
-import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers, FileText, ChevronDown } from 'lucide-react'
+import { Plus, Pencil, Trash2, ImageIcon, SlidersHorizontal, Package, Layers, FileText, ChevronDown, Lock } from 'lucide-react'
 import { type Locale } from '@/i18n/config'
 import { ProductGallery } from './product-gallery'
 import { ProductVariants } from './product-variants'
 import { ProductDocuments } from './product-documents'
 import { MarketBanner } from './market-banner'
+import { InternalCostPanel } from './internal-cost-panel'
 
 interface Product {
   id: number
@@ -121,13 +122,29 @@ const emptyForm: ProductFormData = {
   isActive: true,
 }
 
-export function ProductsManager({ initialProducts, locale }: { initialProducts: Product[], locale: Locale }) {
+export function ProductsManager({
+  initialProducts,
+  locale,
+  isOwner = false,
+}: {
+  initialProducts: Product[]
+  locale: Locale
+  /**
+   * Server-resolved owner flag (see lib/owner-auth.ts / isOwnerAdmin()).
+   * Purely a rendering gate — real access control happens in every
+   * app/actions/internal-costs.ts function via assertOwnerAdmin(). When
+   * false, the internal-costs button/dialog/component are never mounted, so
+   * they do not exist in the DOM or the RSC payload for an ordinary admin.
+   */
+  isOwner?: boolean
+}) {
   const router = useRouter()
   const t = useTranslations('admin.productManagement')
   const tCommon = useTranslations('common')
   const tCategories = useTranslations('admin.categoryLabels')
   const tVariants = useTranslations('admin.variants')
   const tDocuments = useTranslations('admin.documents')
+  const tInternalCosts = useTranslations('admin.internalCosts')
 
   // Map raw internal category values (e.g. "klimageraete") to localized labels.
   const categoryLabel = (category: string | null) => {
@@ -154,6 +171,8 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const [variantsProduct, setVariantsProduct] = useState<Product | null>(null)
   const [documentsDialogOpen, setDocumentsDialogOpen] = useState(false)
   const [documentsProduct, setDocumentsProduct] = useState<Product | null>(null)
+  const [internalCostDialogOpen, setInternalCostDialogOpen] = useState(false)
+  const [internalCostProduct, setInternalCostProduct] = useState<Product | null>(null)
   const [docsOpen, setDocsOpen] = useState(false)
   // Column visibility state
   const [showFeatures, setShowFeatures] = useState(false)
@@ -178,6 +197,15 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
   const openDocumentsDialog = (product: Product) => {
     setDocumentsProduct(product)
     setDocumentsDialogOpen(true)
+  }
+
+  // Only ever invoked when isOwner is true (the trigger button below is
+  // itself gated on isOwner) — but the real security boundary is
+  // assertOwnerAdmin() inside every app/actions/internal-costs.ts function,
+  // not this client-side gate.
+  const openInternalCostDialog = (product: Product) => {
+    setInternalCostProduct(product)
+    setInternalCostDialogOpen(true)
   }
 
   const openCreateDialog = () => {
@@ -707,6 +735,19 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
                           >
                             <ImageIcon className="h-4 w-4" />
                           </Button>
+                          {/* Owner-only. Not rendered at all for a non-owner
+                              admin — no button, no dialog, no data fetch. */}
+                          {isOwner && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openInternalCostDialog(product)}
+                              title={tInternalCosts('title')}
+                              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                            >
+                              <Lock className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -803,6 +844,30 @@ export function ProductsManager({ initialProducts, locale }: { initialProducts: 
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Internal Cost Dialog — OWNER ONLY. The whole subtree (dialog,
+            InternalCostPanel, and every internal-costs server action it
+            calls) only ever mounts/executes when isOwner is true. */}
+        {isOwner && (
+          <Dialog open={internalCostDialogOpen} onOpenChange={setInternalCostDialogOpen}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-amber-600" aria-hidden="true" />
+                  {internalCostProduct?.name} - {tInternalCosts('title')}
+                </DialogTitle>
+                <DialogDescription>{tInternalCosts('subtitle')}</DialogDescription>
+              </DialogHeader>
+              {internalCostProduct && (
+                <InternalCostPanel
+                  productId={internalCostProduct.id}
+                  sellingPrice={internalCostProduct.price}
+                  locale={locale}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+        )}
     </div>
   )
 }
