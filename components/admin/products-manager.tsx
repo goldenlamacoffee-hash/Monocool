@@ -735,6 +735,19 @@ export function ProductsManager({
                           >
                             <ImageIcon className="h-4 w-4" />
                           </Button>
+                          {/* Owner-only. Not rendered at all for a non-owner
+                              admin — no button, no dialog, no data fetch. */}
+                          {isOwner && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openInternalCostDialog(product)}
+                              title={tInternalCosts('title')}
+                              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                            >
+                              <Lock className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -831,6 +844,30 @@ export function ProductsManager({
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Internal Cost Dialog — OWNER ONLY. The whole subtree (dialog,
+            InternalCostPanel, and every internal-costs server action it
+            calls) only ever mounts/executes when isOwner is true. */}
+        {isOwner && (
+          <Dialog open={internalCostDialogOpen} onOpenChange={setInternalCostDialogOpen}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-amber-600" aria-hidden="true" />
+                  {internalCostProduct?.name} - {tInternalCosts('title')}
+                </DialogTitle>
+                <DialogDescription>{tInternalCosts('subtitle')}</DialogDescription>
+              </DialogHeader>
+              {internalCostProduct && (
+                <InternalCostPanel
+                  productId={internalCostProduct.id}
+                  sellingPrice={internalCostProduct.price}
+                  locale={locale}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+        )}
     </div>
   )
 }
