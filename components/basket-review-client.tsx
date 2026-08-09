@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ArrowLeft, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react'
 import { useBasket } from '@/contexts/basket-context'
+import { computeBasketTotals } from '@/lib/basket'
 import { useTranslations } from 'next-intl'
 import { type Locale } from '@/i18n/config'
 
@@ -11,15 +12,17 @@ interface Props {
 }
 
 export function BasketReviewClient({ locale }: Props) {
-  const { items, subtotal, removeItem, setQuantity, hydrated, deliveryPrice, vatRate, currency } = useBasket()
+  const { items, removeItem, setQuantity, hydrated, deliveryPrice, vatRate, currency } = useBasket()
   const t = useTranslations('basket')
 
   // V1.4J.3 — delivery is charged ONCE per order. Display only; placeOrder()
-  // re-reads the authoritative deliveryPrice/vatRate server-side.
-  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
-  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
-  const vatAmount = itemsVat + deliveryVat
-  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
+  // re-reads the authoritative deliveryPrice/vatRate server-side and
+  // re-derives this same result independently from the database.
+  const { itemsSubtotal: subtotal, vatTotal: vatAmount, grandTotal } = computeBasketTotals({
+    items,
+    vatRate,
+    deliveryPrice,
+  })
 
   const fmt = (n: number) =>
     n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })

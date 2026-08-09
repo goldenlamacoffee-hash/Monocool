@@ -617,7 +617,9 @@
       "clear": "Clear",
       "confirmClear": "Really clear this purchase cost?",
       "variantNotAvailable": "Variant costs require the variant table migration."
-    }
+    },
+    "deliveryPrice": "Delivery price excl. VAT",
+    "deliveryPriceHint": "This amount is automatically added once to every order in this market. Set 0 for free delivery."
   },
   "legal": {
     "imprint": {

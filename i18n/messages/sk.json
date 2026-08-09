@@ -617,7 +617,9 @@
       "clear": "Vymazať",
       "confirmClear": "Naozaj chcete vymazať tento nákupný náklad?",
       "variantNotAvailable": "Náklady na variant vyžadujú migráciu tabuľky variantov."
-    }
+    },
+    "deliveryPrice": "Cena dopravy bez DPH",
+    "deliveryPriceHint": "Táto suma sa automaticky pripočíta raz ku každej objednávke na tomto trhu. Hodnota 0 znamená dopravu zdarma."
   },
   "legal": {
     "imprint": {
@@ -626,7 +628,7 @@
       "companyName": "MonoCool GmbH",
       "address": "Adresa spoločnosti bude doplnená pred spustením",
       "city": "Mesto bude doplnené pred spustením",
-      "country": "Rak��sko",
+      "country": "Rakúsko",
       "contact": "Kontakt",
       "phone": "Telefón: bude doplnené pred spustením",
       "email": "E-mail: bude doplnené pred spustením",

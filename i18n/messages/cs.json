@@ -196,7 +196,7 @@
     "errors": {
       "nameRequired": "Zadejte prosím své jméno",
       "invalidEmail": "Zadejte prosím platnou e-mailovou adresu",
-      "passwordLength": "Heslo musí m��t alespoň 8 znaků",
+      "passwordLength": "Heslo musí mít alespoň 8 znaků",
       "passwordMismatch": "Hesla se neshodují",
       "companyRequired": "Zadejte prosím název firmy",
       "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu.",
@@ -286,7 +286,7 @@
     "cmsDesc": "Upravovat obsah webu",
     "setup": {
       "title": "Admin Setup",
-      "description": "Vytvořte administrátorsk�� účet pro MonoCool",
+      "description": "Vytvořte administrátorský účet pro MonoCool",
       "setupSecret": "Setup heslo",
       "setupSecretPlaceholder": "Zadejte setup heslo",
       "setupSecretHint": "ADMIN_SETUP_SECRET z vašich environment proměnných",
@@ -406,7 +406,7 @@
       "createProduct": "Vytvořit nový produkt",
       "deleteProduct": "Smazat produkt",
       "confirmDelete": "Opravdu chcete tento produkt smazat?",
-      "noProducts": "Zatím ��ádné produkty.",
+      "noProducts": "Zatím žádné produkty.",
       "firstProduct": "Vytvořit první produkt",
       "active": "Aktivní",
       "inactive": "Neaktivní",
@@ -617,7 +617,9 @@
       "clear": "Vymazat",
       "confirmClear": "Opravdu chcete vymazat tento nákupní náklad?",
       "variantNotAvailable": "Náklady na variantu vyžadují migraci tabulky variant."
-    }
+    },
+    "deliveryPrice": "Cena dopravy bez DPH",
+    "deliveryPriceHint": "Tato částka se automaticky připočte jednou ke každé objednávce na tomto trhu. Hodnota 0 znamená dopravu zdarma."
   },
   "legal": {
     "imprint": {
@@ -646,7 +648,7 @@
       "responsible": "Správce údajů",
       "responsibleText": "Za zpracování údajů na této webové stránce odpovídá MonoCool GmbH.",
       "dataCollection": "Sběr a zpracování údajů",
-      "dataCollectionText": "Při návštěvě naší webové stránky se automaticky shromažďují technické informace: IP adresa, typ prohlížeče, operační systém, čas přístupu. Tyto údaje se používají výhradně k zajištění plynul��ho provozu webu.",
+      "dataCollectionText": "Při návštěvě naší webové stránky se automaticky shromažďují technické informace: IP adresa, typ prohlížeče, operační systém, čas přístupu. Tyto údaje se používají výhradně k zajištění plynulého provozu webu.",
       "cookies": "Cookies",
       "cookiesText": "Naše webová stránka používá cookies. Jedná se o malé textové soubory uložené na vašem zařízení. Některé cookies jsou technicky nezbytné, jiné nám pomáhají zlepšovat naše webové stránky.",
       "rights": "Vaše práva",
