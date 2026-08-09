@@ -46,6 +46,8 @@ export type SiteSettings = {
   paymentDueDays: number | null
   // V1.4J.1 — per-market sequential order-number counter
   nextOrderNumber: number
+  // V1.4J.3 — per-market fixed delivery price, NET / excluding VAT. 0 = free.
+  deliveryPrice: string
   createdAt: Date
   updatedAt: Date
 }
@@ -91,6 +93,7 @@ const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   nextProformaNumber: 1,
   paymentDueDays: null,
   nextOrderNumber: 115,
+  deliveryPrice: '0.00',
 }
 
 // Map locale to domain
@@ -175,6 +178,22 @@ export async function upsertSiteSettings(
       if (!Number.isInteger(n) || n < 1) {
         return { success: false, error: 'Next order number must be a positive integer' }
       }
+    }
+
+    // V1.4J.3 — validate deliveryPrice server-side. Never rely on the HTML
+    // input's min="0" step="0.01" alone: numeric, finite, >= 0, at most two
+    // decimal places. 0 is valid (free delivery).
+    if (data.deliveryPrice !== undefined && data.deliveryPrice !== null) {
+      const raw = String(data.deliveryPrice).trim()
+      const n = Number(raw)
+      if (raw === '' || !Number.isFinite(n) || n < 0) {
+        return { success: false, error: 'Delivery price must be a non-negative number' }
+      }
+      const decimalPlaces = raw.includes('.') ? raw.split('.')[1].length : 0
+      if (decimalPlaces > 2) {
+        return { success: false, error: 'Delivery price must have at most two decimal places' }
+      }
+      data = { ...data, deliveryPrice: n.toFixed(2) }
     }
 
     // Check if settings exist for this domain

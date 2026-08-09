@@ -137,6 +137,14 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
       : locale === 'de'
       ? 'Nummer, die für die nächste neue Bestellung in diesem Markt verwendet wird.'
       : 'Number that will be used for the next new order in this market.',
+    deliveryPrice: locale === 'sk' ? 'Cena dopravy bez DPH' : locale === 'cs' ? 'Cena dopravy bez DPH' : locale === 'de' ? 'Versandkosten netto' : 'Delivery price excl. VAT',
+    deliveryPriceHint: locale === 'sk'
+      ? 'Táto suma sa automaticky pripočíta raz ku každej objednávke na tomto trhu. Hodnota 0 znamená dopravu zdarma.'
+      : locale === 'cs'
+      ? 'Tato částka se automaticky připočte jednou ke každé objednávce na tomto trhu. Hodnota 0 znamená dopravu zdarma.'
+      : locale === 'de'
+      ? 'Dieser Betrag wird jeder Bestellung in diesem Markt einmal automatisch hinzugefügt. 0 bedeutet kostenloser Versand.'
+      : 'This amount is automatically added once to every order in this market. Set 0 for free delivery.',
   }
 
   const updateField = (domain: string, field: keyof SiteSettings, value: string) => {
@@ -711,6 +719,26 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   className="font-mono"
                 />
                 <p className="text-xs text-muted-foreground">{translations.nextOrderNumberHint}</p>
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="deliveryPrice">{translations.deliveryPrice}</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="deliveryPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={(currentSettings as { deliveryPrice?: string | null }).deliveryPrice ?? ''}
+                    onChange={(e) => updateField(activeDomain, 'deliveryPrice' as keyof typeof currentSettings, e.target.value)}
+                    placeholder="0.00"
+                    className="font-mono max-w-40"
+                  />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {(currentSettings as { currency?: string | null }).currency || 'EUR'}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">{translations.deliveryPriceHint}</p>
               </div>
             </CardContent>
           </Card>

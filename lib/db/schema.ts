@@ -90,6 +90,11 @@ export const siteSettings = pgTable('site_settings', {
   // Independent per domain — site_settings already has one row per market.
   // Allocated atomically inside the same transaction as the order INSERT.
   nextOrderNumber: integer('nextOrderNumber').notNull().default(115),
+  // --- B2B fixed delivery price per market (V1.4J.3) -----------------------
+  // NET / excluding VAT. Charged once per order, added on top of the product
+  // subtotal, and always taxed using this same market's vatRate. 0 = free
+  // delivery. Independent per domain — one row per market already exists.
+  deliveryPrice: decimal('deliveryPrice', { precision: 12, scale: 2 }).notNull().default('0.00'),
   // Metadata
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
@@ -312,6 +317,11 @@ export const order = pgTable('order', {
   discountTotal: decimal('discountTotal', { precision: 12, scale: 2 }).notNull().default('0'),
   vatTotal: decimal('vatTotal', { precision: 12, scale: 2 }).notNull().default('0'),
   grandTotal: decimal('grandTotal', { precision: 12, scale: 2 }),
+  // --- Delivery snapshot (V1.4J.3) ------------------------------------------
+  // Frozen at order-creation time from site_settings.deliveryPrice — never
+  // recomputed from current settings. Historical orders default to 0/0.
+  deliveryPrice: decimal('deliveryPrice', { precision: 12, scale: 2 }).notNull().default('0.00'),
+  deliveryVatAmount: decimal('deliveryVatAmount', { precision: 12, scale: 2 }).notNull().default('0.00'),
   proformaNumber: text('proformaNumber'),
   invoiceNumber: text('invoiceNumber'),
   confirmedAt: timestamp('confirmedAt'),

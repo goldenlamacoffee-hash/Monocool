@@ -93,6 +93,13 @@ type BasketContextValue = {
   removeItem: (key: string) => void
   setQuantity: (key: string, quantity: number) => void
   clearBasket: () => void
+  // V1.4J.3 — current market commerce settings, DISPLAY ONLY. The server
+  // (placeOrder) independently re-reads these from site_settings and is the
+  // sole authority for what actually gets charged. Never persisted to
+  // localStorage — basket storage remains product items only.
+  deliveryPrice: number
+  vatRate: number
+  currency: string
 }
 
 const BasketContext = createContext<BasketContextValue | null>(null)
@@ -101,7 +108,22 @@ const BasketContext = createContext<BasketContextValue | null>(null)
 // Provider
 // ---------------------------------------------------------------------------
 
-export function BasketProvider({ children }: { children: ReactNode }) {
+interface BasketProviderProps {
+  children: ReactNode
+  /** Current market's NET delivery price. Display only — see BasketContextValue. */
+  deliveryPrice?: number
+  /** Current market's VAT rate (%). Display only — see BasketContextValue. */
+  vatRate?: number
+  /** Current market's currency code (e.g. "EUR", "CZK"). Display only. */
+  currency?: string
+}
+
+export function BasketProvider({
+  children,
+  deliveryPrice = 0,
+  vatRate = 20,
+  currency = 'EUR',
+}: BasketProviderProps) {
   const [state, dispatch] = useReducer(basketReducer, { items: [], hydrated: false })
 
   // Hydrate from localStorage once on mount (client only)
@@ -147,6 +169,9 @@ export function BasketProvider({ children }: { children: ReactNode }) {
         removeItem,
         setQuantity,
         clearBasket,
+        deliveryPrice,
+        vatRate,
+        currency,
       }}
     >
       {children}

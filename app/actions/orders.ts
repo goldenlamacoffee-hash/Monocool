@@ -373,7 +373,11 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
   // fall back to another market's counter. Fail cleanly instead of creating
   // the order.
   const [settings] = await db
-    .select({ vatRate: siteSettings.vatRate, currency: siteSettings.currency })
+    .select({
+      vatRate: siteSettings.vatRate,
+      currency: siteSettings.currency,
+      deliveryPrice: siteSettings.deliveryPrice,
+    })
     .from(siteSettings)
     .where(eq(siteSettings.domain, market))
     .limit(1)
@@ -382,6 +386,10 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
   }
   const vatRate = settings.vatRate ? parseFloat(String(settings.vatRate)) : 20
   const currency = settings.currency ?? 'EUR'
+  // V1.4J.3 — delivery is server-authoritative. The client/checkout form
+  // NEVER sends a delivery price; it is always re-read here from the current
+  // market's site_settings row, regardless of what the browser displayed.
+  const deliveryNet = settings.deliveryPrice ? parseFloat(String(settings.deliveryPrice)) : 0
 
   // 3. Re-derive all prices server-side
   const resolvedItems = await Promise.all(
@@ -474,14 +482,22 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
   )
 
   // 4. Aggregate totals
-  const subtotal = resolvedItems.reduce((s, i) => s + parseFloat(i.lineSubtotal), 0)
-  const totalVat = resolvedItems.reduce((s, i) => s + parseFloat(i.vatAmount), 0)
-  const grandTotal = Math.round((subtotal + totalVat) * 100) / 100
+  // itemsSubtotal / itemsVat — product-only, unaffected by delivery.
+  const itemsSubtotal = resolvedItems.reduce((s, i) => s + parseFloat(i.lineSubtotal), 0)
+  const itemsVat = resolvedItems.reduce((s, i) => s + parseFloat(i.vatAmount), 0)
   const discountTotal =
     resolvedItems.reduce(
       (s, i) => s + (parseFloat(i.baseUnitPrice) - parseFloat(i.finalUnitPrice)) * i.quantity,
       0
     )
+
+  // V1.4J.3 — delivery is charged ONCE per order (never multiplied by items
+  // or quantity), is NOT discounted by the partner discount, and is taxed at
+  // this market's current vatRate exactly like product lines.
+  const deliveryVat = Math.round(deliveryNet * (vatRate / 100) * 100) / 100
+  const totalVat = itemsVat + deliveryVat
+  const subtotal = itemsSubtotal // legacy column — product-only, matches spec §6
+  const grandTotal = Math.round((itemsSubtotal + deliveryNet + totalVat) * 100) / 100
 
   // 5. Allocate the order number and insert order + order_items in ONE
   // transaction (V1.4J.1). The nextOrderNumber counter increment and the
@@ -536,6 +552,9 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
           discountTotal: String(Math.round(discountTotal * 100) / 100),
           vatTotal: String(Math.round(totalVat * 100) / 100),
           grandTotal: String(grandTotal),
+          // V1.4J.3 — delivery snapshot, frozen at order-creation time.
+          deliveryPrice: deliveryNet.toFixed(2),
+          deliveryVatAmount: deliveryVat.toFixed(2),
           // Legacy columns
           items: JSON.stringify([]),
           subtotal: String(Math.round(subtotal * 100) / 100),

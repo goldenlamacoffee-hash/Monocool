@@ -27,12 +27,11 @@ interface UserProfile {
 
 interface Props {
   locale: Locale
-  vatRate: number
   userProfile: UserProfile | null
 }
 
-export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
-  const { items, subtotal, clearBasket, hydrated } = useBasket()
+export function CheckoutForm({ locale, userProfile }: Props) {
+  const { items, subtotal, clearBasket, hydrated, deliveryPrice, vatRate, currency } = useBasket()
   const t = useTranslations('checkout')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -52,8 +51,13 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
   const [billPostal, setBillPostal] = useState(userProfile?.postalCode ?? '')
   const [billCountry, setBillCountry] = useState(userProfile?.country ?? '')
 
-  const vatAmount = Math.round(subtotal * (vatRate / 100) * 100) / 100
-  const grandTotal = Math.round((subtotal + vatAmount) * 100) / 100
+  // V1.4J.3 — delivery is charged ONCE per order. This is a DISPLAY-ONLY
+  // preview: placeOrder() below never receives this deliveryPrice and always
+  // re-reads the authoritative value server-side at order-creation time.
+  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
+  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
+  const vatAmount = itemsVat + deliveryVat
+  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
 
   const fmt = (n: number) =>
     n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })

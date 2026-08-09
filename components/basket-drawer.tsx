@@ -9,9 +9,20 @@ import { useLocale, useTranslations } from 'next-intl'
 import { type Locale } from '@/i18n/config'
 
 export function BasketDrawer() {
-  const { items, count, subtotal, removeItem, setQuantity, hydrated } = useBasket()
+  const { items, count, subtotal, removeItem, setQuantity, hydrated, deliveryPrice, vatRate, currency } =
+    useBasket()
   const t = useTranslations('basket')
   const locale = useLocale() as Locale
+
+  // V1.4J.3 — delivery is charged ONCE per order regardless of item count.
+  // Display only; placeOrder() re-reads the authoritative value server-side.
+  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
+  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
+  const vatAmount = itemsVat + deliveryVat
+  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
+
+  const fmt = (n: number) =>
+    n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   return (
     <Sheet>
@@ -83,7 +94,7 @@ export function BasketDrawer() {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 2,
                         })}{' '}
-                        EUR
+                        {currency}
                       </span>
                       {item.discountPercent > 0 && (
                         <span className="rounded bg-secondary/15 px-1 py-0.5 text-[10px] font-semibold text-secondary">
@@ -129,7 +140,7 @@ export function BasketDrawer() {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 2,
                       })}{' '}
-                      EUR
+                      {currency}
                     </span>
                   </div>
                 </li>
@@ -142,17 +153,32 @@ export function BasketDrawer() {
         {hydrated && items.length > 0 && (
           <div className="border-t border-border pt-4 space-y-4">
             <Separator />
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{t('subtotal')}</span>
-              <span className="font-semibold text-foreground tabular-nums">
-                {subtotal.toLocaleString(locale, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{' '}
-                EUR
-              </span>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{t('subtotal')}</span>
+                <span className="font-medium text-foreground tabular-nums">
+                  {fmt(subtotal)} {currency}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{t('delivery')}</span>
+                <span className="font-medium text-foreground tabular-nums">
+                  {deliveryPrice > 0 ? `${fmt(deliveryPrice)} ${currency}` : t('deliveryFree')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">{t('vat', { rate: vatRate })}</span>
+                <span className="font-medium text-foreground tabular-nums">
+                  {fmt(vatAmount)} {currency}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t border-border pt-1.5 text-base font-semibold">
+                <span className="text-foreground">{t('grandTotal')}</span>
+                <span className="text-foreground tabular-nums">
+                  {fmt(grandTotal)} {currency}
+                </span>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">{t('vatNote')}</p>
             <div className="flex flex-col gap-2">
               <Link
                 href={`/${locale}/checkout`}
