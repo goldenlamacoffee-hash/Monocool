@@ -95,10 +95,7 @@ export function OrdersClient({ orders, marketCurrency, locale }: OrdersClientPro
 
     if (search.trim()) {
       const q = search.trim().toLowerCase()
-      result = result.filter(o =>
-        o.orderNumber.toLowerCase().includes(q) ||
-        (o.customerPoNumber ?? '').toLowerCase().includes(q)
-      )
+      result = result.filter(o => o.orderNumber.toLowerCase().includes(q))
     }
 
     return result
@@ -167,7 +164,6 @@ export function OrdersClient({ orders, marketCurrency, locale }: OrdersClientPro
                     <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)]">{t('orders.date')}</th>
                     <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)]">{t('orders.status')}</th>
                     <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)]">{t('orders.payment')}</th>
-                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)]">{t('orders.poNumber')}</th>
                     <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)]">{t('orders.total')}</th>
                     <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[color:var(--mono-muted)] sr-only">{t('orders.actions')}</th>
                   </tr>
@@ -196,9 +192,6 @@ export function OrdersClient({ orders, marketCurrency, locale }: OrdersClientPro
                         <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${paymentColor(o.paymentStatus)}`}>
                           {paymentLabel(o.paymentStatus)}
                         </span>
-                      </td>
-                      <td className="px-3 py-3.5 text-[color:var(--mono-muted)] text-xs">
-                        {o.customerPoNumber ?? '—'}
                       </td>
                       <td className="px-3 py-3.5 text-right font-semibold text-[color:var(--mono-navy)]">
                         {fmtOrderCurrency(String(o.grandTotal ?? o.total ?? '0'), o.currency)}
@@ -243,9 +236,6 @@ export function OrdersClient({ orders, marketCurrency, locale }: OrdersClientPro
                     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${paymentColor(o.paymentStatus)}`}>
                       {paymentLabel(o.paymentStatus)}
                     </span>
-                    {o.customerPoNumber && (
-                      <span className="text-xs text-[color:var(--mono-muted)]">PO: {o.customerPoNumber}</span>
-                    )}
                   </div>
                 </Link>
               ))}

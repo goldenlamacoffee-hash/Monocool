@@ -247,12 +247,6 @@ export default async function OrderDetailPage({ params }: Props) {
                 <dt className="text-[color:var(--mono-muted)]">{t('orders.date')}</dt>
                 <dd className="font-medium text-[color:var(--mono-navy)] text-right">{fmtDate(order.createdAt)}</dd>
               </div>
-              {order.customerPoNumber && (
-                <div className="flex justify-between gap-2">
-                  <dt className="text-[color:var(--mono-muted)]">{t('orders.poNumber')}</dt>
-                  <dd className="font-medium text-[color:var(--mono-navy)] text-right font-mono text-xs">{order.customerPoNumber}</dd>
-                </div>
-              )}
               {order.customerNote && (
                 <div className="flex flex-col gap-1">
                   <dt className="text-[color:var(--mono-muted)]">{t('orders.customerNote')}</dt>
