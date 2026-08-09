@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react'
 import { useBasket } from '@/contexts/basket-context'
+import { computeBasketTotals } from '@/lib/basket'
 import { placeOrder } from '@/app/actions/orders'
 import { useTranslations } from 'next-intl'
 import { type Locale } from '@/i18n/config'
@@ -31,7 +32,7 @@ interface Props {
 }
 
 export function CheckoutForm({ locale, userProfile }: Props) {
-  const { items, subtotal, clearBasket, hydrated, deliveryPrice, vatRate, currency } = useBasket()
+  const { items, clearBasket, hydrated, deliveryPrice, vatRate, currency } = useBasket()
   const t = useTranslations('checkout')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -53,11 +54,13 @@ export function CheckoutForm({ locale, userProfile }: Props) {
 
   // V1.4J.3 — delivery is charged ONCE per order. This is a DISPLAY-ONLY
   // preview: placeOrder() below never receives this deliveryPrice and always
-  // re-reads the authoritative value server-side at order-creation time.
-  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
-  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
-  const vatAmount = itemsVat + deliveryVat
-  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
+  // re-reads the authoritative value server-side at order-creation time,
+  // re-deriving this same result independently from the database.
+  const { itemsSubtotal: subtotal, vatTotal: vatAmount, grandTotal } = computeBasketTotals({
+    items,
+    vatRate,
+    deliveryPrice,
+  })
 
   const fmt = (n: number) =>
     n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })

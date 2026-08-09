@@ -617,7 +617,9 @@
       "clear": "Löschen",
       "confirmClear": "Diese Einkaufskosten wirklich löschen?",
       "variantNotAvailable": "Variantenkosten erfordern die Varianten-Tabellenmigration."
-    }
+    },
+    "deliveryPrice": "Versandkosten netto",
+    "deliveryPriceHint": "Dieser Betrag wird jeder Bestellung in diesem Markt einmal automatisch hinzugefügt. 0 bedeutet kostenloser Versand."
   },
   "legal": {
     "imprint": {
