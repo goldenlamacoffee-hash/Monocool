@@ -194,7 +194,7 @@
     "registrationPendingDescription": "Overujeme vaše údaje a aktivujeme váš účet do 24 hodín. Dostanete e-mailové oznámenie.",
     "backToHome": "Späť na hlavnú stránku",
     "errors": {
-      "nameRequired": "Zadajte pros��m svoje meno",
+      "nameRequired": "Zadajte prosím svoje meno",
       "invalidEmail": "Zadajte prosím platnú e-mailovú adresu",
       "passwordLength": "Heslo musí mať aspoň 8 znakov",
       "passwordMismatch": "Heslá sa nezhodujú",
