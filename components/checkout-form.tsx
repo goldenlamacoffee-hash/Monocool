@@ -340,7 +340,7 @@ export function CheckoutForm({ locale, userProfile }: Props) {
                       {' ×'}{item.quantity}
                     </span>
                     <span className="shrink-0 tabular-nums font-medium">
-                      {fmt(item.finalUnitPrice * item.quantity)} EUR
+                      {fmt(item.finalUnitPrice * item.quantity)} {currency}
                     </span>
                   </li>
                 ))}
@@ -349,15 +349,21 @@ export function CheckoutForm({ locale, userProfile }: Props) {
               <div className="border-t border-border pt-3 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('subtotal')}</span>
-                  <span className="tabular-nums">{fmt(subtotal)} EUR</span>
+                  <span className="tabular-nums">{fmt(subtotal)} {currency}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('delivery')}</span>
+                  <span className="tabular-nums">
+                    {deliveryPrice > 0 ? `${fmt(deliveryPrice)} ${currency}` : t('deliveryFree')}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('vat', { rate: vatRate })}</span>
-                  <span className="tabular-nums">{fmt(vatAmount)} EUR</span>
+                  <span className="tabular-nums">{fmt(vatAmount)} {currency}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between font-bold text-base">
                   <span>{t('grandTotal')}</span>
-                  <span className="tabular-nums">{fmt(grandTotal)} EUR</span>
+                  <span className="tabular-nums">{fmt(grandTotal)} {currency}</span>
                 </div>
               </div>
 
