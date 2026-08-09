@@ -129,6 +129,14 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
     nextInvoiceNumber: locale === 'sk' ? 'Ďalšie číslo faktúry' : locale === 'cs' ? 'Další číslo faktury' : locale === 'de' ? 'Nächste Rechnungsnr.' : 'Next invoice number',
     nextProformaNumber: locale === 'sk' ? 'Ďalšie číslo proformy' : locale === 'cs' ? 'Další číslo proformy' : locale === 'de' ? 'Nächste Proformanr.' : 'Next proforma number',
     paymentDueDays: locale === 'sk' ? 'Splatnosť (dni)' : locale === 'cs' ? 'Splatnost (dny)' : locale === 'de' ? 'Zahlungsfrist (Tage)' : 'Payment due (days)',
+    nextOrderNumber: locale === 'sk' ? 'Ďalšie číslo objednávky' : locale === 'cs' ? 'Další číslo objednávky' : locale === 'de' ? 'Nächste Bestellnummer' : 'Next order number',
+    nextOrderNumberHint: locale === 'sk'
+      ? 'Číslo, ktoré bude použité pre nasledujúcu novú objednávku na tomto trhu.'
+      : locale === 'cs'
+      ? 'Číslo, které bude použito pro následující novou objednávku na tomto trhu.'
+      : locale === 'de'
+      ? 'Nummer, die für die nächste neue Bestellung in diesem Markt verwendet wird.'
+      : 'Number that will be used for the next new order in this market.',
   }
 
   const updateField = (domain: string, field: keyof SiteSettings, value: string) => {
@@ -688,6 +696,21 @@ export function ContactSettingsManager({ initialSettings, locale }: ContactSetti
                   placeholder="1"
                   className="font-mono"
                 />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="nextOrderNumber">{translations.nextOrderNumber}</Label>
+                <Input
+                  id="nextOrderNumber"
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={(currentSettings as { nextOrderNumber?: number | null }).nextOrderNumber ?? ''}
+                  onChange={(e) => updateField(activeDomain, 'nextOrderNumber' as keyof typeof currentSettings, e.target.value)}
+                  placeholder="115"
+                  className="font-mono"
+                />
+                <p className="text-xs text-muted-foreground">{translations.nextOrderNumberHint}</p>
               </div>
             </CardContent>
           </Card>

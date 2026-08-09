@@ -3,10 +3,11 @@
 import { db } from '@/lib/db'
 import { order, orderItem, product, productVariant, user, siteSettings } from '@/lib/db/schema'
 import { assertAdmin, getSessionWithRole } from '@/lib/auth-utils'
-import { eq, desc, and, getTableColumns } from 'drizzle-orm'
+import { eq, desc, and, sql, getTableColumns } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { normalizeDiscountPercent, computePartnerPrice, parseBasePrice } from '@/lib/pricing'
 import { getDomainFromLocale } from '@/lib/domain-utils'
+import { formatOrderNumber } from '@/lib/order-number'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -368,14 +369,20 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
   // 1. Auth guard — re-derives discount from DB, never from client
   const { userId, discountPercent, market } = await assertApprovedPartner(input.locale)
 
-  // 2. Fetch VAT rate for this market
+  // 2. Fetch site_settings for this market. A row is REQUIRED — order numbering
+  // (V1.4J.1) is market-specific and must never invent a global sequence or
+  // fall back to another market's counter. Fail cleanly instead of creating
+  // the order.
   const [settings] = await db
     .select({ vatRate: siteSettings.vatRate, currency: siteSettings.currency })
     .from(siteSettings)
     .where(eq(siteSettings.domain, market))
     .limit(1)
-  const vatRate = settings?.vatRate ? parseFloat(String(settings.vatRate)) : 20
-  const currency = settings?.currency ?? 'EUR'
+  if (!settings) {
+    throw new Error(`No site settings configured for market ${market}`)
+  }
+  const vatRate = settings.vatRate ? parseFloat(String(settings.vatRate)) : 20
+  const currency = settings.currency ?? 'EUR'
 
   // 3. Re-derive all prices server-side
   const resolvedItems = await Promise.all(
@@ -477,60 +484,95 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
       0
     )
 
-  // 5. Generate order number: MC-{MARKET_2CHAR}-{YYYYMM}-{RANDOM_4HEX}
+  // 5. Allocate the order number and insert order + order_items in ONE
+  // transaction (V1.4J.1). The nextOrderNumber counter increment and the
+  // order INSERT must be atomic so that:
+  //  - two concurrent checkouts on the same market can never receive the
+  //    same number
+  //  - a rolled-back transaction (e.g. a UNIQUE collision on orderNumber
+  //    after an admin manually edited the counter) never permanently
+  //    consumes a sequence number
   const now = new Date()
-  const marketCode = market.replace('monocool.', '').toUpperCase().slice(0, 2)
-  const yyyymm = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`
-  const rand = Math.floor(Math.random() * 0xffff)
-    .toString(16)
-    .toUpperCase()
-    .padStart(4, '0')
-  const orderNumber = `MC-${marketCode}-${yyyymm}-${rand}`
+  let orderNumber = ''
 
-  // 6. Insert order + order_items in a single transaction
-  await db.transaction(async (tx) => {
-    const [newOrder] = await tx
-      .insert(order)
-      .values({
-        orderNumber,
-        userId,
-        status: 'submitted',
-        market,
-        currency,
-        paymentStatus: 'unpaid',
-        customerPoNumber: input.customerPoNumber?.trim() || null,
-        customerNote: input.customerNote?.trim() || null,
-        shippingAddress: input.shippingAddress ?? null,
-        billingAddress: input.billingAddress ?? null,
-        discountTotal: String(Math.round(discountTotal * 100) / 100),
-        vatTotal: String(Math.round(totalVat * 100) / 100),
-        grandTotal: String(grandTotal),
-        // Legacy columns
-        items: JSON.stringify([]),
-        subtotal: String(Math.round(subtotal * 100) / 100),
-        total: String(grandTotal),
-      })
-      .returning({ id: order.id })
+  try {
+    await db.transaction(async (tx) => {
+      // Atomically increment and read back the pre-increment value in a
+      // single statement — this is the allocation. No separate SELECT-then-
+      // UPDATE: two concurrent transactions serialize on this row.
+      const [allocated] = await tx
+        .update(siteSettings)
+        .set({
+          nextOrderNumber: sql`${siteSettings.nextOrderNumber} + 1`,
+          updatedAt: now,
+        })
+        .where(eq(siteSettings.domain, market))
+        .returning({ allocatedNumber: sql<number>`${siteSettings.nextOrderNumber} - 1` })
 
-    await tx.insert(orderItem).values(
-      resolvedItems.map((item) => ({
-        orderId: newOrder.id,
-        productId: item.productId,
-        variantId: item.variantId ?? null,
-        productName: item.productName,
-        variantName: item.variantName,
-        sku: item.sku,
-        quantity: item.quantity,
-        baseUnitPrice: item.baseUnitPrice,
-        discountPercent: item.discountPercent,
-        finalUnitPrice: item.finalUnitPrice,
-        vatRate: item.vatRate,
-        vatAmount: item.vatAmount,
-        lineSubtotal: item.lineSubtotal,
-        lineTotal: item.lineTotal,
-      }))
-    )
-  })
+      if (!allocated) {
+        // Row disappeared between step 2 and here — fail closed, never
+        // invent a sequence.
+        throw new Error(`No site settings configured for market ${market}`)
+      }
+
+      orderNumber = formatOrderNumber({ market, date: now, sequence: allocated.allocatedNumber })
+
+      const [newOrder] = await tx
+        .insert(order)
+        .values({
+          orderNumber,
+          userId,
+          status: 'submitted',
+          market,
+          currency,
+          paymentStatus: 'unpaid',
+          customerPoNumber: input.customerPoNumber?.trim() || null,
+          customerNote: input.customerNote?.trim() || null,
+          shippingAddress: input.shippingAddress ?? null,
+          billingAddress: input.billingAddress ?? null,
+          discountTotal: String(Math.round(discountTotal * 100) / 100),
+          vatTotal: String(Math.round(totalVat * 100) / 100),
+          grandTotal: String(grandTotal),
+          // Legacy columns
+          items: JSON.stringify([]),
+          subtotal: String(Math.round(subtotal * 100) / 100),
+          total: String(grandTotal),
+        })
+        .returning({ id: order.id })
+
+      await tx.insert(orderItem).values(
+        resolvedItems.map((item) => ({
+          orderId: newOrder.id,
+          productId: item.productId,
+          variantId: item.variantId ?? null,
+          productName: item.productName,
+          variantName: item.variantName,
+          sku: item.sku,
+          quantity: item.quantity,
+          baseUnitPrice: item.baseUnitPrice,
+          discountPercent: item.discountPercent,
+          finalUnitPrice: item.finalUnitPrice,
+          vatRate: item.vatRate,
+          vatAmount: item.vatAmount,
+          lineSubtotal: item.lineSubtotal,
+          lineTotal: item.lineTotal,
+        }))
+      )
+      // If the INSERT above throws (e.g. UNIQUE violation on orderNumber
+      // after an admin manually edited nextOrderNumber to collide with an
+      // existing order), the whole transaction — including the counter
+      // increment — rolls back automatically. No number is permanently lost.
+    })
+  } catch (err) {
+    const pgError = err as { code?: string; constraint?: string }
+    if (pgError?.code === '23505') {
+      // Unique constraint violation on order.orderNumber
+      throw new Error(
+        'Order number collision detected — the sequence was rolled back safely. Please try again.'
+      )
+    }
+    throw err
+  }
 
   revalidatePath('/[locale]/admin/(dashboard)/bestellungen', 'page')
   return { orderNumber }

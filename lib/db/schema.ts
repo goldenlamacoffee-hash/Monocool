@@ -85,6 +85,11 @@ export const siteSettings = pgTable('site_settings', {
   nextInvoiceNumber: integer('nextInvoiceNumber').notNull().default(1),
   nextProformaNumber: integer('nextProformaNumber').notNull().default(1),
   paymentDueDays: integer('paymentDueDays'),
+  // --- B2B sequential order numbering (V1.4J.1) ----------------------------
+  // Market-specific counter for the next order number (see lib/order-number.ts).
+  // Independent per domain — site_settings already has one row per market.
+  // Allocated atomically inside the same transaction as the order INSERT.
+  nextOrderNumber: integer('nextOrderNumber').notNull().default(115),
   // Metadata
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
