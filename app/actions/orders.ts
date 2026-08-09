@@ -345,7 +345,6 @@ export type BasketItemInput = {
 export type PlaceOrderInput = {
   locale: string
   items: BasketItemInput[]
-  customerPoNumber?: string
   customerNote?: string
   shippingAddress?: {
     address?: string
@@ -526,7 +525,11 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderNumber:
           market,
           currency,
           paymentStatus: 'unpaid',
-          customerPoNumber: input.customerPoNumber?.trim() || null,
+          // V1.4J.2 — the customer-entered PO/order-number field has been removed.
+          // Only the MonoCool-generated orderNumber is customer-visible now.
+          // The DB column is kept (nullable) for backward compatibility with
+          // historical orders only — new orders never write to it.
+          customerPoNumber: null,
           customerNote: input.customerNote?.trim() || null,
           shippingAddress: input.shippingAddress ?? null,
           billingAddress: input.billingAddress ?? null,

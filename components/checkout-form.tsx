@@ -39,7 +39,6 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   // Form fields
-  const [poNumber, setPoNumber] = useState('')
   const [customerNote, setCustomerNote] = useState('')
   // Shipping address — pre-filled from user profile
   const [shipAddress, setShipAddress] = useState(userProfile?.address ?? '')
@@ -91,7 +90,6 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
             variantName: i.variantName,
             sku: i.sku,
           })),
-          customerPoNumber: poNumber.trim() || undefined,
           customerNote: customerNote.trim() || undefined,
           shippingAddress,
           billingAddress,
@@ -300,22 +298,11 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
               )}
             </section>
 
-            {/* PO Number + Customer note */}
+            {/* Customer note */}
             <section className="rounded-2xl border border-border bg-card p-6 space-y-4">
               <h2 className="font-heading text-base font-semibold text-foreground">
                 {t('orderDetails')}
               </h2>
-              <div>
-                <Label htmlFor="poNumber">{t('poNumber')}</Label>
-                <p className="text-xs text-muted-foreground mt-0.5 mb-1.5">{t('poNumberHint')}</p>
-                <Input
-                  id="poNumber"
-                  value={poNumber}
-                  onChange={(e) => setPoNumber(e.target.value)}
-                  placeholder={t('poNumberPlaceholder')}
-                  className="font-mono"
-                />
-              </div>
               <div>
                 <Label htmlFor="customerNote">{t('customerNote')}</Label>
                 <p className="text-xs text-muted-foreground mt-0.5 mb-1.5">
