@@ -44,6 +44,8 @@ export type SiteSettings = {
   nextInvoiceNumber: number
   nextProformaNumber: number
   paymentDueDays: number | null
+  // V1.4J.1 — per-market sequential order-number counter
+  nextOrderNumber: number
   createdAt: Date
   updatedAt: Date
 }
@@ -88,6 +90,7 @@ const defaultSettings: Omit<SiteSettings, 'id' | 'createdAt' | 'updatedAt'> = {
   nextInvoiceNumber: 1,
   nextProformaNumber: 1,
   paymentDueDays: null,
+  nextOrderNumber: 115,
 }
 
 // Map locale to domain
@@ -162,6 +165,17 @@ export async function upsertSiteSettings(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     await assertAdmin()
+
+    // V1.4J.1 — validate nextOrderNumber before it ever reaches the DB.
+    // Rejects negative/zero and non-integer values (the admin may still
+    // intentionally jump the sequence forward/backward; the real collision
+    // guard is the UNIQUE constraint + transaction rollback in placeOrder).
+    if (data.nextOrderNumber !== undefined && data.nextOrderNumber !== null) {
+      const n = Number(data.nextOrderNumber)
+      if (!Number.isInteger(n) || n < 1) {
+        return { success: false, error: 'Next order number must be a positive integer' }
+      }
+    }
 
     // Check if settings exist for this domain
     const existing = await db
