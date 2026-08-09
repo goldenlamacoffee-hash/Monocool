@@ -8,15 +8,18 @@ import { type Locale } from '@/i18n/config'
 
 interface Props {
   locale: Locale
-  vatRate: number
 }
 
-export function BasketReviewClient({ locale, vatRate }: Props) {
-  const { items, subtotal, removeItem, setQuantity, hydrated } = useBasket()
+export function BasketReviewClient({ locale }: Props) {
+  const { items, subtotal, removeItem, setQuantity, hydrated, deliveryPrice, vatRate, currency } = useBasket()
   const t = useTranslations('basket')
 
-  const vatAmount = Math.round(subtotal * (vatRate / 100) * 100) / 100
-  const grandTotal = Math.round((subtotal + vatAmount) * 100) / 100
+  // V1.4J.3 — delivery is charged ONCE per order. Display only; placeOrder()
+  // re-reads the authoritative deliveryPrice/vatRate server-side.
+  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
+  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
+  const vatAmount = itemsVat + deliveryVat
+  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
 
   const fmt = (n: number) =>
     n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -82,7 +85,7 @@ export function BasketReviewClient({ locale, vatRate }: Props) {
                 )}
                 <div className="flex items-center gap-2 pt-1">
                   <span className="text-sm text-muted-foreground">
-                    {fmt(item.finalUnitPrice)} EUR / {t('piece')}
+                    {fmt(item.finalUnitPrice)} {currency} / {t('piece')}
                   </span>
                   {item.discountPercent > 0 && (
                     <span className="rounded bg-secondary/15 px-1.5 py-0.5 text-[11px] font-semibold text-secondary">
@@ -126,7 +129,7 @@ export function BasketReviewClient({ locale, vatRate }: Props) {
                 </div>
 
                 <span className="text-base font-bold text-foreground tabular-nums">
-                  {fmt(item.finalUnitPrice * item.quantity)} EUR
+                  {fmt(item.finalUnitPrice * item.quantity)} {currency}
                 </span>
               </div>
             </div>
@@ -143,17 +146,23 @@ export function BasketReviewClient({ locale, vatRate }: Props) {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('subtotal')}</span>
-                <span className="font-medium tabular-nums">{fmt(subtotal)} EUR</span>
+                <span className="font-medium tabular-nums">{fmt(subtotal)} {currency}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('delivery')}</span>
+                <span className="font-medium tabular-nums">
+                  {deliveryPrice > 0 ? `${fmt(deliveryPrice)} ${currency}` : t('deliveryFree')}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   {t('vat', { rate: vatRate })}
                 </span>
-                <span className="font-medium tabular-nums">{fmt(vatAmount)} EUR</span>
+                <span className="font-medium tabular-nums">{fmt(vatAmount)} {currency}</span>
               </div>
               <div className="border-t border-border pt-2 flex justify-between text-base font-bold">
                 <span>{t('grandTotal')}</span>
-                <span className="tabular-nums">{fmt(grandTotal)} EUR</span>
+                <span className="tabular-nums">{fmt(grandTotal)} {currency}</span>
               </div>
             </div>
 

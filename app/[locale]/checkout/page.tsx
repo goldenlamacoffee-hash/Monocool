@@ -68,13 +68,12 @@ export default async function CheckoutPage({ params }: Props) {
   }
 
   const siteSettings = await getSiteSettingsByLocale(locale)
-  const vatRate = siteSettings.vatRate ? parseFloat(String(siteSettings.vatRate)) : 20
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <CheckoutForm locale={locale} vatRate={vatRate} userProfile={userProfile} />
+        <CheckoutForm locale={locale} userProfile={userProfile} />
       </main>
       <Footer
         contactInfo={{

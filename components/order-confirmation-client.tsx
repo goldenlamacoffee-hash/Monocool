@@ -31,6 +31,9 @@ export interface OrderData {
   customerNote: unknown
   createdAt: unknown
   items: OrderItem[]
+  // V1.4J.3 — delivery snapshot, frozen at order-creation time
+  deliveryPrice?: unknown
+  deliveryVatAmount?: unknown
 }
 
 interface Props {
@@ -100,6 +103,14 @@ export function OrderConfirmationClient({ order, locale }: Props) {
         <div className="flex justify-between">
           <span className="text-muted-foreground">{t('subtotalLabel')}</span>
           <span className="tabular-nums">{fmt(order.subtotal)} {currency}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{t('deliveryLabel')}</span>
+          <span className="tabular-nums">
+            {parseFloat(String(order.deliveryPrice ?? '0')) > 0
+              ? `${fmt(order.deliveryPrice)} ${currency}`
+              : t('deliveryFreeLabel')}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">{t('vatLabel')}</span>

@@ -181,13 +181,19 @@ export default async function OrderDetailPage({ params }: Props) {
                 <div className="flex items-center gap-8">
                   <span className="text-[color:var(--mono-muted)]">{t('orders.subtotal')}</span>
                   <span className="font-medium text-[color:var(--mono-navy)] min-w-[100px] text-right">
-                    {fmtCurrency(String(parseFloat(order.grandTotal ?? order.total ?? '0') - parseFloat(order.vatTotal)))}
+                    {fmtCurrency(order.subtotal)}
                   </span>
                 </div>
                 <div className="flex items-center gap-8">
                   <span className="text-[color:var(--mono-muted)]">{t('orders.discountTotal')}</span>
                   <span className="font-medium text-emerald-600 min-w-[100px] text-right">
                     -{fmtCurrency(order.discountTotal)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-8">
+                  <span className="text-[color:var(--mono-muted)]">{t('orders.delivery')}</span>
+                  <span className="font-medium text-[color:var(--mono-navy)] min-w-[100px] text-right">
+                    {parseFloat(order.deliveryPrice ?? '0') > 0 ? fmtCurrency(order.deliveryPrice) : t('orders.deliveryFree')}
                   </span>
                 </div>
                 <div className="flex items-center gap-8">

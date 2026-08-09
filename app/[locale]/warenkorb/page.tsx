@@ -29,13 +29,12 @@ export default async function WarenkorbPage({ params }: Props) {
   }
 
   const siteSettings = await getSiteSettingsByLocale(locale)
-  const vatRate = siteSettings.vatRate ? parseFloat(String(siteSettings.vatRate)) : 20
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <BasketReviewClient locale={locale} vatRate={vatRate} />
+        <BasketReviewClient locale={locale} />
       </main>
       <Footer
         contactInfo={{

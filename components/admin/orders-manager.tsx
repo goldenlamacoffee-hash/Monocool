@@ -600,6 +600,7 @@ export function OrdersManager({ initialOrders, locale: _locale }: OrdersManagerP
                       grandTotal?: string | null
                       total?: string | null
                       currency?: string | null
+                      deliveryPrice?: string | null
                     }
                     return (
                       <div className="mt-3 flex flex-col items-end gap-1 text-sm">
@@ -607,6 +608,14 @@ export function OrdersManager({ initialOrders, locale: _locale }: OrdersManagerP
                           <div className="flex gap-8 text-muted-foreground">
                             <span>{t('discount')}</span>
                             <span className="font-mono">{'-'}{formatCurrency(t2.discountTotal)}</span>
+                          </div>
+                        )}
+                        {t2.deliveryPrice != null && (
+                          <div className="flex gap-8 text-muted-foreground">
+                            <span>{t('delivery')}</span>
+                            <span className="font-mono">
+                              {parseFloat(t2.deliveryPrice) > 0 ? formatCurrency(t2.deliveryPrice) : t('deliveryFree')}
+                            </span>
                           </div>
                         )}
                         {t2.vatTotal != null && (

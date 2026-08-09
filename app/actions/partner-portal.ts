@@ -269,10 +269,14 @@ export type MyOrderDetail = {
   customerNote: string | null
   billingAddress: unknown
   shippingAddress: unknown
+  subtotal: string
   discountTotal: string
   vatTotal: string
   grandTotal: string | null
   total: string
+  // V1.4J.3 — delivery snapshot, frozen at order-creation time
+  deliveryPrice: string
+  deliveryVatAmount: string
   // Order timestamps for timeline
   createdAt: Date
   confirmedAt: Date | null
@@ -317,10 +321,13 @@ export async function getMyOrderByNumber(
       customerNote: order.customerNote,
       billingAddress: order.billingAddress,
       shippingAddress: order.shippingAddress,
+      subtotal: order.subtotal,
       discountTotal: order.discountTotal,
       vatTotal: order.vatTotal,
       grandTotal: order.grandTotal,
       total: order.total,
+      deliveryPrice: order.deliveryPrice,
+      deliveryVatAmount: order.deliveryVatAmount,
       createdAt: order.createdAt,
       confirmedAt: order.confirmedAt,
       shippedAt: order.shippedAt,
@@ -362,9 +369,12 @@ export async function getMyOrderByNumber(
 
   return {
     ...row,
+    subtotal: String(row.subtotal ?? '0'),
     discountTotal: String(row.discountTotal ?? '0'),
     vatTotal: String(row.vatTotal ?? '0'),
     total: String(row.total ?? '0'),
+    deliveryPrice: String(row.deliveryPrice ?? '0'),
+    deliveryVatAmount: String(row.deliveryVatAmount ?? '0'),
     items,
   }
 }

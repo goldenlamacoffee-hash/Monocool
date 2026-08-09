@@ -27,12 +27,11 @@ interface UserProfile {
 
 interface Props {
   locale: Locale
-  vatRate: number
   userProfile: UserProfile | null
 }
 
-export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
-  const { items, subtotal, clearBasket, hydrated } = useBasket()
+export function CheckoutForm({ locale, userProfile }: Props) {
+  const { items, subtotal, clearBasket, hydrated, deliveryPrice, vatRate, currency } = useBasket()
   const t = useTranslations('checkout')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -52,8 +51,13 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
   const [billPostal, setBillPostal] = useState(userProfile?.postalCode ?? '')
   const [billCountry, setBillCountry] = useState(userProfile?.country ?? '')
 
-  const vatAmount = Math.round(subtotal * (vatRate / 100) * 100) / 100
-  const grandTotal = Math.round((subtotal + vatAmount) * 100) / 100
+  // V1.4J.3 — delivery is charged ONCE per order. This is a DISPLAY-ONLY
+  // preview: placeOrder() below never receives this deliveryPrice and always
+  // re-reads the authoritative value server-side at order-creation time.
+  const itemsVat = Math.round(subtotal * (vatRate / 100) * 100) / 100
+  const deliveryVat = Math.round(deliveryPrice * (vatRate / 100) * 100) / 100
+  const vatAmount = itemsVat + deliveryVat
+  const grandTotal = Math.round((subtotal + deliveryPrice + vatAmount) * 100) / 100
 
   const fmt = (n: number) =>
     n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -336,7 +340,7 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
                       {' ×'}{item.quantity}
                     </span>
                     <span className="shrink-0 tabular-nums font-medium">
-                      {fmt(item.finalUnitPrice * item.quantity)} EUR
+                      {fmt(item.finalUnitPrice * item.quantity)} {currency}
                     </span>
                   </li>
                 ))}
@@ -345,15 +349,21 @@ export function CheckoutForm({ locale, vatRate, userProfile }: Props) {
               <div className="border-t border-border pt-3 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('subtotal')}</span>
-                  <span className="tabular-nums">{fmt(subtotal)} EUR</span>
+                  <span className="tabular-nums">{fmt(subtotal)} {currency}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('delivery')}</span>
+                  <span className="tabular-nums">
+                    {deliveryPrice > 0 ? `${fmt(deliveryPrice)} ${currency}` : t('deliveryFree')}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('vat', { rate: vatRate })}</span>
-                  <span className="tabular-nums">{fmt(vatAmount)} EUR</span>
+                  <span className="tabular-nums">{fmt(vatAmount)} {currency}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between font-bold text-base">
                   <span>{t('grandTotal')}</span>
-                  <span className="tabular-nums">{fmt(grandTotal)} EUR</span>
+                  <span className="tabular-nums">{fmt(grandTotal)} {currency}</span>
                 </div>
               </div>
 

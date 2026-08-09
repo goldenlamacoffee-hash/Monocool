@@ -75,12 +75,22 @@ export default async function LocaleLayout({
   // market is invalidated server-side here and reported via the notice.
   const { wrongMarket } = await enforceMarketSession()
 
+  // V1.4J.3 — current market's commerce settings (delivery price, VAT rate,
+  // currency), loaded once here and passed into BasketProvider so every
+  // basket/checkout surface (drawer, full basket, checkout) reads the same
+  // DISPLAY values. placeOrder() independently re-reads these from the DB —
+  // this is display-only, never trusted for the actual charge.
+  const commerceSettings = await getSiteSettingsByLocale(locale)
+  const deliveryPrice = commerceSettings.deliveryPrice ? parseFloat(String(commerceSettings.deliveryPrice)) : 0
+  const vatRate = commerceSettings.vatRate ? parseFloat(String(commerceSettings.vatRate)) : 20
+  const currency = commerceSettings.currency ?? 'EUR'
+
   return (
     <html lang={locale} className={`bg-background ${manrope.variable} ${sora.variable}`}>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           <ImpersonationBannerWrapper locale={locale} />
-          <BasketProvider>
+          <BasketProvider deliveryPrice={deliveryPrice} vatRate={vatRate} currency={currency}>
             {wrongMarket && <WrongMarketNotice />}
             {children}
           </BasketProvider>
